@@ -22,3 +22,5 @@ pathChunks.pop();
 const tilePath = pathChunks.join('/')
 
 export {tileId, tilePath, tileUrl, parent}
+const tileProps = {tileId, tilePath, tileUrl, parent}
+export default tileProps

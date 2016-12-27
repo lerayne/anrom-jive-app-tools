@@ -39,4 +39,7 @@ exports.tileId = tileId;
 exports.tilePath = tilePath;
 exports.tileUrl = tileUrl;
 exports.parent = parent;
+
+var tileProps = { tileId: tileId, tilePath: tilePath, tileUrl: tileUrl, parent: parent };
+exports.default = tileProps;
 //# sourceMappingURL=tileProps.js.map

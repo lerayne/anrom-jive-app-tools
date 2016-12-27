@@ -1,0 +1,1 @@
+{"version":3,"sources":["src/index.jsx"],"names":["tileProps"],"mappings":";;;;;;;AAIA;;;;;;QAEQA,S,wBANR","file":"index.js","sourcesContent":["/**\r\n * Created by M. Yegorov on 2016-12-27.\r\n */\r\n\r\nimport tileProps from './tileProps'\r\n\r\nexport {tileProps}"]}
