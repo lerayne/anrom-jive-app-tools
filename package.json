@@ -1,0 +1,43 @@
+{
+  "name": "anrom-jive-app-tools",
+  "version": "0.1.0",
+  "description": "Simple tools for jive apps and tiles",
+  "main": "index.js",
+  "engines": {
+    "node": ">=4.3.2"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build-win": "gulp"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/lerayne/anrom-jive-app-tools.git"
+  },
+  "keywords": [
+    "jive"
+  ],
+  "author": "Michael Yegorov",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/lerayne/anrom-jive-app-tools/issues"
+  },
+  "homepage": "https://github.com/lerayne/anrom-jive-app-tools#readme",
+  "devDependencies": {
+    "babel-cli": "6.16.0",
+    "babel-core": "6.17.0",
+    "babel-plugin-add-module-exports": "0.2.1",
+    "babel-preset-latest": "6.16.0",
+    "babel-preset-react": "6.16.0",
+    "babel-preset-stage-0": "6.16.0",
+    "gulp": "3.9.1",
+    "gulp-rimraf": "0.2.1",
+    "gulp-shell": "0.5.2"
+  },
+  "peerDependencies": {
+    "react": "15.3.2"
+  },
+  "dependencies": {
+    "url": "0.11.0"
+  }
+}
