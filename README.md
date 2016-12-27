@@ -9,13 +9,13 @@
 
 ## Tools
 Global import
-`import tools from 'anrom-jive-app-tools'`
+`import tools from 'anrom-jive-app-tools'`  
 `import {tileProps} from 'anrom-jive-app-tools'`
 
 ### tileProps
 Gives you access to some valuable information about the tile before DOM loads
 
-`import tools from 'anrom-jive-app-tools/tileProps'`
+`import tools from 'anrom-jive-app-tools/tileProps'`  
 `import {tileId, tilePath, tileUrl, parent} from 'anrom-jive-app-tools/tileProps'`
 
 **tileId** - id of a tile, e.g. `1582`. Can be useful if your domain security is turned off and you want to access tile's frame from within a tile.
