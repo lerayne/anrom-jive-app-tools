@@ -3,7 +3,8 @@
  */
 
 import tileProps from './tileProps'
+import fetchPromise from './fetchPromise'
 
-const tools = {tileProps}
-export {tileProps}
+const tools = {tileProps, fetchPromise}
+export {tileProps, fetchPromise}
 export default tools
