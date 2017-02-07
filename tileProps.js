@@ -7,13 +7,9 @@ exports.parent = exports.tileUrl = exports.tilePath = exports.tileId = undefined
 
 var _url = require('url');
 
-var _gadgets = require('jive/gadgets');
+//import gadgets from 'jive/gadgets'
 
-var _gadgets2 = _interopRequireDefault(_gadgets);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-var urlParemeters = _gadgets2.default.util.getUrlParameters();
+var urlParemeters = window.gadgets.util.getUrlParameters();
 
 // parent: url of a root jive instance (e.g. mysite.com instead of domain-protected apps.mysite.com)
 var parent = urlParemeters.parent;
