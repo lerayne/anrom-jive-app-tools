@@ -26,7 +26,7 @@ export function promiseRestRequest(href){
             href
         }).execute(response => {
             if (!response.error) {
-                resolve(response)
+                resolve(response.content ? response.content : response)
             } else {
                 reject(response)
             }
