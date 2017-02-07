@@ -9,8 +9,8 @@ if (gala != undefined && typeof gala === 'object') {
     console.log('getAppURL', jive.tile.getAppURL())
 
     urlParemeters = {
-        parent: jive.tile.getJiveURL(),
-        url: jive.tile.getAppURL()
+        parent: jive.tile.getJiveURL() || '',
+        url: jive.tile.getAppURL() || ''
     }
 } else {
     const gadgets = require('jive/gadgets')
