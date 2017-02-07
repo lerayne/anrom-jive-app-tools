@@ -37,7 +37,7 @@ function promiseRestRequest(href) {
             href: href
         }).execute(function (response) {
             if (!response.error) {
-                resolve(response);
+                resolve(response.content ? response.content : response);
             } else {
                 reject(response);
             }
