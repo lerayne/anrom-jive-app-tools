@@ -1,10 +1,20 @@
 import {parse} from 'url'
-//import gadgets from 'jive/gadgets'
+import jive from 'jive'
 
-const urlParemeters = window.gadgets.util.getUrlParameters()
+let urlParemeters
+
+if (gala != undefined && typeof gala === 'object') {
+    urlParemeters = {
+        parent: jive.tile.getJiveURL(),
+        url: jive.tile.getAppURL()
+    }
+} else {
+    const gadgets = require('jive/gadgets')
+    urlParemeters = gadgets.util.getUrlParameters()
+}
 
 // parent: url of a root jive instance (e.g. mysite.com instead of domain-protected apps.mysite.com)
-const {parent} = urlParemeters;
+const {parent} = urlParemeters
 
 // full tile url prsed as jive object
 const tileUrl = parse(urlParemeters.url, true)

@@ -5,14 +5,31 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.parent = exports.tileUrl = exports.tilePath = exports.tileId = undefined;
 
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
+
 var _url = require('url');
 
-//import gadgets from 'jive/gadgets'
+var _jive = require('jive');
 
-var urlParemeters = window.gadgets.util.getUrlParameters();
+var _jive2 = _interopRequireDefault(_jive);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var urlParemeters = void 0;
+
+if (gala != undefined && (typeof gala === 'undefined' ? 'undefined' : _typeof(gala)) === 'object') {
+    urlParemeters = {
+        parent: _jive2.default.tile.getJiveURL(),
+        url: _jive2.default.tile.getAppURL()
+    };
+} else {
+    var gadgets = require('jive/gadgets');
+    urlParemeters = gadgets.util.getUrlParameters();
+}
 
 // parent: url of a root jive instance (e.g. mysite.com instead of domain-protected apps.mysite.com)
-var parent = urlParemeters.parent;
+var _urlParemeters = urlParemeters,
+    parent = _urlParemeters.parent;
 
 // full tile url prsed as jive object
 
