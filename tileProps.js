@@ -5,8 +5,6 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.parent = exports.tileUrl = exports.tilePath = exports.tileId = undefined;
 
-var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
-
 var _url = require('url');
 
 var _jive = require('jive');
@@ -17,7 +15,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 var getUrlParemeters = void 0;
 
-if (window.gala != undefined && _typeof(window.gala) === 'object') {
+if (typeof window.gala != 'undefined') {
     getUrlParemeters = function getUrlParemeters() {
         return {
             parent: _jive2.default.tile.getJiveURL() || '',
