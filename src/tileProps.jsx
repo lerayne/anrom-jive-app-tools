@@ -3,7 +3,7 @@ import jive from 'jive'
 
 let getUrlParemeters
 
-if (gala != undefined && typeof gala === 'object') {
+if (window.gala != undefined && typeof window.gala === 'object') {
     getUrlParemeters = function(){
         return {
             parent: jive.tile.getJiveURL() || '',
