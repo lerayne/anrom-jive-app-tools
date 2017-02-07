@@ -1,7 +1,7 @@
 import {parse} from 'url'
-import gadgets from 'jive/gadgets'
+//import gadgets from 'jive/gadgets'
 
-const urlParemeters = gadgets.util.getUrlParameters()
+const urlParemeters = window.gadgets.util.getUrlParameters()
 
 // parent: url of a root jive instance (e.g. mysite.com instead of domain-protected apps.mysite.com)
 const {parent} = urlParemeters;
