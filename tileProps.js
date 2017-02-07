@@ -48,7 +48,7 @@ if (tileUrl.query && tileUrl.query.syn_app) {
 }
 
 //path that helps address images and other assets
-var pathChunks = tileUrl.pathname.split('/');
+var pathChunks = tileUrl.pathname ? tileUrl.pathname.split('/') : [];
 pathChunks.pop();
 var tilePath = pathChunks.join('/');
 

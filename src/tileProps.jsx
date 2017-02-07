@@ -31,7 +31,7 @@ if (tileUrl.query && tileUrl.query.syn_app) {
 }
 
 //path that helps address images and other assets
-const pathChunks = tileUrl.pathname.split('/')
+const pathChunks = tileUrl.pathname ? tileUrl.pathname.split('/') : []
 pathChunks.pop();
 const tilePath = pathChunks.join('/')
 
