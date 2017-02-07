@@ -17,7 +17,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 var getUrlParemeters = void 0;
 
-if (gala != undefined && (typeof gala === 'undefined' ? 'undefined' : _typeof(gala)) === 'object') {
+if (window.gala != undefined && _typeof(window.gala) === 'object') {
     getUrlParemeters = function getUrlParemeters() {
         return {
             parent: _jive2.default.tile.getJiveURL() || '',
