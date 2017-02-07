@@ -4,6 +4,10 @@ import jive from 'jive'
 let urlParemeters
 
 if (gala != undefined && typeof gala === 'object') {
+
+    console.log('getJiveURL', jive.tile.getJiveURL())
+    console.log('getAppURL', jive.tile.getAppURL())
+
     urlParemeters = {
         parent: jive.tile.getJiveURL(),
         url: jive.tile.getAppURL()
