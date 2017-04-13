@@ -6,6 +6,7 @@ Object.defineProperty(exports, "__esModule", {
 exports.promiseOsapiRequest = promiseOsapiRequest;
 exports.promiseRestRequest = promiseRestRequest;
 exports.promiseHttpGet = promiseHttpGet;
+exports.promiseHttpPost = promiseHttpPost;
 
 var _osapi = require('jive/osapi');
 
@@ -61,7 +62,23 @@ function promiseHttpGet() {
     });
 }
 
-var fetchPromise = { promiseHttpGet: promiseHttpGet, promiseOsapiRequest: promiseOsapiRequest, promiseRestRequest: promiseRestRequest };
+function promiseHttpPost() {
+    for (var _len2 = arguments.length, args = Array(_len2), _key2 = 0; _key2 < _len2; _key2++) {
+        args[_key2] = arguments[_key2];
+    }
+
+    return new Promise(function (resolve, reject) {
+        var _osapi$http2;
+
+        (_osapi$http2 = _osapi2.default.http).post.apply(_osapi$http2, args).execute(function (result) {
+            if (result.error) reject(result.error);else {
+                resolve(result);
+            }
+        });
+    });
+}
+
+var fetchPromise = { promiseHttpGet: promiseHttpGet, promiseHttpPost: promiseHttpPost, promiseOsapiRequest: promiseOsapiRequest, promiseRestRequest: promiseRestRequest };
 
 exports.default = fetchPromise;
 //# sourceMappingURL=fetchPromise.js.map

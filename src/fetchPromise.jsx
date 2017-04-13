@@ -46,6 +46,18 @@ export function promiseHttpGet(...args){
     })
 }
 
-const fetchPromise = {promiseHttpGet, promiseOsapiRequest, promiseRestRequest}
+export function promiseHttpPost(...args){
+    return new Promise ((resolve, reject) => {
+
+        osapi.http.post(...args).execute(result => {
+            if (result.error) reject(result.error);
+            else {
+                resolve(result);
+            }
+        })
+    })
+}
+
+const fetchPromise = {promiseHttpGet, promiseHttpPost, promiseOsapiRequest, promiseRestRequest}
 
 export default fetchPromise
