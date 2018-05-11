@@ -6,7 +6,7 @@ Object.defineProperty(exports, "__esModule", {
 exports.promiseBatch = exports.promiseRestGet = undefined;
 
 var promiseBatch = exports.promiseBatch = function () {
-    var _ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee(entries, createBatchEntry) {
+    var _ref = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee(entries, createBatchEntry) {
         var batchObjectToArray, promiseSingleBatch, entryArrays, results, response, i;
         return regeneratorRuntime.wrap(function _callee$(_context) {
             while (1) {
@@ -118,7 +118,7 @@ require('core-js/fn/array/map');
 
 require('core-js/fn/array/foreach');
 
-require('regenerator-runtime');
+require('regenerator-runtime/runtime');
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -142,14 +142,12 @@ function splitArray(array, chunksNumber) {
     }
 
     if (array !== undefined && array.length) {
-        (function () {
-            var chunkLength = Math.ceil(array.length / chunksNumber);
+        var chunkLength = Math.ceil(array.length / chunksNumber);
 
-            array.forEach(function (item, i) {
-                var chunkNumber = Math.floor(i / chunkLength);
-                newArray[chunkNumber].push(item);
-            });
-        })();
+        array.forEach(function (item, i) {
+            var chunkNumber = Math.floor(i / chunkLength);
+            newArray[chunkNumber].push(item);
+        });
     }
 
     return newArray;
@@ -171,7 +169,7 @@ function promiseOsapiRequest(osapiRequestFunc) {
 }
 
 /**
- * todo: нормальная реализация, если надо сделать загрузку один раз, но будте плохо работать если нужна догрузка:
+ * todo: нормальная реализация, если надо сделать загрузку один раз, но будет плохо работать если нужна догрузка:
  * возвращает не запрошенное количество, а больший кусок. Нужно придумать вариант, при котором вместо родного
  * getNextPage используется собственный promiseNextPage, в котором содержатся рекурсия на сам promiseOsapiPollingRequest
  * и остаток списка
@@ -197,7 +195,7 @@ function promiseOsapiPollingRequest(osapiRequestFunc, filterFunction, targetNumb
                 /*const promiseNextPage = function(){
                  return new Promise((resolve2, reject2) => {
                  if (list.length >= targetNumber) {
-                   }
+                  }
                  })
                  }*/
 

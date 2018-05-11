@@ -1,6 +1,6 @@
 {
   "name": "anrom-jive-app-tools",
-  "version": "0.5.0",
+  "version": "0.6.0",
   "description": "Simple tools for jive apps and tiles",
   "main": "index.js",
   "engines": {
