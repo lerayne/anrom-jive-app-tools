@@ -6,7 +6,7 @@ import osapi from 'jive/osapi'
 import 'core-js/fn/object/keys'
 import 'core-js/fn/array/concat'
 import 'core-js/fn/array/map'
-import 'core-js/fn/array/foreach'
+import 'core-js/fn/array/for-each'
 import 'regenerator-runtime/runtime'
 
 function pause(delay){

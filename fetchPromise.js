@@ -116,7 +116,7 @@ require('core-js/fn/array/concat');
 
 require('core-js/fn/array/map');
 
-require('core-js/fn/array/foreach');
+require('core-js/fn/array/for-each');
 
 require('regenerator-runtime/runtime');
 
