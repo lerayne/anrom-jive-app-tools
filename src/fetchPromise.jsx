@@ -175,6 +175,36 @@ export function promiseHttpPost(...args){
     })
 }
 
+export function promiseRestDelete(href) {
+    return new Promise((resolve, reject) => {
+        osapi.jive.core.delete({
+            v:'v3',
+            href
+        }).execute(response => {
+            if (response.error) {
+                reject(response)
+            } else {
+                resolve(response)
+            }
+        })
+    })
+}
+
+export function promiseRestPut(href) {
+    return new Promise((resolve, reject) => {
+        osapi.jive.core.put({
+            v:'v3',
+            href
+        }).execute(response => {
+            if (response.error) {
+                reject(response)
+            } else {
+                resolve(response)
+            }
+        })
+    })
+}
+
 export async function promiseBatch(entries, createBatchEntry){
 
     function batchObjectToArray(batchResponseObject){
@@ -229,6 +259,8 @@ const fetchPromise = {
     promiseOsapiRequest,
     promiseRestGet,
     promiseRestPost,
+    promiseRestPut,
+    promiseRestDelete,
     promiseRestRequest,
     promiseOsapiPollingRequest,
     promiseBatch
