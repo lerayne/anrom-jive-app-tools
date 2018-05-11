@@ -3,9 +3,106 @@
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
+exports.promiseBatch = exports.promiseRestGet = undefined;
+
+var promiseBatch = exports.promiseBatch = function () {
+    var _ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee(entries, createBatchEntry) {
+        var batchObjectToArray, promiseSingleBatch, entryArrays, results, response, i;
+        return regeneratorRuntime.wrap(function _callee$(_context) {
+            while (1) {
+                switch (_context.prev = _context.next) {
+                    case 0:
+                        promiseSingleBatch = function promiseSingleBatch(entries, createBatchEntry) {
+                            return new Promise(function (resolve, reject) {
+
+                                var batch = _osapi2.default.newBatch();
+
+                                entries.forEach(function (entry, i) {
+                                    var _createBatchEntry = createBatchEntry(entry, i),
+                                        id = _createBatchEntry.id,
+                                        request = _createBatchEntry.request;
+
+                                    batch.add(id, request);
+                                });
+
+                                batch.execute(function (response) {
+                                    if (response.error) {
+                                        reject(response);
+                                    } else {
+                                        resolve(response);
+                                    }
+                                });
+                            });
+                        };
+
+                        batchObjectToArray = function batchObjectToArray(batchResponseObject) {
+                            return Object.keys(batchResponseObject).map(function (id) {
+                                return { id: id, content: batchResponseObject[id] };
+                            });
+                        };
+
+                        if (!(entries.length <= 30)) {
+                            _context.next = 10;
+                            break;
+                        }
+
+                        _context.t0 = batchObjectToArray;
+                        _context.next = 6;
+                        return promiseSingleBatch(entries, createBatchEntry);
+
+                    case 6:
+                        _context.t1 = _context.sent;
+                        return _context.abrupt('return', (0, _context.t0)(_context.t1));
+
+                    case 10:
+                        entryArrays = splitArray(entries, Math.ceil(entries.length / 30));
+                        results = [];
+                        response = false;
+                        i = 0;
+
+                    case 14:
+                        if (!(i < entryArrays.length)) {
+                            _context.next = 24;
+                            break;
+                        }
+
+                        _context.next = 17;
+                        return promiseSingleBatch(entryArrays[i], createBatchEntry);
+
+                    case 17:
+                        response = _context.sent;
+
+
+                        results = results.concat(batchObjectToArray(response));
+
+                        _context.next = 21;
+                        return pause((i + 1) % 4 === 0 ? 11000 : 1000);
+
+                    case 21:
+                        i++;
+                        _context.next = 14;
+                        break;
+
+                    case 24:
+                        return _context.abrupt('return', results);
+
+                    case 25:
+                    case 'end':
+                        return _context.stop();
+                }
+            }
+        }, _callee, this);
+    }));
+
+    return function promiseBatch(_x2, _x3) {
+        return _ref.apply(this, arguments);
+    };
+}();
+
 exports.promiseOsapiRequest = promiseOsapiRequest;
 exports.promiseOsapiPollingRequest = promiseOsapiPollingRequest;
 exports.promiseRestRequest = promiseRestRequest;
+exports.promiseRestPost = promiseRestPost;
 exports.promiseHttpGet = promiseHttpGet;
 exports.promiseHttpPost = promiseHttpPost;
 
@@ -13,11 +110,50 @@ var _osapi = require('jive/osapi');
 
 var _osapi2 = _interopRequireDefault(_osapi);
 
+require('core-js/fn/object/keys');
+
+require('core-js/fn/array/concat');
+
+require('core-js/fn/array/map');
+
+require('core-js/fn/array/foreach');
+
+require('regenerator-runtime');
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, arguments); return new Promise(function (resolve, reject) { function step(key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { return Promise.resolve(value).then(function (value) { step("next", value); }, function (err) { step("throw", err); }); } } return step("next"); }); }; }
 
 function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } } /**
                                                                                                                                                                                                      * Created by M. Yegorov on 2016-12-27.
                                                                                                                                                                                                      */
+
+function pause(delay) {
+    return new Promise(function (resolve) {
+        setTimeout(resolve, delay);
+    });
+}
+
+function splitArray(array, chunksNumber) {
+    var newArray = [];
+
+    for (var i = 0; i < chunksNumber; i++) {
+        newArray.push([]);
+    }
+
+    if (array !== undefined && array.length) {
+        (function () {
+            var chunkLength = Math.ceil(array.length / chunksNumber);
+
+            array.forEach(function (item, i) {
+                var chunkNumber = Math.floor(i / chunkLength);
+                newArray[chunkNumber].push(item);
+            });
+        })();
+    }
+
+    return newArray;
+}
 
 function promiseOsapiRequest(osapiRequestFunc) {
     return new Promise(function (resolve, reject) {
@@ -113,6 +249,23 @@ function promiseRestRequest(href) {
     });
 }
 
+var promiseRestGet = exports.promiseRestGet = promiseRestRequest;
+
+function promiseRestPost(href) {
+    return new Promise(function (resolve, reject) {
+        _osapi2.default.jive.core.post({
+            v: 'v3',
+            href: href
+        }).execute(function (response) {
+            if (response.error) {
+                reject(response);
+            } else {
+                resolve(response);
+            }
+        });
+    });
+}
+
 function promiseHttpGet() {
     for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
         args[_key] = arguments[_key];
@@ -153,8 +306,11 @@ var fetchPromise = {
     promiseHttpGet: promiseHttpGet,
     promiseHttpPost: promiseHttpPost,
     promiseOsapiRequest: promiseOsapiRequest,
+    promiseRestGet: promiseRestGet,
+    promiseRestPost: promiseRestPost,
     promiseRestRequest: promiseRestRequest,
-    promiseOsapiPollingRequest: promiseOsapiPollingRequest
+    promiseOsapiPollingRequest: promiseOsapiPollingRequest,
+    promiseBatch: promiseBatch
 };
 
 exports.default = fetchPromise;
