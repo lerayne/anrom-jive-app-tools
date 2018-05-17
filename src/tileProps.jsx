@@ -67,6 +67,20 @@ const parent = function(){
     return cache.parent
 }
 
-export {tileId, tilePath, tileUrl, parent}
-const tileProps = {tileId, tilePath, tileUrl, parent}
+const getContainerAsync = function(){
+    return new Promise((resolve, reject) => {
+
+        if (cache.place) {
+            resolve(cache.place)
+        } else {
+            jive.tile.getContainer(place => {
+                cache.place = place
+                resolve(place)
+            })
+        }
+    })
+}
+
+export {tileId, tilePath, tileUrl, parent, getContainerAsync}
+const tileProps = {tileId, tilePath, tileUrl, parent, getContainerAsync}
 export default tileProps

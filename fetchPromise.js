@@ -105,6 +105,8 @@ exports.promiseRestRequest = promiseRestRequest;
 exports.promiseRestPost = promiseRestPost;
 exports.promiseHttpGet = promiseHttpGet;
 exports.promiseHttpPost = promiseHttpPost;
+exports.promiseRestDelete = promiseRestDelete;
+exports.promiseRestPut = promiseRestPut;
 
 var _osapi = require('jive/osapi');
 
@@ -300,12 +302,44 @@ function promiseHttpPost() {
     });
 }
 
+function promiseRestDelete(href) {
+    return new Promise(function (resolve, reject) {
+        _osapi2.default.jive.core.delete({
+            v: 'v3',
+            href: href
+        }).execute(function (response) {
+            if (response.error) {
+                reject(response);
+            } else {
+                resolve(response);
+            }
+        });
+    });
+}
+
+function promiseRestPut(href) {
+    return new Promise(function (resolve, reject) {
+        _osapi2.default.jive.core.put({
+            v: 'v3',
+            href: href
+        }).execute(function (response) {
+            if (response.error) {
+                reject(response);
+            } else {
+                resolve(response);
+            }
+        });
+    });
+}
+
 var fetchPromise = {
     promiseHttpGet: promiseHttpGet,
     promiseHttpPost: promiseHttpPost,
     promiseOsapiRequest: promiseOsapiRequest,
     promiseRestGet: promiseRestGet,
     promiseRestPost: promiseRestPost,
+    promiseRestPut: promiseRestPut,
+    promiseRestDelete: promiseRestDelete,
     promiseRestRequest: promiseRestRequest,
     promiseOsapiPollingRequest: promiseOsapiPollingRequest,
     promiseBatch: promiseBatch

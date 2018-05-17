@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
-exports.parent = exports.tileUrl = exports.tilePath = exports.tileId = undefined;
+exports.getContainerAsync = exports.parent = exports.tileUrl = exports.tilePath = exports.tileId = undefined;
 
 var _url = require('url');
 
@@ -80,11 +80,26 @@ var parent = function parent() {
     return cache.parent;
 };
 
+var getContainerAsync = function getContainerAsync() {
+    return new Promise(function (resolve, reject) {
+
+        if (cache.place) {
+            resolve(cache.place);
+        } else {
+            _jive2.default.tile.getContainer(function (place) {
+                cache.place = place;
+                resolve(place);
+            });
+        }
+    });
+};
+
 exports.tileId = tileId;
 exports.tilePath = tilePath;
 exports.tileUrl = tileUrl;
 exports.parent = parent;
+exports.getContainerAsync = getContainerAsync;
 
-var tileProps = { tileId: tileId, tilePath: tilePath, tileUrl: tileUrl, parent: parent };
+var tileProps = { tileId: tileId, tilePath: tilePath, tileUrl: tileUrl, parent: parent, getContainerAsync: getContainerAsync };
 exports.default = tileProps;
 //# sourceMappingURL=tileProps.js.map
