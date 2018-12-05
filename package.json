@@ -1,6 +1,6 @@
 {
   "name": "anrom-jive-app-tools",
-  "version": "0.7.1",
+  "version": "0.8.0-beta.1",
   "description": "Simple tools for jive apps and tiles",
   "main": "index.js",
   "engines": {
@@ -27,6 +27,7 @@
     "babel-cli": "6.16.0",
     "babel-core": "6.17.0",
     "babel-plugin-add-module-exports": "0.2.1",
+    "babel-plugin-transform-runtime": "^6.23.0",
     "babel-preset-latest": "6.16.0",
     "babel-preset-react": "6.16.0",
     "babel-preset-stage-0": "6.16.0",
@@ -35,9 +36,8 @@
     "gulp-shell": "0.5.2"
   },
   "peerDependencies": {
-    "react": "15.3.2",
-    "core-js": "2.5.1",
-    "regenerator-runtime": "0.11.0"
+    "react": ">= 15.3.2",
+    "babel-runtime": ">= 6.26.0"
   },
   "dependencies": {
     "url": "0.11.0"

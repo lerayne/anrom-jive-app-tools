@@ -117,6 +117,32 @@ export function promiseOsapiPollingRequest(osapiRequestFunc, filterFunction, tar
     })
 }
 
+export function promiseHttpGet(...args){
+    return new Promise ((resolve, reject) => {
+
+        osapi.http.get(...args).execute(response => {
+            if (response.error) {
+                reject(response)
+            } else {
+                resolve(response)
+            }
+        })
+    })
+}
+
+export function promiseHttpPost(...args){
+    return new Promise ((resolve, reject) => {
+
+        osapi.http.post(...args).execute(response => {
+            if (response.error) {
+                reject(response)
+            } else {
+                resolve(response)
+            }
+        })
+    })
+}
+
 export function promiseRestRequest(href) {
     return new Promise((resolve, reject) => {
         osapi.jive.core.get({
@@ -140,32 +166,6 @@ export function promiseRestPost(href) {
             v:'v3',
             href
         }).execute(response => {
-            if (response.error) {
-                reject(response)
-            } else {
-                resolve(response)
-            }
-        })
-    })
-}
-
-export function promiseHttpGet(...args){
-    return new Promise ((resolve, reject) => {
-
-        osapi.http.get(...args).execute(response => {
-            if (response.error) {
-                reject(response)
-            } else {
-                resolve(response)
-            }
-        })
-    })
-}
-
-export function promiseHttpPost(...args){
-    return new Promise ((resolve, reject) => {
-
-        osapi.http.post(...args).execute(response => {
             if (response.error) {
                 reject(response)
             } else {

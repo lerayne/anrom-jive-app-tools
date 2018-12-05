@@ -5,15 +5,35 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.promiseBatch = exports.promiseRestGet = undefined;
 
+var _regenerator = require('babel-runtime/regenerator');
+
+var _regenerator2 = _interopRequireDefault(_regenerator);
+
+var _keys = require('babel-runtime/core-js/object/keys');
+
+var _keys2 = _interopRequireDefault(_keys);
+
+var _asyncToGenerator2 = require('babel-runtime/helpers/asyncToGenerator');
+
+var _asyncToGenerator3 = _interopRequireDefault(_asyncToGenerator2);
+
+var _toConsumableArray2 = require('babel-runtime/helpers/toConsumableArray');
+
+var _toConsumableArray3 = _interopRequireDefault(_toConsumableArray2);
+
+var _promise = require('babel-runtime/core-js/promise');
+
+var _promise2 = _interopRequireDefault(_promise);
+
 var promiseBatch = exports.promiseBatch = function () {
-    var _ref = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee(entries, createBatchEntry) {
+    var _ref = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee(entries, createBatchEntry) {
         var batchObjectToArray, promiseSingleBatch, entryArrays, results, response, i;
-        return regeneratorRuntime.wrap(function _callee$(_context) {
+        return _regenerator2.default.wrap(function _callee$(_context) {
             while (1) {
                 switch (_context.prev = _context.next) {
                     case 0:
                         promiseSingleBatch = function promiseSingleBatch(entries, createBatchEntry) {
-                            return new Promise(function (resolve, reject) {
+                            return new _promise2.default(function (resolve, reject) {
 
                                 var batch = _osapi2.default.newBatch();
 
@@ -36,7 +56,7 @@ var promiseBatch = exports.promiseBatch = function () {
                         };
 
                         batchObjectToArray = function batchObjectToArray(batchResponseObject) {
-                            return Object.keys(batchResponseObject).map(function (id) {
+                            return (0, _keys2.default)(batchResponseObject).map(function (id) {
                                 return { id: id, content: batchResponseObject[id] };
                             });
                         };
@@ -101,10 +121,10 @@ var promiseBatch = exports.promiseBatch = function () {
 
 exports.promiseOsapiRequest = promiseOsapiRequest;
 exports.promiseOsapiPollingRequest = promiseOsapiPollingRequest;
-exports.promiseRestRequest = promiseRestRequest;
-exports.promiseRestPost = promiseRestPost;
 exports.promiseHttpGet = promiseHttpGet;
 exports.promiseHttpPost = promiseHttpPost;
+exports.promiseRestRequest = promiseRestRequest;
+exports.promiseRestPost = promiseRestPost;
 exports.promiseRestDelete = promiseRestDelete;
 exports.promiseRestPut = promiseRestPut;
 
@@ -124,14 +144,12 @@ require('regenerator-runtime/runtime');
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, arguments); return new Promise(function (resolve, reject) { function step(key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { return Promise.resolve(value).then(function (value) { step("next", value); }, function (err) { step("throw", err); }); } } return step("next"); }); }; }
-
-function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } } /**
-                                                                                                                                                                                                     * Created by M. Yegorov on 2016-12-27.
-                                                                                                                                                                                                     */
+/**
+ * Created by M. Yegorov on 2016-12-27.
+ */
 
 function pause(delay) {
-    return new Promise(function (resolve) {
+    return new _promise2.default(function (resolve) {
         setTimeout(resolve, delay);
     });
 }
@@ -156,7 +174,7 @@ function splitArray(array, chunksNumber) {
 }
 
 function promiseOsapiRequest(osapiRequestFunc) {
-    return new Promise(function (resolve, reject) {
+    return new _promise2.default(function (resolve, reject) {
 
         var request = typeof osapiRequestFunc === 'function' ? osapiRequestFunc(_osapi2.default.jive.corev3) : osapiRequestFunc;
 
@@ -180,7 +198,7 @@ function promiseOsapiRequest(osapiRequestFunc) {
 function promiseOsapiPollingRequest(osapiRequestFunc, filterFunction, targetNumber) {
     var maxIterationCount = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : 0;
 
-    return new Promise(function (resolve, reject) {
+    return new _promise2.default(function (resolve, reject) {
 
         var list = [];
         var iteration = 0;
@@ -206,7 +224,7 @@ function promiseOsapiPollingRequest(osapiRequestFunc, filterFunction, targetNumb
                     resolve({ list: list, reason: 'no results' });
                 } else {
 
-                    list = [].concat(_toConsumableArray(list), _toConsumableArray(response.list.filter(filterFunction)));
+                    list = [].concat((0, _toConsumableArray3.default)(list), (0, _toConsumableArray3.default)(response.list.filter(filterFunction)));
 
                     if (list.length >= targetNumber) {
 
@@ -234,44 +252,12 @@ function promiseOsapiPollingRequest(osapiRequestFunc, filterFunction, targetNumb
     });
 }
 
-function promiseRestRequest(href) {
-    return new Promise(function (resolve, reject) {
-        _osapi2.default.jive.core.get({
-            v: 'v3',
-            href: href
-        }).execute(function (response) {
-            if (response.error) {
-                reject(response);
-            } else {
-                resolve(response);
-            }
-        });
-    });
-}
-
-var promiseRestGet = exports.promiseRestGet = promiseRestRequest;
-
-function promiseRestPost(href) {
-    return new Promise(function (resolve, reject) {
-        _osapi2.default.jive.core.post({
-            v: 'v3',
-            href: href
-        }).execute(function (response) {
-            if (response.error) {
-                reject(response);
-            } else {
-                resolve(response);
-            }
-        });
-    });
-}
-
 function promiseHttpGet() {
     for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
         args[_key] = arguments[_key];
     }
 
-    return new Promise(function (resolve, reject) {
+    return new _promise2.default(function (resolve, reject) {
         var _osapi$http;
 
         (_osapi$http = _osapi2.default.http).get.apply(_osapi$http, args).execute(function (response) {
@@ -289,7 +275,7 @@ function promiseHttpPost() {
         args[_key2] = arguments[_key2];
     }
 
-    return new Promise(function (resolve, reject) {
+    return new _promise2.default(function (resolve, reject) {
         var _osapi$http2;
 
         (_osapi$http2 = _osapi2.default.http).post.apply(_osapi$http2, args).execute(function (response) {
@@ -302,8 +288,40 @@ function promiseHttpPost() {
     });
 }
 
+function promiseRestRequest(href) {
+    return new _promise2.default(function (resolve, reject) {
+        _osapi2.default.jive.core.get({
+            v: 'v3',
+            href: href
+        }).execute(function (response) {
+            if (response.error) {
+                reject(response);
+            } else {
+                resolve(response);
+            }
+        });
+    });
+}
+
+var promiseRestGet = exports.promiseRestGet = promiseRestRequest;
+
+function promiseRestPost(href) {
+    return new _promise2.default(function (resolve, reject) {
+        _osapi2.default.jive.core.post({
+            v: 'v3',
+            href: href
+        }).execute(function (response) {
+            if (response.error) {
+                reject(response);
+            } else {
+                resolve(response);
+            }
+        });
+    });
+}
+
 function promiseRestDelete(href) {
-    return new Promise(function (resolve, reject) {
+    return new _promise2.default(function (resolve, reject) {
         _osapi2.default.jive.core.delete({
             v: 'v3',
             href: href
@@ -318,7 +336,7 @@ function promiseRestDelete(href) {
 }
 
 function promiseRestPut(href) {
-    return new Promise(function (resolve, reject) {
+    return new _promise2.default(function (resolve, reject) {
         _osapi2.default.jive.core.put({
             v: 'v3',
             href: href

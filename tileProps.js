@@ -5,6 +5,10 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.getContainerAsync = exports.parent = exports.tileUrl = exports.tilePath = exports.tileId = undefined;
 
+var _promise = require('babel-runtime/core-js/promise');
+
+var _promise2 = _interopRequireDefault(_promise);
+
 var _url = require('url');
 
 var _jive = require('jive');
@@ -81,7 +85,7 @@ var parent = function parent() {
 };
 
 var getContainerAsync = function getContainerAsync() {
-    return new Promise(function (resolve, reject) {
+    return new _promise2.default(function (resolve, reject) {
 
         if (cache.place) {
             resolve(cache.place);
