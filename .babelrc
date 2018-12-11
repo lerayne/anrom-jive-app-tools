@@ -1,12 +1,12 @@
 {
-  "presets":["latest", "react", "stage-0"],
+  "presets":["env", "react", "stage-0"],
   "env": {
     "production": {
       "presets": ["react-optimize"]
     }
   },
   "plugins":[
-    "babel-plugin-add-module-exports",
-    "babel-plugin-transform-runtime"
+    "add-module-exports",
+    "transform-runtime"
   ]
 }
