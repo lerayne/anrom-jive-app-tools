@@ -40,7 +40,8 @@ export class ContinuousLoader {
             getNextAsyncFunc: ::this.getNextAsyncFunc,
             getError: ::this.getError,
             getList: ::this.getList,
-            getResponseContent: ::this.getResponseContent
+            getResponseContent: ::this.getResponseContent,
+            map: false
         }
 
         this.options = {...optionsDefaults, ...options}
@@ -70,7 +71,7 @@ export class ContinuousLoader {
             if (error) throw new Error(error)
 
             //getting list
-            const list = getList(asyncFunctionResponse)
+            let list = getList(asyncFunctionResponse)
 
             //if unfiltered list is empty - means nothing to load
             // returning the rest of result poll (if any) and blocking
@@ -85,8 +86,11 @@ export class ContinuousLoader {
                 return null
             }
 
-            //put filtered items in pool
-            this.resultPool = this.resultPool.concat(this.filter(list))
+            //put (mapped and) filtered items in pool
+            if (this.options.map) list = await this.options.map(list, [...this.resultPool])
+            const filteredList = await this.filter(list, [...this.resultPool])
+
+            this.resultPool = this.resultPool.concat(filteredList)
 
             // getting possible next poll - this should be done before first possible
             // contentful resolve()
@@ -100,7 +104,7 @@ export class ContinuousLoader {
                 this.log('pool reached the target count. set pause.')
                 resolve({
                     list: this.resultPool.splice(0, targetCount),
-                    reason: 'reached target value'
+                    reason: 'reached target count'
                 })
                 this.log('(rest of pool:', this.resultPool)
                 return null
@@ -147,7 +151,19 @@ export class ContinuousLoader {
                     list: [],
                     reason: 'polling finished'
                 })
-                return
+                this.log('(rest of pool:', this.resultPool)
+                return null
+            }
+
+            const {targetCount} = this.options
+
+            if (this.resultPool.length >= targetCount) {
+                this.log('target count found in existing pool')
+                resolve({
+                    list: this.resultPool.splice(0, targetCount),
+                    reason: 'target count exists in pool'
+                })
+                return null
             }
 
             this.recursiveLoad(resolve, reject, 0)

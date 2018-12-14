@@ -25,6 +25,10 @@ var _regenerator = require('babel-runtime/regenerator');
 
 var _regenerator2 = _interopRequireDefault(_regenerator);
 
+var _toConsumableArray2 = require('babel-runtime/helpers/toConsumableArray');
+
+var _toConsumableArray3 = _interopRequireDefault(_toConsumableArray2);
+
 var _asyncToGenerator2 = require('babel-runtime/helpers/asyncToGenerator');
 
 var _asyncToGenerator3 = _interopRequireDefault(_asyncToGenerator2);
@@ -97,7 +101,8 @@ var ContinuousLoader = exports.ContinuousLoader = function () {
             getNextAsyncFunc: this.getNextAsyncFunc.bind(this),
             getError: this.getError.bind(this),
             getList: this.getList.bind(this),
-            getResponseContent: this.getResponseContent.bind(this)
+            getResponseContent: this.getResponseContent.bind(this),
+            map: false
         };
 
         this.options = (0, _extends3.default)({}, optionsDefaults, options);
@@ -112,7 +117,7 @@ var ContinuousLoader = exports.ContinuousLoader = function () {
         key: 'recursiveLoad',
         value: function () {
             var _ref = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee(resolve, reject, loadCount) {
-                var asyncFunctionResponse, _options, getError, getList, getNextAsyncFunc, targetCount, maxTriesPerLoad, error, list, nextAsyncFunc;
+                var asyncFunctionResponse, _options, getError, getList, getNextAsyncFunc, targetCount, maxTriesPerLoad, error, list, filteredList, nextAsyncFunc;
 
                 return _regenerator2.default.wrap(function _callee$(_context) {
                     while (1) {
@@ -162,9 +167,26 @@ var ContinuousLoader = exports.ContinuousLoader = function () {
                                 return _context.abrupt('return', null);
 
                             case 15:
+                                if (!this.options.map) {
+                                    _context.next = 19;
+                                    break;
+                                }
 
-                                //put filtered items in pool
-                                this.resultPool = this.resultPool.concat(this.filter(list));
+                                _context.next = 18;
+                                return this.options.map(list, [].concat((0, _toConsumableArray3.default)(this.resultPool)));
+
+                            case 18:
+                                list = _context.sent;
+
+                            case 19:
+                                _context.next = 21;
+                                return this.filter(list, [].concat((0, _toConsumableArray3.default)(this.resultPool)));
+
+                            case 21:
+                                filteredList = _context.sent;
+
+
+                                this.resultPool = this.resultPool.concat(filteredList);
 
                                 // getting possible next poll - this should be done before first possible
                                 // contentful resolve()
@@ -177,24 +199,24 @@ var ContinuousLoader = exports.ContinuousLoader = function () {
                                 //if pool reached target number - resolve items and remove them from pool
 
                                 if (!(this.resultPool.length >= targetCount)) {
-                                    _context.next = 23;
+                                    _context.next = 30;
                                     break;
                                 }
 
                                 this.log('pool reached the target count. set pause.');
                                 resolve({
                                     list: this.resultPool.splice(0, targetCount),
-                                    reason: 'reached target value'
+                                    reason: 'reached target count'
                                 });
                                 this.log('(rest of pool:', this.resultPool);
                                 return _context.abrupt('return', null);
 
-                            case 23:
+                            case 30:
 
                                 loadCount++;
 
                                 if (!(loadCount >= maxTriesPerLoad)) {
-                                    _context.next = 30;
+                                    _context.next = 37;
                                     break;
                                 }
 
@@ -207,9 +229,9 @@ var ContinuousLoader = exports.ContinuousLoader = function () {
                                 });
                                 return _context.abrupt('return', null);
 
-                            case 30:
+                            case 37:
                                 if (!(typeof nextAsyncFunc === 'function')) {
-                                    _context.next = 36;
+                                    _context.next = 43;
                                     break;
                                 }
 
@@ -218,7 +240,7 @@ var ContinuousLoader = exports.ContinuousLoader = function () {
                                 this.recursiveLoad(resolve, reject, loadCount);
                                 return _context.abrupt('return', null);
 
-                            case 36:
+                            case 43:
                                 this.log('no next promise available. returning pool');
                                 this.endReached = true;
                                 resolve({
@@ -226,22 +248,22 @@ var ContinuousLoader = exports.ContinuousLoader = function () {
                                     reason: 'source ended'
                                 });
 
-                            case 39:
-                                _context.next = 44;
+                            case 46:
+                                _context.next = 51;
                                 break;
 
-                            case 41:
-                                _context.prev = 41;
+                            case 48:
+                                _context.prev = 48;
                                 _context.t0 = _context['catch'](0);
 
                                 reject(_context.t0);
 
-                            case 44:
+                            case 51:
                             case 'end':
                                 return _context.stop();
                         }
                     }
-                }, _callee, this, [[0, 41]]);
+                }, _callee, this, [[0, 48]]);
             }));
 
             function recursiveLoad(_x2, _x3, _x4) {
@@ -263,7 +285,20 @@ var ContinuousLoader = exports.ContinuousLoader = function () {
                         list: [],
                         reason: 'polling finished'
                     });
-                    return;
+                    _this.log('(rest of pool:', _this.resultPool);
+                    return null;
+                }
+
+                var targetCount = _this.options.targetCount;
+
+
+                if (_this.resultPool.length >= targetCount) {
+                    _this.log('target count found in existing pool');
+                    resolve({
+                        list: _this.resultPool.splice(0, targetCount),
+                        reason: 'target count exists in pool'
+                    });
+                    return null;
                 }
 
                 _this.recursiveLoad(resolve, reject, 0);

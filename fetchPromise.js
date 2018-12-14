@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
-exports.promiseBatch = exports.promiseRestGet = undefined;
+exports.promiseBatch = exports.promiseRestRequest = undefined;
 
 var _regenerator = require('babel-runtime/regenerator');
 
@@ -16,10 +16,6 @@ var _keys2 = _interopRequireDefault(_keys);
 var _asyncToGenerator2 = require('babel-runtime/helpers/asyncToGenerator');
 
 var _asyncToGenerator3 = _interopRequireDefault(_asyncToGenerator2);
-
-var _toConsumableArray2 = require('babel-runtime/helpers/toConsumableArray');
-
-var _toConsumableArray3 = _interopRequireDefault(_toConsumableArray2);
 
 var _promise = require('babel-runtime/core-js/promise');
 
@@ -46,11 +42,7 @@ var promiseBatch = exports.promiseBatch = function () {
                                 });
 
                                 batch.execute(function (response) {
-                                    if (response.error) {
-                                        reject(response);
-                                    } else {
-                                        resolve(response);
-                                    }
+                                    if (response.error) reject(response);else resolve(response);
                                 });
                             });
                         };
@@ -114,16 +106,15 @@ var promiseBatch = exports.promiseBatch = function () {
         }, _callee, this);
     }));
 
-    return function promiseBatch(_x2, _x3) {
+    return function promiseBatch(_x, _x2) {
         return _ref.apply(this, arguments);
     };
 }();
 
 exports.promiseOsapiRequest = promiseOsapiRequest;
-exports.promiseOsapiPollingRequest = promiseOsapiPollingRequest;
 exports.promiseHttpGet = promiseHttpGet;
 exports.promiseHttpPost = promiseHttpPost;
-exports.promiseRestRequest = promiseRestRequest;
+exports.promiseRestGet = promiseRestGet;
 exports.promiseRestPost = promiseRestPost;
 exports.promiseRestDelete = promiseRestDelete;
 exports.promiseRestPut = promiseRestPut;
@@ -140,7 +131,7 @@ require('core-js/fn/array/map');
 
 require('core-js/fn/array/for-each');
 
-require('regenerator-runtime/runtime');
+var _deprecated = require('./deprecated');
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -150,7 +141,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 function pause(delay) {
     return new _promise2.default(function (resolve) {
-        setTimeout(resolve, delay);
+        return setTimeout(resolve, delay);
     });
 }
 
@@ -179,76 +170,8 @@ function promiseOsapiRequest(osapiRequestFunc) {
         var request = typeof osapiRequestFunc === 'function' ? osapiRequestFunc(_osapi2.default.jive.corev3) : osapiRequestFunc;
 
         request.execute(function (response) {
-            if (response.error) {
-                reject(response);
-            } else {
-                resolve(response);
-            }
+            if (response.error) reject(response);else resolve(response);
         });
-    });
-}
-
-/**
- * todo: нормальная реализация, если надо сделать загрузку один раз, но будет плохо работать если нужна догрузка:
- * возвращает не запрошенное количество, а больший кусок. Нужно придумать вариант, при котором вместо родного
- * getNextPage используется собственный promiseNextPage, в котором содержатся рекурсия на сам promiseOsapiPollingRequest
- * и остаток списка
- */
-
-function promiseOsapiPollingRequest(osapiRequestFunc, filterFunction, targetNumber) {
-    var maxIterationCount = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : 0;
-
-    return new _promise2.default(function (resolve, reject) {
-
-        var list = [];
-        var iteration = 0;
-
-        function getNextChunk(executable) {
-
-            iteration++;
-
-            promiseOsapiRequest(executable).then(function (response) {
-
-                var getNextPage = response.getNextPage || false;
-
-                //todo: собственно начало работы над промисом остатка
-                /*const promiseNextPage = function(){
-                 return new Promise((resolve2, reject2) => {
-                 if (list.length >= targetNumber) {
-                  }
-                 })
-                 }*/
-
-                if (!response.list.length) {
-
-                    resolve({ list: list, reason: 'no results' });
-                } else {
-
-                    list = [].concat((0, _toConsumableArray3.default)(list), (0, _toConsumableArray3.default)(response.list.filter(filterFunction)));
-
-                    if (list.length >= targetNumber) {
-
-                        resolve({ list: list, getNextPage: getNextPage, reason: 'target number reached (on iteration ' + iteration + ')' });
-                    } else {
-
-                        if (maxIterationCount === 0 || iteration <= maxIterationCount) {
-
-                            if (getNextPage) {
-
-                                // recursion here
-                                getNextChunk(getNextPage);
-                            } else {
-                                resolve({ list: list, reason: 'list end reached' });
-                            }
-                        } else {
-                            resolve({ list: list, getNextPage: getNextPage, reason: 'maximum iteration count reached' });
-                        }
-                    }
-                }
-            }).catch(reject);
-        }
-
-        getNextChunk(osapiRequestFunc);
     });
 }
 
@@ -261,11 +184,7 @@ function promiseHttpGet() {
         var _osapi$http;
 
         (_osapi$http = _osapi2.default.http).get.apply(_osapi$http, args).execute(function (response) {
-            if (response.error) {
-                reject(response);
-            } else {
-                resolve(response);
-            }
+            if (response.error) reject(response);else resolve(response);
         });
     });
 }
@@ -279,31 +198,26 @@ function promiseHttpPost() {
         var _osapi$http2;
 
         (_osapi$http2 = _osapi2.default.http).post.apply(_osapi$http2, args).execute(function (response) {
-            if (response.error) {
-                reject(response);
-            } else {
-                resolve(response);
-            }
+            if (response.error) reject(response);else resolve(response);
         });
     });
 }
 
-function promiseRestRequest(href) {
+function promiseRestGet(href) {
     return new _promise2.default(function (resolve, reject) {
         _osapi2.default.jive.core.get({
             v: 'v3',
             href: href
         }).execute(function (response) {
-            if (response.error) {
-                reject(response);
-            } else {
-                resolve(response);
-            }
+            if (response.error) reject(response);else resolve(response);
         });
     });
 }
 
-var promiseRestGet = exports.promiseRestGet = promiseRestRequest;
+var promiseRestRequest = exports.promiseRestRequest = function promiseRestRequest(href) {
+    console.warn('Use of promiseRestRequest is deprecated, use promiseRestGet instead');
+    return promiseRestGet(href);
+};
 
 function promiseRestPost(href) {
     return new _promise2.default(function (resolve, reject) {
@@ -311,11 +225,7 @@ function promiseRestPost(href) {
             v: 'v3',
             href: href
         }).execute(function (response) {
-            if (response.error) {
-                reject(response);
-            } else {
-                resolve(response);
-            }
+            if (response.error) reject(response);else resolve(response);
         });
     });
 }
@@ -326,11 +236,7 @@ function promiseRestDelete(href) {
             v: 'v3',
             href: href
         }).execute(function (response) {
-            if (response.error) {
-                reject(response);
-            } else {
-                resolve(response);
-            }
+            if (response.error) reject(response);else resolve(response);
         });
     });
 }
@@ -341,11 +247,7 @@ function promiseRestPut(href) {
             v: 'v3',
             href: href
         }).execute(function (response) {
-            if (response.error) {
-                reject(response);
-            } else {
-                resolve(response);
-            }
+            if (response.error) reject(response);else resolve(response);
         });
     });
 }
@@ -359,7 +261,7 @@ var fetchPromise = {
     promiseRestPut: promiseRestPut,
     promiseRestDelete: promiseRestDelete,
     promiseRestRequest: promiseRestRequest,
-    promiseOsapiPollingRequest: promiseOsapiPollingRequest,
+    promiseOsapiPollingRequest: _deprecated.promiseOsapiPollingRequest,
     promiseBatch: promiseBatch
 };
 

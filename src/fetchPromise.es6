@@ -39,7 +39,8 @@ export function promiseOsapiRequest(osapiRequestFunc){
         const request = typeof osapiRequestFunc === 'function' ? osapiRequestFunc(osapi.jive.corev3) : osapiRequestFunc;
 
         request.execute(response => {
-            if (response.error) reject(response) else resolve(response)
+            if (response.error) reject(response)
+            else resolve(response)
         })
     })
 }
@@ -49,7 +50,8 @@ export function promiseHttpGet(...args){
     return new Promise ((resolve, reject) => {
 
         osapi.http.get(...args).execute(response => {
-            if (response.error) reject(response) else resolve(response)
+            if (response.error) reject(response)
+            else resolve(response)
         })
     })
 }
@@ -58,7 +60,8 @@ export function promiseHttpPost(...args){
     return new Promise ((resolve, reject) => {
 
         osapi.http.post(...args).execute(response => {
-            if (response.error) reject(response) else resolve(response)
+            if (response.error) reject(response)
+            else resolve(response)
         })
     })
 }
@@ -69,7 +72,8 @@ export function promiseRestGet(href) {
             v:'v3',
             href
         }).execute(response => {
-            if (response.error) reject(response) else resolve(response)
+            if (response.error) reject(response)
+            else resolve(response)
         })
     })
 }
@@ -85,7 +89,8 @@ export function promiseRestPost(href) {
             v:'v3',
             href
         }).execute(response => {
-            if (response.error) reject(response) else resolve(response)
+            if (response.error) reject(response)
+            else resolve(response)
         })
     })
 }
@@ -96,7 +101,8 @@ export function promiseRestDelete(href) {
             v:'v3',
             href
         }).execute(response => {
-            if (response.error) reject(response) else resolve(response)
+            if (response.error) reject(response)
+            else resolve(response)
         })
     })
 }
@@ -107,7 +113,8 @@ export function promiseRestPut(href) {
             v:'v3',
             href
         }).execute(response => {
-            if (response.error) reject(response) else resolve(response)
+            if (response.error) reject(response)
+            else resolve(response)
         })
     })
 }
@@ -129,7 +136,8 @@ export async function promiseBatch(entries, createBatchEntry){
             })
 
             batch.execute(response => {
-                if (response.error) reject(response) else resolve(response)
+                if (response.error) reject(response)
+                else resolve(response)
             })
         })
     }
