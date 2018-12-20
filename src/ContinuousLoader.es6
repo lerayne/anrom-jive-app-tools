@@ -202,7 +202,7 @@ export class ContinuousLoadJiveREST extends ContinuousLoader {
             }
         }
 
-        return 'Unable to find status of async function response'
+        return false
     }
 
     getNextAsyncFunc (asyncFunctionResponse){

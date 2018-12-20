@@ -3,35 +3,15 @@
  */
 
 import osapi from 'jive/osapi'
+import jive from 'jive'
 import 'core-js/fn/object/keys'
 import 'core-js/fn/array/concat'
 import 'core-js/fn/array/map'
 import 'core-js/fn/array/for-each'
 
 import {promiseOsapiPollingRequest} from './deprecated'
+import {unescapeHtmlEntities, pause, splitArray} from './utils'
 
-function pause(delay){
-    return new Promise(resolve => setTimeout(resolve, delay))
-}
-
-function splitArray(array, chunksNumber) {
-    const newArray = []
-
-    for (let i = 0; i < chunksNumber; i++){
-        newArray.push([])
-    }
-
-    if (array !== undefined && array.length){
-        const chunkLength = Math.ceil(array.length / chunksNumber)
-
-        array.forEach((item, i) => {
-            const chunkNumber = Math.floor(i / chunkLength)
-            newArray[chunkNumber].push(item)
-        })
-    }
-
-    return newArray
-}
 
 export function promiseOsapiRequest(osapiRequestFunc){
     return new Promise((resolve, reject) => {
@@ -83,11 +63,18 @@ export const promiseRestRequest = function(href){
     return promiseRestGet(href)
 }
 
-export function promiseRestPost(href) {
+/**
+ *
+ * @param href
+ * @param options - body, type, etc
+ * @returns {Promise<any>}
+ */
+export function promiseRestPost(href, options = {}) {
     return new Promise((resolve, reject) => {
         osapi.jive.core.post({
             v:'v3',
-            href
+            href,
+            ...options
         }).execute(response => {
             if (response.error) reject(response)
             else resolve(response)
@@ -164,6 +151,42 @@ export async function promiseBatch(entries, createBatchEntry){
 }
 
 
+
+export class CurrentPlace {
+    place = false
+
+    constructor(filter = this._filter){
+        this.filter = filter
+    }
+
+    _filter(rawPlace){
+        return {
+            id: rawPlace.placeID,
+            uri: rawPlace.resources.self.ref,
+            html: rawPlace.resources.html.ref,
+            name: unescapeHtmlEntities(rawPlace.name),
+            type: 'place'
+        }
+    }
+
+    fetch(){
+        return new Promise(resolve => {
+
+            if (this.place) {
+                resolve(this.place)
+                return null
+            }
+
+            jive.tile.getContainer(place => {
+                this.place = this.filter(place)
+                resolve(this.place)
+            })
+        })
+    }
+}
+
+export const currentPlace = new CurrentPlace()
+
 const fetchPromise = {
     promiseHttpGet,
     promiseHttpPost,
@@ -174,7 +197,9 @@ const fetchPromise = {
     promiseRestDelete,
     promiseRestRequest,
     promiseOsapiPollingRequest,
-    promiseBatch
+    promiseBatch,
+    CurrentPlace,
+    currentPlace,
 }
 
 export default fetchPromise

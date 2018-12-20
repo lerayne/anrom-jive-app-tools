@@ -3,7 +3,15 @@
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
-exports.promiseBatch = exports.promiseRestRequest = undefined;
+exports.currentPlace = exports.CurrentPlace = exports.promiseBatch = exports.promiseRestRequest = undefined;
+
+var _classCallCheck2 = require('babel-runtime/helpers/classCallCheck');
+
+var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
+
+var _createClass2 = require('babel-runtime/helpers/createClass');
+
+var _createClass3 = _interopRequireDefault(_createClass2);
 
 var _regenerator = require('babel-runtime/regenerator');
 
@@ -16,6 +24,10 @@ var _keys2 = _interopRequireDefault(_keys);
 var _asyncToGenerator2 = require('babel-runtime/helpers/asyncToGenerator');
 
 var _asyncToGenerator3 = _interopRequireDefault(_asyncToGenerator2);
+
+var _extends2 = require('babel-runtime/helpers/extends');
+
+var _extends3 = _interopRequireDefault(_extends2);
 
 var _promise = require('babel-runtime/core-js/promise');
 
@@ -67,7 +79,7 @@ var promiseBatch = exports.promiseBatch = function () {
                         return _context.abrupt('return', (0, _context.t0)(_context.t1));
 
                     case 10:
-                        entryArrays = splitArray(entries, Math.ceil(entries.length / 30));
+                        entryArrays = (0, _utils.splitArray)(entries, Math.ceil(entries.length / 30));
                         results = [];
                         response = false;
                         i = 0;
@@ -88,7 +100,7 @@ var promiseBatch = exports.promiseBatch = function () {
                         results = results.concat(batchObjectToArray(response));
 
                         _context.next = 21;
-                        return pause((i + 1) % 4 === 0 ? 11000 : 1000);
+                        return (0, _utils.pause)((i + 1) % 4 === 0 ? 11000 : 1000);
 
                     case 21:
                         i++;
@@ -106,7 +118,7 @@ var promiseBatch = exports.promiseBatch = function () {
         }, _callee, this);
     }));
 
-    return function promiseBatch(_x, _x2) {
+    return function promiseBatch(_x2, _x3) {
         return _ref.apply(this, arguments);
     };
 }();
@@ -123,6 +135,10 @@ var _osapi = require('jive/osapi');
 
 var _osapi2 = _interopRequireDefault(_osapi);
 
+var _jive = require('jive');
+
+var _jive2 = _interopRequireDefault(_jive);
+
 require('core-js/fn/object/keys');
 
 require('core-js/fn/array/concat');
@@ -133,36 +149,13 @@ require('core-js/fn/array/for-each');
 
 var _deprecated = require('./deprecated');
 
+var _utils = require('./utils');
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 /**
  * Created by M. Yegorov on 2016-12-27.
  */
-
-function pause(delay) {
-    return new _promise2.default(function (resolve) {
-        return setTimeout(resolve, delay);
-    });
-}
-
-function splitArray(array, chunksNumber) {
-    var newArray = [];
-
-    for (var i = 0; i < chunksNumber; i++) {
-        newArray.push([]);
-    }
-
-    if (array !== undefined && array.length) {
-        var chunkLength = Math.ceil(array.length / chunksNumber);
-
-        array.forEach(function (item, i) {
-            var chunkNumber = Math.floor(i / chunkLength);
-            newArray[chunkNumber].push(item);
-        });
-    }
-
-    return newArray;
-}
 
 function promiseOsapiRequest(osapiRequestFunc) {
     return new _promise2.default(function (resolve, reject) {
@@ -219,12 +212,20 @@ var promiseRestRequest = exports.promiseRestRequest = function promiseRestReques
     return promiseRestGet(href);
 };
 
+/**
+ *
+ * @param href
+ * @param options - body, type, etc
+ * @returns {Promise<any>}
+ */
 function promiseRestPost(href) {
+    var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+
     return new _promise2.default(function (resolve, reject) {
-        _osapi2.default.jive.core.post({
+        _osapi2.default.jive.core.post((0, _extends3.default)({
             v: 'v3',
             href: href
-        }).execute(function (response) {
+        }, options)).execute(function (response) {
             if (response.error) reject(response);else resolve(response);
         });
     });
@@ -252,6 +253,50 @@ function promiseRestPut(href) {
     });
 }
 
+var CurrentPlace = exports.CurrentPlace = function () {
+    function CurrentPlace() {
+        var filter = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : this._filter;
+        (0, _classCallCheck3.default)(this, CurrentPlace);
+        this.place = false;
+
+        this.filter = filter;
+    }
+
+    (0, _createClass3.default)(CurrentPlace, [{
+        key: '_filter',
+        value: function _filter(rawPlace) {
+            return {
+                id: rawPlace.placeID,
+                uri: rawPlace.resources.self.ref,
+                html: rawPlace.resources.html.ref,
+                name: (0, _utils.unescapeHtmlEntities)(rawPlace.name),
+                type: 'place'
+            };
+        }
+    }, {
+        key: 'fetch',
+        value: function fetch() {
+            var _this = this;
+
+            return new _promise2.default(function (resolve) {
+
+                if (_this.place) {
+                    resolve(_this.place);
+                    return null;
+                }
+
+                _jive2.default.tile.getContainer(function (place) {
+                    _this.place = _this.filter(place);
+                    resolve(_this.place);
+                });
+            });
+        }
+    }]);
+    return CurrentPlace;
+}();
+
+var currentPlace = exports.currentPlace = new CurrentPlace();
+
 var fetchPromise = {
     promiseHttpGet: promiseHttpGet,
     promiseHttpPost: promiseHttpPost,
@@ -262,7 +307,9 @@ var fetchPromise = {
     promiseRestDelete: promiseRestDelete,
     promiseRestRequest: promiseRestRequest,
     promiseOsapiPollingRequest: _deprecated.promiseOsapiPollingRequest,
-    promiseBatch: promiseBatch
+    promiseBatch: promiseBatch,
+    CurrentPlace: CurrentPlace,
+    currentPlace: currentPlace
 };
 
 exports.default = fetchPromise;

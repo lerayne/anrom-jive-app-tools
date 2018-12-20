@@ -347,7 +347,7 @@ var ContinuousLoadJiveREST = exports.ContinuousLoadJiveREST = function (_Continu
                 }
             }
 
-            return 'Unable to find status of async function response';
+            return false;
         }
     }, {
         key: 'getNextAsyncFunc',
