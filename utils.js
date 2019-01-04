@@ -118,6 +118,8 @@ function findContentImage(contentItem, defaultImageURL) {
     var mode = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 'regexp';
 
 
+    if (!contentItem || !contentItem.content || !contentItem.content.text) return null;
+
     switch (mode) {
         case 'api':
             // version 1: take from API. Downside: API images list never updates after content creation

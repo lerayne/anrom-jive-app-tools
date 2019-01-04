@@ -84,6 +84,8 @@ export function getCacheableImage(initialImageURL, imageWidth = 500, thumbnail =
 
 export function findContentImage(contentItem, defaultImageURL, mode = 'regexp') {
 
+    if (!contentItem || !contentItem.content || !contentItem.content.text) return null
+
     switch (mode) {
         case 'api':
             // version 1: take from API. Downside: API images list never updates after content creation
@@ -122,6 +124,19 @@ export function getContentImage(contentItem, options){
     return getCacheableImage(findContentImage(contentItem, defaultImageURL, mode), imageWidth, thumbnail)
 }
 
+export function jsonCopy (obj) {
+    if (typeof obj !== 'object') return null
+    try {
+        return JSON.parse(JSON.stringify(obj))
+    } catch (error) {
+        console.error('Warning! Argument is not a valid JSON. Details:', error)
+    }
+}
+
+export function isEmptyObject (obj){
+    if (typeof obj !== 'object') return null
+    return Object.keys(obj).length === 0
+}
 
 const utils = {
     pause,
@@ -130,7 +145,9 @@ const utils = {
     abridge,
     getCacheableImage,
     findContentImage,
-    getContentImage
+    getContentImage,
+    jsonCopy,
+    isEmptyObject
 }
 
 export default utils
