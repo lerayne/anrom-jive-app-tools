@@ -105,6 +105,10 @@ export function findContentImage(contentItem, defaultImageURL, mode = 'regexp') 
     }
 }
 
+export function getImagelessHTML(htmlText) {
+    return htmlText.replace(/<img[^>]*src=["']?([^>"']+)["']?[^>]*>/gim, '')
+}
+
 export function getContentImage(contentItem, options){
 
     const defaultOptions = {
@@ -146,6 +150,7 @@ const utils = {
     getCacheableImage,
     findContentImage,
     getContentImage,
+    getImagelessHTML,
     jsonCopy,
     isEmptyObject
 }
