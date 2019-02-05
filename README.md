@@ -25,30 +25,32 @@ bundle even larger:
 Here's the list of toolsets that the library offers:
 
 ## tileProps
-`import {tileId, tilePath, tileUrl, parent, getContainerAsync} from 'anrom-jive-app-tools/tileProps'`  
+```javascript
+import {
+    tileId, 
+    tilePath, 
+    tileUrl, 
+    parent, 
+    getContainerAsync
+} from 'anrom-jive-app-tools/tileProps'
+```
 
 Gives you access to the tile information before DOM loads 
 
-### `tileId()`
-**type:** function  
-**returns:** String   
-Id of a tile, e.g. `1582`. Can be useful if your domain security is turned off and you want to access tile's frame from within a tile.
+#### `tileId()` 
+**returns:** String; Id of a tile (string), e.g. `1582`. Can be useful if your domain security is turned off and you want to access tile's frame from within a tile.
 ```html
 <iframe id="__gadget_j-app-tile-parent-1582"...    
 ```
 **Note:** returns `undefined` if called from an app
 
-### `tilePath()`
-**type:** function  
-**returns:** String  
-Relative path to a tile's folder inside jive. Helps you load the resources directly. 
+#### `tilePath()` 
+**returns:** String; Relative path to a tile's folder inside jive. Helps you load the resources directly. 
 (`/resources/add-ons/9abb17d6-e0a4-4e3e-b3d7-dc29f1a9edae/6dc9c116f0/tiles/tile-search`)
 
 
-### `tileUrl()`
-**type:** function  
-**returns:** Object  
-Full URL of a tile, with query params  
+#### `tileUrl()`
+**returns:** Object; Full URL of a tile, with query params  
 **output example:**
 ```json
 {
@@ -72,23 +74,32 @@ Full URL of a tile, with query params
 }
 ```
 
-### `parent()`
-**type:** function  
-**returns:** String  
-URL of your root jive instance (without the subdomain added by domain security 
+#### `parent()` 
+**returns:** String; URL of your root jive instance (without the subdomain added by domain security 
 settings) e.g. `http://myjivesite.com` instead of `http://apps.myjivesite.com`
 
-### `getContainerAsync()`
-**type:** async function  
-**returns:** Promise  
-Jive place in which tile instance is located
+#### `async getContainerAsync()`
+**returns:** Promise(object); Jive place in which tile instance is located
 
 ## utils
 Regular utility functions that is often used in jive tile development  
-`import {pause, unescapeHtmlEntities, splitArray, abridge, getCacheableImage, findContentImage, getContentImage, getImagelessHTML, jsonCopy, isEmptyObject} from 'anrom-jive-app-tools/utils'`
+```javascript
+import {
+    pause, 
+    unescapeHtmlEntities, 
+    splitArray, 
+    abridge, 
+    getCacheableImage, 
+    findContentImage, 
+    getContentImage, 
+    getImagelessHTML, 
+    jsonCopy, 
+    isEmptyObject
+} from 'anrom-jive-app-tools/utils'
+```
 
-### `pause(milliseconds)`
-Promise/async wrapper for `setTimeout`. If you need to set your code execution on hold, use it:
+#### `async pause(milliseconds)`
+**returns:** Promise(none); Promise/async wrapper for `setTimeout`. If you need to set your code execution on hold, use it:
 ```javascript
 async function myFunc(){
     /* do stuff */
@@ -97,29 +108,34 @@ async function myFunc(){
 } 
 ```
 
-### `unescapeHtmlEntities(text)`
+#### `unescapeHtmlEntities(text)`
+**returns:** String;   
 Text returned by jive API can contain special escape characters like **&amp;amp;** which stands for 
 &. With usual react rendering (`<div>{text}</div>`) these characters are not being unescaped, which 
 means it will appear in your tile as "Chip &amp;amp; Dale". To avoid that, use this function:   
 `<div>{unescapeHtmlEntities(text)}</div>` 
 
-### `splitArray(array, columns)`
+#### `splitArray(array, columns)`
+**returns:** Array(Arrays);  
 Used to split a plain array into several relatively equal chunks (relatively - because last chunk 
 can be shorter if division is with a remainder). This is usually used to split data model array to
 display in several columns 
 
-### `abridge(text, [length=160])`
+#### `abridge(text, [length=160])`
+**returns:** String;  
 Used to display text, smartly truncated to end with a whole word and with '...' at the end. If there's 
 only one word left after truncation - it will be left truncated and appedned with '...'
 
-### `getCacheableImage(initialImageURL, [imageWidth=500, thumbnail=false])`
+#### `getCacheableImage(initialImageURL, [imageWidth=500, thumbnail=false])`
+**returns:** String;   
 Check image URL against few rules, detecting images hosted within jive. If such image is detected - 
 special URL is being returned, allowing image caching and size reduction. It's **highly recommended** 
 to use it when rendering images in terms of performance.  
 **Note:** I don't know how "thumbnail" mode is defferent from default, I'm just passing this 
 argument to the URL
 
-### `findContentImage(contentItem, defaultImageURL, [mode='regexp'])`
+#### `findContentImage(contentItem, defaultImageURL, [mode='regexp'])`
+**returns:** String;   
 Searches jive API content item (document, discussion etc) for first content image URL. It has 3 modes. 
 By default regular expression (`regexp`) mode is used. It's recommended to use it that way, but if 
 you're experiencing some edge cases, you may want to use other modes. Though, each of them has it's 
@@ -134,7 +150,8 @@ the most precise way, but it's also a slowest one. Also, **all** images in the p
 being requested from the network. This cat hit the overal performance even harder. This mode is 
 only recommended as a temporal solution if `regexp` mode fails and is not yet fixed by me :)   
 
-### `getContentImage(contentItem, [options])`
+#### `getContentImage(contentItem, [options])`
+**returns:** String;   
 The combination of the previous two functions. Finds image in jive content and if it's a jive-hosted 
 image - converts it's URL to a cacheable and resized one. **Recommended for usage by default** 
 when the job is to display a content preview.
@@ -151,30 +168,55 @@ when the job is to display a content preview.
 (they're the same as default parameters of the functions above)
 
 
-### `getImagelessHTML(htmlText)`
+#### `getImagelessHTML(htmlText)`
+**returns:** String;   
 Sometimes you may need html stripped of all images. This is a function for such cases.
 
-### `jsonCopy(object)`
+#### `jsonCopy(object)`
+**returns:** Object;   
 Makes a deep copy of JS data object (ensuring that there will be no links to it in other parts of a 
 program). *Don't use* for objects with function values, class instances etc.
 
-### `isEmptyObject(object)`
+#### `isEmptyObject(object)`
+**returns:** Boolean;   
 Returns **true** if the given object has no values (`{}`), **false** otherwise.
 
 ## dateUtils
 Working with dates in jive requires same actions all the time. I grouped them in a few functions  
-`import {jiveDateFormat, jiveDate2Moment, moment2JiveDate, jiveDate2TS, TS2JiveDate} from 'anrom-jive-app-tools/dateUtils'`
+```javascript
+import {
+    jiveDateFormat, 
+    jiveDate2Moment, 
+    moment2JiveDate, 
+    jiveDate2TS, 
+    TS2JiveDate
+} from 'anrom-jive-app-tools/dateUtils'
+```
 
-### `jiveDateFormat`
+#### `jiveDateFormat`
+**type:** String;   
 Simple string with the value `YYYY-MM-DDTHH:mm:ss.SSSZ`, which is a formatting pattern for moment.js
 
 Next functions are quite self-explanatory:
-### `jiveDate2Moment(jiveDate)`
-### `moment2JiveDate(momentDate)`
-### `jiveDate2TS(JiveDate)`
-### `TS2JiveDate(timestamp)`
+#### `jiveDate2Moment(jiveDate)`
+#### `moment2JiveDate(momentDate)`
+#### `jiveDate2TS(JiveDate)`
+#### `TS2JiveDate(timestamp)`
 
 ## fetchPromise
+```javascript
+import {
+    promiseOsapiRequest,
+    promiseHttpGet,
+    promiseHttpPost,
+    promiseRestGet,
+    promiseRestPost,
+    promiseRestPut,
+    promiseRestDelete,
+    promiseBatch,
+    CurrentPlace
+} from 'anrom-jive-app-tools/fetchPromise'
+```
 Provides a set of async promise-wrappers for jive tile osapi network methods.  
 All "promise..." functions are throwing the entire response as a reject/error:
 
@@ -201,9 +243,8 @@ async function getData(){
 }
 ```
 
-### `promiseOsapiRequest(functionOrExecutable)`
-**type:** async function  
-**returns:** Promise (Object)  
+#### `async promiseOsapiRequest(functionOrExecutable)`
+**returns:** Promise(Object)  
 **params:**
 * **functionOrExecutable** - jive osapi executabe or function that takes `osapi.jive.corev3` as a 
 single argument and returns such executable:
@@ -218,20 +259,20 @@ Usage option 2:
 const viewer = await promiseOsapiRequest(api => api.people.getViewer())
 ```
  
-### `promiseHttpGet(...args)`
+#### `async promiseHttpGet(...args)`
 Promise/async wrapper for [osapi.http.get](https://opensocial.atlassian.net/wiki/spaces/OSD/pages/527081/Osapi.http+v0.9#Osapi.http(v0.9)-osapi.http.get). Parameters are forwarded without change
 
 Example:
 ```javascript
-const posts = await promiseHttpPost('//apisrver.com/api/v1/posts')
+const posts = await promiseHttpPost('https://apisrver.com/api/v1/posts')
 ```
 
-### `promiseHttpPost(...args)` 
+#### `async promiseHttpPost(...args)` 
 Promise/async wrapper for [osapi.http.get](https://opensocial.atlassian.net/wiki/spaces/OSD/pages/527081/Osapi.http+v0.9#Osapi.http(v0.9)-osapi.http.post). Parameters are forwarded without change
 
 Example:
 ```javascript
-const creationResponse = await promiseHttpPost('//apisrver.com/api/v1/posts/create', {
+const creationResponse = await promiseHttpPost('https://apisrver.com/api/v1/posts/create', {
     authz: 'signed',
     headers : { 'Content-Type' : ['application/json'] },
     body: {
@@ -241,7 +282,7 @@ const creationResponse = await promiseHttpPost('//apisrver.com/api/v1/posts/crea
 })
 ```
 
-### `promiseRestGet(endpoint)`
+#### `async promiseRestGet(endpoint)`
 Promise/async wrapper for osapi.jive.core.get, which is an OSAPI endpoint for regular jive rest requests.
 
 Example:
@@ -249,26 +290,30 @@ Example:
 const viewer = await promiseRestGet('/people/@me')
 ```
 
-### `promiseRestPost(endpoint, options)` 
+#### `async promiseRestPost(endpoint, options)` 
 Promise/async wrapper for osapi.jive.core.post, which is an OSAPI endpoint for regular jive rest requests.
 
 Example:
 ```javascript
+const batch = [/* your batch entries */]
 const viewer = await promiseRestPost('/executeBatch', {
     type: "application/json",
     body: batch
 })
-
 ```
-### `promiseRestDelete(endpoint)`
-Promise/async wrapper for osapi.jive.core.delete, which is an OSAPI endpoint for regular jive rest requests.
-Usage is the same as promiseRestGet
- 
-### `promiseRestPut(endpoint, options)` 
-Promise/async wrapper for osapi.jive.core.put, which is an OSAPI endpoint for regular jive rest requests.
-Usage is the same as promiseRestPost
 
-### `CurrentPlace([<function> filter])` 
+#### `async promiseRestDelete(endpoint)`
+Promise/async wrapper for osapi.jive.core.delete, which is an OSAPI endpoint for regular jive rest requests.
+Usage is the same as `promiseRestGet`
+ 
+#### `async promiseRestPut(endpoint, options)` 
+Promise/async wrapper for osapi.jive.core.put, which is an OSAPI endpoint for regular jive rest requests.
+Usage is the same as `promiseRestPost`
+
+#### `async promiseBatch(entries, createBatchEntry)`
+This function will be reworked. No docs for now
+
+#### `class CurrentPlace([<function> filter])` 
 A class for getting the current place (sophisticated alternative to `getContainerAsync`)
 
 Usage:
@@ -298,3 +343,15 @@ or even this way, if you want a raw unfiltered place object
 ```javascript
 const currentPlace = new CurrentPlace(rawPlace => rawPlace)
 ```
+
+## ContinuousLoader
+```javascript
+import {
+    ContinuousLoader, 
+    ContinuousLoadJiveREST, 
+    ContinuousLoadJiveOSAPI
+} from 'anrom-jive-app-tools/ContinuousLoader'
+```
+A set of classes for sequential requests and frontend-side content filtering
+
+#### class ContinuousLoader
