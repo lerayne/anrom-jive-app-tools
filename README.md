@@ -315,7 +315,7 @@ This function will be reworked. No docs for now
 ### `class CurrentPlace([<function> filter])` 
 A class for getting the current place (sophisticated alternative to `getContainerAsync`)
 
-Usage:
+Usage example:
 ```javascript
 const currentPlace = new CurrentPlace()
 const place = await currentPlace.fetch() 
@@ -353,4 +353,35 @@ import {
 ```
 A set of classes for sequential requests and frontend-side content filtering
 
-### `class ContinuousLoader`
+### `class ContinuousLoader(asyncFunction, filter, [options={}])`
+**params:** 
+* **asyncFunction** - ES2017 async function or any function that returns a Promise. **Important:** you 
+should not pass Promise itself there, but a function that returns Promise when called.
+* **filter** - async/promise function that is being called for each collection to define whether 
+it's members pass to the final set or not (interface below)
+* **options** - other parameters (listed below)
+    * required:
+        * `getNextAsyncFunc`
+    * optional (have defaults):
+        * `targetCount` (10)
+        * `maxTriesPerLoad` (5)
+        * `getError`
+        * `getList`
+        * `getResponseContent`
+        * `map`
+        * `debug` (false)
+
+**Function interfaces:**
+
+`async filter(currentList, existingList)`  
+*should return:* Array; Filtered list of items   
+* `currentList` - results collection received with the latest `asyncFunction` call
+* `existingList` - results from previous calls that have already passed this filter, but haven't 
+been returned by `loadNext` (usually used to 
+remove duplicates). Note that the filtered items which are already returned by `loadNext` 
+are being cleared and will not be passed to this parameter again, so if you want to remove all the 
+duplicates, you should check items against your target collection too.
+
+#### `async ContinuousLoader.loadNext()`
+**returns:** Promise(Object)  
+Main loading function that tries to loads first/next stated number of items 
