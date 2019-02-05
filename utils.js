@@ -4,6 +4,14 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
+var _keys = require('babel-runtime/core-js/object/keys');
+
+var _keys2 = _interopRequireDefault(_keys);
+
+var _stringify = require('babel-runtime/core-js/json/stringify');
+
+var _stringify2 = _interopRequireDefault(_stringify);
+
 var _extends2 = require('babel-runtime/helpers/extends');
 
 var _extends3 = _interopRequireDefault(_extends2);
@@ -22,7 +30,10 @@ exports.splitArray = splitArray;
 exports.abridge = abridge;
 exports.getCacheableImage = getCacheableImage;
 exports.findContentImage = findContentImage;
+exports.getImagelessHTML = getImagelessHTML;
 exports.getContentImage = getContentImage;
+exports.jsonCopy = jsonCopy;
+exports.isEmptyObject = isEmptyObject;
 
 var _jquery = require('jive/jquery');
 
@@ -139,7 +150,13 @@ function findContentImage(contentItem, defaultImageURL) {
     }
 }
 
-function getContentImage(contentItem, options) {
+function getImagelessHTML(htmlText) {
+    return htmlText.replace(/<img[^>]*src=["']?([^>"']+)["']?[^>]*>/gim, '');
+}
+
+function getContentImage(contentItem) {
+    var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+
 
     var defaultOptions = {
         imageWidth: 500,
@@ -160,6 +177,20 @@ function getContentImage(contentItem, options) {
     return getCacheableImage(findContentImage(contentItem, defaultImageURL, mode), imageWidth, thumbnail);
 }
 
+function jsonCopy(obj) {
+    if ((typeof obj === 'undefined' ? 'undefined' : (0, _typeof3.default)(obj)) !== 'object') return null;
+    try {
+        return JSON.parse((0, _stringify2.default)(obj));
+    } catch (error) {
+        console.error('Warning! Argument is not a valid JSON. Details:', error);
+    }
+}
+
+function isEmptyObject(obj) {
+    if ((typeof obj === 'undefined' ? 'undefined' : (0, _typeof3.default)(obj)) !== 'object') return null;
+    return (0, _keys2.default)(obj).length === 0;
+}
+
 var utils = {
     pause: pause,
     unescapeHtmlEntities: unescapeHtmlEntities,
@@ -167,7 +198,10 @@ var utils = {
     abridge: abridge,
     getCacheableImage: getCacheableImage,
     findContentImage: findContentImage,
-    getContentImage: getContentImage
+    getContentImage: getContentImage,
+    getImagelessHTML: getImagelessHTML,
+    jsonCopy: jsonCopy,
+    isEmptyObject: isEmptyObject
 };
 
 exports.default = utils;

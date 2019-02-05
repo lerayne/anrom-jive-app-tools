@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
-exports.currentPlace = exports.CurrentPlace = exports.promiseBatch = exports.promiseRestRequest = undefined;
+exports.CurrentPlace = exports.promiseBatch = exports.promiseRestRequest = undefined;
 
 var _classCallCheck2 = require('babel-runtime/helpers/classCallCheck');
 
@@ -295,7 +295,7 @@ var CurrentPlace = exports.CurrentPlace = function () {
     return CurrentPlace;
 }();
 
-var currentPlace = exports.currentPlace = new CurrentPlace();
+//export const currentPlace = new CurrentPlace()
 
 var fetchPromise = {
     promiseHttpGet: promiseHttpGet,
@@ -308,8 +308,8 @@ var fetchPromise = {
     promiseRestRequest: promiseRestRequest,
     promiseOsapiPollingRequest: _deprecated.promiseOsapiPollingRequest,
     promiseBatch: promiseBatch,
-    CurrentPlace: CurrentPlace,
-    currentPlace: currentPlace
+    CurrentPlace: CurrentPlace
+    //currentPlace,
 };
 
 exports.default = fetchPromise;

@@ -1,4 +1,4 @@
-import jQuery from 'jive/jquery'
+const jQuery = window.jQuery
 
 export function unescapeHtmlEntities(text) {
     const temp = document.createElement('div')
@@ -109,7 +109,7 @@ export function getImagelessHTML(htmlText) {
     return htmlText.replace(/<img[^>]*src=["']?([^>"']+)["']?[^>]*>/gim, '')
 }
 
-export function getContentImage(contentItem, options){
+export function getContentImage(contentItem, options={}){
 
     const defaultOptions = {
         imageWidth: 500,

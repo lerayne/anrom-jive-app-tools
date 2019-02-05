@@ -2,12 +2,13 @@
  * Created by M. Yegorov on 2016-12-27.
  */
 
-import osapi from 'jive/osapi'
-import jive from 'jive'
 import 'core-js/fn/object/keys'
 import 'core-js/fn/array/concat'
 import 'core-js/fn/array/map'
 import 'core-js/fn/array/for-each'
+
+const jive = window.jive
+const osapi = window.osapi
 
 import {promiseOsapiPollingRequest} from './deprecated'
 import {unescapeHtmlEntities, pause, splitArray} from './utils'
@@ -16,7 +17,7 @@ import {unescapeHtmlEntities, pause, splitArray} from './utils'
 export function promiseOsapiRequest(osapiRequestFunc){
     return new Promise((resolve, reject) => {
 
-        const request = typeof osapiRequestFunc === 'function' ? osapiRequestFunc(osapi.jive.corev3) : osapiRequestFunc;
+        const request = (typeof osapiRequestFunc === 'function') ? osapiRequestFunc(osapi.jive.corev3) : osapiRequestFunc;
 
         request.execute(response => {
             if (response.error) reject(response)
@@ -150,8 +151,6 @@ export async function promiseBatch(entries, createBatchEntry){
     }
 }
 
-
-
 export class CurrentPlace {
     place = false
 
@@ -185,7 +184,7 @@ export class CurrentPlace {
     }
 }
 
-export const currentPlace = new CurrentPlace()
+//export const currentPlace = new CurrentPlace()
 
 const fetchPromise = {
     promiseHttpGet,
@@ -199,7 +198,7 @@ const fetchPromise = {
     promiseOsapiPollingRequest,
     promiseBatch,
     CurrentPlace,
-    currentPlace,
+    //currentPlace,
 }
 
 export default fetchPromise

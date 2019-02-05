@@ -11,25 +11,12 @@ var _promise2 = _interopRequireDefault(_promise);
 
 var _url = require('url');
 
-var _jive = require('jive');
-
-var _jive2 = _interopRequireDefault(_jive);
-
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-var getUrlParemeters = void 0;
+var jive = window.jive;
+var gadgets = window.jive.gadgets;
 
-if (typeof window.gala != 'undefined') {
-    getUrlParemeters = function getUrlParemeters() {
-        return {
-            parent: _jive2.default.tile.getJiveURL() || '',
-            url: _jive2.default.tile.getAppURL() || ''
-        };
-    };
-} else {
-    var gadgets = require('jive/gadgets');
-    getUrlParemeters = gadgets.util.getUrlParameters;
-}
+var getUrlParemeters = gadgets.util.getUrlParameters;
 
 var cache = {};
 
@@ -90,7 +77,7 @@ var getContainerAsync = function getContainerAsync() {
         if (cache.place) {
             resolve(cache.place);
         } else {
-            _jive2.default.tile.getContainer(function (place) {
+            jive.tile.getContainer(function (place) {
                 cache.place = place;
                 resolve(place);
             });
