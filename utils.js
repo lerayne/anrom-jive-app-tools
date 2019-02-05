@@ -35,11 +35,9 @@ exports.getContentImage = getContentImage;
 exports.jsonCopy = jsonCopy;
 exports.isEmptyObject = isEmptyObject;
 
-var _jquery = require('jive/jquery');
-
-var _jquery2 = _interopRequireDefault(_jquery);
-
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var jQuery = window.jQuery;
 
 function unescapeHtmlEntities(text) {
     var temp = document.createElement('div');
@@ -140,7 +138,7 @@ function findContentImage(contentItem, defaultImageURL) {
             return defaultImageURL;
         case 'jquery':
             //version 2: find image links with jQuery. Downside: it requests all the images content item has
-            return _jquery2.default ? $(contentItem.content.text).find('img').attr('src') || defaultImageURL : defaultImageURL;
+            return jQuery ? $(contentItem.content.text).find('img').attr('src') || defaultImageURL : defaultImageURL;
         case 'regexp':
             //version 3: Find image URLs by regExp
             var images = contentItem.content.text.match(/<img[^>]*src=["']?([^>"']+)["']?[^>]*>/im);

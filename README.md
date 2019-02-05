@@ -361,19 +361,23 @@ should not pass Promise itself there, but a function that returns Promise when c
 it's members pass to the final set or not (interface below)
 * **options** - other parameters (listed below)
     * required:
-        * `getNextAsyncFunc`
+        * `getNextAsyncFunc` - function that returns new async/promise function for the next call. 
+        It can be based on previous async call's results.
     * optional (have defaults):
-        * `targetCount` (10)
-        * `maxTriesPerLoad` (5)
-        * `getError`
-        * `getList`
-        * `getResponseContent`
-        * `map`
-        * `debug` (false)
+        * `debug` (false) - turns on console logging
+        * `targetCount` (10) - Desired number of the items. Per one call of `loadNext` ContinuousLoader 
+        will make several requests and filter the results until the number is reached
+        * `maxTriesPerLoad` (5) - Number of requests per single `loadNext` is by default limited to 5. 
+        You can set it to 0 to allow infinite calls (not safe for performance) or just pass another
+        number 
+        * `getError` - calculates error type based on async/promise function response. By default 
+        just looks for `response.error` 
+        * `getList` - gets list of items from async/promise function response. By default looks for 
+        `response.list`
 
-**Function interfaces:**
+**Argument functions' interfaces:**
 
-`async filter(currentList, existingList)`  
+**`async filter(currentList, existingList)`**  
 *should return:* Array; Filtered list of items   
 * `currentList` - results collection received with the latest `asyncFunction` call
 * `existingList` - results from previous calls that have already passed this filter, but haven't 
@@ -381,6 +385,22 @@ been returned by `loadNext` (usually used to
 remove duplicates). Note that the filtered items which are already returned by `loadNext` 
 are being cleared and will not be passed to this parameter again, so if you want to remove all the 
 duplicates, you should check items against your target collection too.
+
+*Note:* since this function receives the array and returns the array, it can be used not only for 
+filtering, but also for mapping (transforming) the array either before filtering, or after it. Also,
+this function can be async if needed, so you can make another async operations inside it.
+
+**`getNextAsyncFunc(asyncFunctionResponse)`**  
+*should return:* async/promise function for the next call, analogical to the `asyncFunction`
+* `asyncFunctionResponse` - response of the previous async/promise function
+
+**`getError(asyncFunctionResponse)`**  
+*should return:* Error to display if there is one, `false` if no errors found.
+* `asyncFunctionResponse` - response of the previous async/promise function
+
+**`getList(asyncFunctionResponse)`**  
+*should return:* Array of items
+* `asyncFunctionResponse` - response of the previous async/promise function
 
 #### `async ContinuousLoader.loadNext()`
 **returns:** Promise(Object)  

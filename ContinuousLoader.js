@@ -60,11 +60,6 @@ var ContinuousLoader = exports.ContinuousLoader = function () {
         value: function getList(asyncFunctionResponse) {
             return asyncFunctionResponse.list || [];
         }
-    }, {
-        key: 'getResponseContent',
-        value: function getResponseContent(asyncFunctionResponse) {
-            return asyncFunctionResponse;
-        }
 
         /**
          * Overrideable function to create new promise-returning function
@@ -100,9 +95,7 @@ var ContinuousLoader = exports.ContinuousLoader = function () {
             maxTriesPerLoad: 5,
             getNextAsyncFunc: this.getNextAsyncFunc.bind(this),
             getError: this.getError.bind(this),
-            getList: this.getList.bind(this),
-            getResponseContent: this.getResponseContent.bind(this),
-            map: false
+            getList: this.getList.bind(this)
         };
 
         this.options = (0, _extends3.default)({}, optionsDefaults, options);
@@ -167,22 +160,10 @@ var ContinuousLoader = exports.ContinuousLoader = function () {
                                 return _context.abrupt('return', null);
 
                             case 15:
-                                if (!this.options.map) {
-                                    _context.next = 19;
-                                    break;
-                                }
-
-                                _context.next = 18;
-                                return this.options.map(list, [].concat((0, _toConsumableArray3.default)(this.resultPool)));
-
-                            case 18:
-                                list = _context.sent;
-
-                            case 19:
-                                _context.next = 21;
+                                _context.next = 17;
                                 return this.filter(list, [].concat((0, _toConsumableArray3.default)(this.resultPool)));
 
-                            case 21:
+                            case 17:
                                 filteredList = _context.sent;
 
 
@@ -199,7 +180,7 @@ var ContinuousLoader = exports.ContinuousLoader = function () {
                                 //if pool reached target number - resolve items and remove them from pool
 
                                 if (!(this.resultPool.length >= targetCount)) {
-                                    _context.next = 30;
+                                    _context.next = 26;
                                     break;
                                 }
 
@@ -211,12 +192,12 @@ var ContinuousLoader = exports.ContinuousLoader = function () {
                                 this.log('(rest of pool:', this.resultPool);
                                 return _context.abrupt('return', null);
 
-                            case 30:
+                            case 26:
 
                                 loadCount++;
 
-                                if (!(loadCount >= maxTriesPerLoad)) {
-                                    _context.next = 37;
+                                if (!(maxTriesPerLoad > 0 && loadCount >= maxTriesPerLoad)) {
+                                    _context.next = 33;
                                     break;
                                 }
 
@@ -229,9 +210,9 @@ var ContinuousLoader = exports.ContinuousLoader = function () {
                                 });
                                 return _context.abrupt('return', null);
 
-                            case 37:
+                            case 33:
                                 if (!(typeof nextAsyncFunc === 'function')) {
-                                    _context.next = 43;
+                                    _context.next = 39;
                                     break;
                                 }
 
@@ -240,7 +221,7 @@ var ContinuousLoader = exports.ContinuousLoader = function () {
                                 this.recursiveLoad(resolve, reject, loadCount);
                                 return _context.abrupt('return', null);
 
-                            case 43:
+                            case 39:
                                 this.log('no next promise available. returning pool');
                                 this.endReached = true;
                                 resolve({
@@ -248,22 +229,22 @@ var ContinuousLoader = exports.ContinuousLoader = function () {
                                     reason: 'source ended'
                                 });
 
-                            case 46:
-                                _context.next = 51;
+                            case 42:
+                                _context.next = 47;
                                 break;
 
-                            case 48:
-                                _context.prev = 48;
+                            case 44:
+                                _context.prev = 44;
                                 _context.t0 = _context['catch'](0);
 
                                 reject(_context.t0);
 
-                            case 51:
+                            case 47:
                             case 'end':
                                 return _context.stop();
                         }
                     }
-                }, _callee, this, [[0, 48]]);
+                }, _callee, this, [[0, 44]]);
             }));
 
             function recursiveLoad(_x2, _x3, _x4) {
@@ -323,14 +304,8 @@ var ContinuousLoadJiveREST = exports.ContinuousLoadJiveREST = function (_Continu
         key: 'getList',
         value: function getList(asyncFunctionResponse) {
             //this.log('REST getList')
-            var responseContent = this.getResponseContent(asyncFunctionResponse);
+            var responseContent = asyncFunctionResponse.content || asyncFunctionResponse;
             return responseContent.list || [];
-        }
-    }, {
-        key: 'getResponseContent',
-        value: function getResponseContent(asyncFunctionResponse) {
-            //this.log('REST getResponseContent')
-            return asyncFunctionResponse.content || asyncFunctionResponse;
         }
     }, {
         key: 'getError',
@@ -352,7 +327,7 @@ var ContinuousLoadJiveREST = exports.ContinuousLoadJiveREST = function (_Continu
     }, {
         key: 'getNextAsyncFunc',
         value: function getNextAsyncFunc(asyncFunctionResponse) {
-            var responseContent = this.getResponseContent(asyncFunctionResponse);
+            var responseContent = asyncFunctionResponse.content || asyncFunctionResponse;
 
             var itemsPerPage = responseContent.itemsPerPage,
                 list = responseContent.list,
@@ -409,14 +384,8 @@ var ContinuousLoadJiveOSAPI = exports.ContinuousLoadJiveOSAPI = function (_Conti
         key: 'getList',
         value: function getList(asyncFunctionResponse) {
             //console.log('REST getList')
-            var responseContent = this.getResponseContent(asyncFunctionResponse);
+            var responseContent = asyncFunctionResponse.content || asyncFunctionResponse;
             return responseContent.list || [];
-        }
-    }, {
-        key: 'getResponseContent',
-        value: function getResponseContent(asyncFunctionResponse) {
-            //console.log('REST getResponseContent')
-            return asyncFunctionResponse.content || asyncFunctionResponse;
         }
     }, {
         key: 'getNextAsyncFunc',

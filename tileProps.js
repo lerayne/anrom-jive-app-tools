@@ -14,7 +14,7 @@ var _url = require('url');
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var jive = window.jive;
-var gadgets = window.jive.gadgets;
+var gadgets = window.gadgets;
 
 var getUrlParemeters = gadgets.util.getUrlParameters;
 

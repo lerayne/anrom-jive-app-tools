@@ -43,7 +43,7 @@ var promiseBatch = exports.promiseBatch = function () {
                         promiseSingleBatch = function promiseSingleBatch(entries, createBatchEntry) {
                             return new _promise2.default(function (resolve, reject) {
 
-                                var batch = _osapi2.default.newBatch();
+                                var batch = osapi.newBatch();
 
                                 entries.forEach(function (entry, i) {
                                     var _createBatchEntry = createBatchEntry(entry, i),
@@ -131,14 +131,6 @@ exports.promiseRestPost = promiseRestPost;
 exports.promiseRestDelete = promiseRestDelete;
 exports.promiseRestPut = promiseRestPut;
 
-var _osapi = require('jive/osapi');
-
-var _osapi2 = _interopRequireDefault(_osapi);
-
-var _jive = require('jive');
-
-var _jive2 = _interopRequireDefault(_jive);
-
 require('core-js/fn/object/keys');
 
 require('core-js/fn/array/concat');
@@ -157,10 +149,13 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
  * Created by M. Yegorov on 2016-12-27.
  */
 
+var jive = window.jive;
+var osapi = window.osapi;
+
 function promiseOsapiRequest(osapiRequestFunc) {
     return new _promise2.default(function (resolve, reject) {
 
-        var request = typeof osapiRequestFunc === 'function' ? osapiRequestFunc(_osapi2.default.jive.corev3) : osapiRequestFunc;
+        var request = typeof osapiRequestFunc === 'function' ? osapiRequestFunc(osapi.jive.corev3) : osapiRequestFunc;
 
         request.execute(function (response) {
             if (response.error) reject(response);else resolve(response);
@@ -176,7 +171,7 @@ function promiseHttpGet() {
     return new _promise2.default(function (resolve, reject) {
         var _osapi$http;
 
-        (_osapi$http = _osapi2.default.http).get.apply(_osapi$http, args).execute(function (response) {
+        (_osapi$http = osapi.http).get.apply(_osapi$http, args).execute(function (response) {
             if (response.error) reject(response);else resolve(response);
         });
     });
@@ -190,7 +185,7 @@ function promiseHttpPost() {
     return new _promise2.default(function (resolve, reject) {
         var _osapi$http2;
 
-        (_osapi$http2 = _osapi2.default.http).post.apply(_osapi$http2, args).execute(function (response) {
+        (_osapi$http2 = osapi.http).post.apply(_osapi$http2, args).execute(function (response) {
             if (response.error) reject(response);else resolve(response);
         });
     });
@@ -198,7 +193,7 @@ function promiseHttpPost() {
 
 function promiseRestGet(href) {
     return new _promise2.default(function (resolve, reject) {
-        _osapi2.default.jive.core.get({
+        osapi.jive.core.get({
             v: 'v3',
             href: href
         }).execute(function (response) {
@@ -222,7 +217,7 @@ function promiseRestPost(href) {
     var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 
     return new _promise2.default(function (resolve, reject) {
-        _osapi2.default.jive.core.post((0, _extends3.default)({
+        osapi.jive.core.post((0, _extends3.default)({
             v: 'v3',
             href: href
         }, options)).execute(function (response) {
@@ -233,7 +228,7 @@ function promiseRestPost(href) {
 
 function promiseRestDelete(href) {
     return new _promise2.default(function (resolve, reject) {
-        _osapi2.default.jive.core.delete({
+        osapi.jive.core.delete({
             v: 'v3',
             href: href
         }).execute(function (response) {
@@ -244,7 +239,7 @@ function promiseRestDelete(href) {
 
 function promiseRestPut(href) {
     return new _promise2.default(function (resolve, reject) {
-        _osapi2.default.jive.core.put({
+        osapi.jive.core.put({
             v: 'v3',
             href: href
         }).execute(function (response) {
@@ -285,7 +280,7 @@ var CurrentPlace = exports.CurrentPlace = function () {
                     return null;
                 }
 
-                _jive2.default.tile.getContainer(function (place) {
+                jive.tile.getContainer(function (place) {
                     _this.place = _this.filter(place);
                     resolve(_this.place);
                 });

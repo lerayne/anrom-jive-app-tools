@@ -10,10 +10,6 @@ export class ContinuousLoader {
         return asyncFunctionResponse.list || []
     }
 
-    getResponseContent (asyncFunctionResponse) {
-        return asyncFunctionResponse
-    }
-
     /**
      * Overrideable function to create new promise-returning function
      * @param asyncFunctionResponse
@@ -39,9 +35,7 @@ export class ContinuousLoader {
             maxTriesPerLoad: 5,
             getNextAsyncFunc: ::this.getNextAsyncFunc,
             getError: ::this.getError,
-            getList: ::this.getList,
-            getResponseContent: ::this.getResponseContent,
-            map: false
+            getList: ::this.getList
         }
 
         this.options = {...optionsDefaults, ...options}
@@ -87,7 +81,6 @@ export class ContinuousLoader {
             }
 
             //put (mapped and) filtered items in pool
-            if (this.options.map) list = await this.options.map(list, [...this.resultPool])
             const filteredList = await this.filter(list, [...this.resultPool])
 
             this.resultPool = this.resultPool.concat(filteredList)
@@ -112,7 +105,7 @@ export class ContinuousLoader {
 
             loadCount++
 
-            if (loadCount >= maxTriesPerLoad){
+            if (maxTriesPerLoad > 0 && loadCount >= maxTriesPerLoad){
                 // if pool hasn't reached the target number, but it's last poll according to
                 // maxTriesPerLoad
                 this.log("max tries reached. returning what's found so far")
@@ -180,13 +173,8 @@ export class ContinuousLoader {
 export class ContinuousLoadJiveREST extends ContinuousLoader {
     getList (asyncFunctionResponse) {
         //this.log('REST getList')
-        const responseContent = this.getResponseContent(asyncFunctionResponse)
+        const responseContent = asyncFunctionResponse.content || asyncFunctionResponse
         return  responseContent.list || []
-    }
-
-    getResponseContent (asyncFunctionResponse) {
-        //this.log('REST getResponseContent')
-        return asyncFunctionResponse.content || asyncFunctionResponse
     }
 
     getError(asyncFunctionResponse) {
@@ -206,7 +194,7 @@ export class ContinuousLoadJiveREST extends ContinuousLoader {
     }
 
     getNextAsyncFunc (asyncFunctionResponse){
-        const responseContent = this.getResponseContent(asyncFunctionResponse)
+        const responseContent = asyncFunctionResponse.content || asyncFunctionResponse
 
         const {itemsPerPage, list, links} = responseContent
 
@@ -241,13 +229,8 @@ export class ContinuousLoadJiveREST extends ContinuousLoader {
 export class ContinuousLoadJiveOSAPI extends ContinuousLoader {
     getList (asyncFunctionResponse) {
         //console.log('REST getList')
-        const responseContent = this.getResponseContent(asyncFunctionResponse)
+        const responseContent = asyncFunctionResponse.content || asyncFunctionResponse
         return  responseContent.list || []
-    }
-
-    getResponseContent (asyncFunctionResponse) {
-        //console.log('REST getResponseContent')
-        return asyncFunctionResponse.content || asyncFunctionResponse
     }
 
     getNextAsyncFunc(asyncFunctionResponse){
