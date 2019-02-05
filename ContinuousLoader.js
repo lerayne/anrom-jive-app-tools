@@ -107,7 +107,7 @@ var ContinuousLoader = exports.ContinuousLoader = function () {
     }
 
     (0, _createClass3.default)(ContinuousLoader, [{
-        key: 'recursiveLoad',
+        key: '_recursiveLoad',
         value: function () {
             var _ref = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee(resolve, reject, loadCount) {
                 var asyncFunctionResponse, _options, getError, getList, getNextAsyncFunc, targetCount, maxTriesPerLoad, error, list, filteredList, nextAsyncFunc;
@@ -125,7 +125,7 @@ var ContinuousLoader = exports.ContinuousLoader = function () {
                                 _options = this.options, getError = _options.getError, getList = _options.getList, getNextAsyncFunc = _options.getNextAsyncFunc, targetCount = _options.targetCount, maxTriesPerLoad = _options.maxTriesPerLoad;
 
 
-                                this.log('asyncFunctionResponse', asyncFunctionResponse);
+                                this._log('asyncFunctionResponse', asyncFunctionResponse);
 
                                 // catch errors
                                 error = getError(asyncFunctionResponse);
@@ -151,7 +151,7 @@ var ContinuousLoader = exports.ContinuousLoader = function () {
                                     break;
                                 }
 
-                                this.log('zero items get, returning []/rest of pool');
+                                this._log('zero items get, returning []/rest of pool');
                                 this.endReached = true;
                                 resolve({
                                     list: this.resultPool.splice(0),
@@ -184,12 +184,12 @@ var ContinuousLoader = exports.ContinuousLoader = function () {
                                     break;
                                 }
 
-                                this.log('pool reached the target count. set pause.');
+                                this._log('pool reached the target count. set pause.');
                                 resolve({
                                     list: this.resultPool.splice(0, targetCount),
                                     reason: 'reached target count'
                                 });
-                                this.log('(rest of pool:', this.resultPool);
+                                this._log('(rest of pool:', this.resultPool);
                                 return _context.abrupt('return', null);
 
                             case 26:
@@ -203,7 +203,7 @@ var ContinuousLoader = exports.ContinuousLoader = function () {
 
                                 // if pool hasn't reached the target number, but it's last poll according to
                                 // maxTriesPerLoad
-                                this.log("max tries reached. returning what's found so far");
+                                this_("max tries reached. returning what's found so far");
                                 resolve({
                                     list: this.resultPool.splice(0),
                                     reason: 'max polls reached'
@@ -217,12 +217,12 @@ var ContinuousLoader = exports.ContinuousLoader = function () {
                                 }
 
                                 //if pool hasn't reached target number, but there's more to load
-                                this.log('got', this.resultPool.length, 'while target is', targetCount, 'need to load one more time');
-                                this.recursiveLoad(resolve, reject, loadCount);
+                                this._log('got', this.resultPool.length, 'while target is', targetCount, 'need to load one more time');
+                                this._recursiveLoad(resolve, reject, loadCount);
                                 return _context.abrupt('return', null);
 
                             case 39:
-                                this.log('no next promise available. returning pool');
+                                this._log('no next promise available. returning pool');
                                 this.endReached = true;
                                 resolve({
                                     list: this.resultPool.splice(0),
@@ -247,11 +247,11 @@ var ContinuousLoader = exports.ContinuousLoader = function () {
                 }, _callee, this, [[0, 44]]);
             }));
 
-            function recursiveLoad(_x2, _x3, _x4) {
+            function _recursiveLoad(_x2, _x3, _x4) {
                 return _ref.apply(this, arguments);
             }
 
-            return recursiveLoad;
+            return _recursiveLoad;
         }()
     }, {
         key: 'loadNext',
@@ -261,12 +261,12 @@ var ContinuousLoader = exports.ContinuousLoader = function () {
             return new _promise2.default(function (resolve, reject) {
 
                 if (_this.endReached) {
-                    _this.log('end was reached before, no more promising');
+                    _this._log('end was reached before, no more promising');
                     resolve({
                         list: [],
                         reason: 'polling finished'
                     });
-                    _this.log('(rest of pool:', _this.resultPool);
+                    _this._log('(rest of pool:', _this.resultPool);
                     return null;
                 }
 
@@ -274,7 +274,7 @@ var ContinuousLoader = exports.ContinuousLoader = function () {
 
 
                 if (_this.resultPool.length >= targetCount) {
-                    _this.log('target count found in existing pool');
+                    _this._log('target count found in existing pool');
                     resolve({
                         list: _this.resultPool.splice(0, targetCount),
                         reason: 'target count exists in pool'
@@ -282,12 +282,12 @@ var ContinuousLoader = exports.ContinuousLoader = function () {
                     return null;
                 }
 
-                _this.recursiveLoad(resolve, reject, 0);
+                _this._recursiveLoad(resolve, reject, 0);
             });
         }
     }, {
-        key: 'log',
-        value: function log() {
+        key: '_log',
+        value: function _log() {
             if (this.options.debug) {
                 var _console;
 
@@ -303,14 +303,14 @@ var ContinuousLoadJiveREST = exports.ContinuousLoadJiveREST = function (_Continu
     (0, _createClass3.default)(ContinuousLoadJiveREST, [{
         key: 'getList',
         value: function getList(asyncFunctionResponse) {
-            //this.log('REST getList')
+            //this._log('REST getList')
             var responseContent = asyncFunctionResponse.content || asyncFunctionResponse;
             return responseContent.list || [];
         }
     }, {
         key: 'getError',
         value: function getError(asyncFunctionResponse) {
-            //this.log('REST getError')
+            //this._log('REST getError')
             if (asyncFunctionResponse.status) {
                 switch (asyncFunctionResponse.status) {
                     case 200:

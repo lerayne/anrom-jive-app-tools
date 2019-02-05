@@ -46,7 +46,7 @@ export class ContinuousLoader {
         this.endReached = false
     }
 
-    async recursiveLoad(resolve, reject, loadCount){
+    async _recursiveLoad(resolve, reject, loadCount){
         try {
             const asyncFunctionResponse = await this.asyncFunction()
 
@@ -58,7 +58,7 @@ export class ContinuousLoader {
                 maxTriesPerLoad
             } = this.options
 
-            this.log('asyncFunctionResponse', asyncFunctionResponse)
+            this._log('asyncFunctionResponse', asyncFunctionResponse)
 
             // catch errors
             const error = getError(asyncFunctionResponse)
@@ -71,7 +71,7 @@ export class ContinuousLoader {
             // returning the rest of result poll (if any) and blocking
             // further calls of this.loadNext
             if (!list.length) {
-                this.log('zero items get, returning []/rest of pool')
+                this._log('zero items get, returning []/rest of pool')
                 this.endReached = true
                 resolve({
                     list: this.resultPool.splice(0),
@@ -94,12 +94,12 @@ export class ContinuousLoader {
 
             //if pool reached target number - resolve items and remove them from pool
             if (this.resultPool.length >= targetCount) {
-                this.log('pool reached the target count. set pause.')
+                this._log('pool reached the target count. set pause.')
                 resolve({
                     list: this.resultPool.splice(0, targetCount),
                     reason: 'reached target count'
                 })
-                this.log('(rest of pool:', this.resultPool)
+                this._log('(rest of pool:', this.resultPool)
                 return null
             }
 
@@ -108,7 +108,7 @@ export class ContinuousLoader {
             if (maxTriesPerLoad > 0 && loadCount >= maxTriesPerLoad){
                 // if pool hasn't reached the target number, but it's last poll according to
                 // maxTriesPerLoad
-                this.log("max tries reached. returning what's found so far")
+                this._log("max tries reached. returning what's found so far")
                 resolve({
                     list: this.resultPool.splice(0),
                     reason: 'max polls reached'
@@ -117,12 +117,12 @@ export class ContinuousLoader {
 
             } else if (typeof nextAsyncFunc === 'function') {
                 //if pool hasn't reached target number, but there's more to load
-                this.log('got', this.resultPool.length, 'while target is', targetCount ,'need to load one more time')
-                this.recursiveLoad(resolve, reject, loadCount)
+                this._log('got', this.resultPool.length, 'while target is', targetCount ,'need to load one more time')
+                this._recursiveLoad(resolve, reject, loadCount)
                 return null
 
             } else {
-                this.log('no next promise available. returning pool')
+                this._log('no next promise available. returning pool')
                 this.endReached = true
                 resolve({
                     list: this.resultPool.splice(0),
@@ -139,19 +139,19 @@ export class ContinuousLoader {
         return new Promise((resolve, reject) => {
 
             if (this.endReached) {
-                this.log('end was reached before, no more promising')
+                this._log('end was reached before, no more promising')
                 resolve({
                     list: [],
                     reason: 'polling finished'
                 })
-                this.log('(rest of pool:', this.resultPool)
+                this._log('(rest of pool:', this.resultPool)
                 return null
             }
 
             const {targetCount} = this.options
 
             if (this.resultPool.length >= targetCount) {
-                this.log('target count found in existing pool')
+                this._log('target count found in existing pool')
                 resolve({
                     list: this.resultPool.splice(0, targetCount),
                     reason: 'target count exists in pool'
@@ -159,11 +159,11 @@ export class ContinuousLoader {
                 return null
             }
 
-            this.recursiveLoad(resolve, reject, 0)
+            this._recursiveLoad(resolve, reject, 0)
         })
     }
 
-    log(...args){
+    _log(...args){
         if (this.options.debug){
             console.log(...args)
         }
@@ -172,13 +172,13 @@ export class ContinuousLoader {
 
 export class ContinuousLoadJiveREST extends ContinuousLoader {
     getList (asyncFunctionResponse) {
-        //this.log('REST getList')
+        //this._log('REST getList')
         const responseContent = asyncFunctionResponse.content || asyncFunctionResponse
         return  responseContent.list || []
     }
 
     getError(asyncFunctionResponse) {
-        //this.log('REST getError')
+        //this._log('REST getError')
         if (asyncFunctionResponse.status) {
             switch (asyncFunctionResponse.status) {
                 case 200:
