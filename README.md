@@ -232,7 +232,7 @@ function getData(){
 ```
 
 Use as async function (ES2017+ usage):
-```ecmascript 6
+```javascript
 async function getData(){
     try {
         const viewer = await promiseRestGet('/people/@me')
