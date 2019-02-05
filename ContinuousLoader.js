@@ -203,7 +203,7 @@ var ContinuousLoader = exports.ContinuousLoader = function () {
 
                                 // if pool hasn't reached the target number, but it's last poll according to
                                 // maxTriesPerLoad
-                                this_("max tries reached. returning what's found so far");
+                                this._log("max tries reached. returning what's found so far");
                                 resolve({
                                     list: this.resultPool.splice(0),
                                     reason: 'max polls reached'
