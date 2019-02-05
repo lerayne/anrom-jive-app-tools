@@ -377,7 +377,7 @@ it's members pass to the final set or not (interface below)
 
 **Argument functions' interfaces:**
 
-**`async filter(currentList, existingList)`**  
+**`[async] filter(currentList, existingList)`**  
 *should return:* Array; Filtered list of items   
 * `currentList` - results collection received with the latest `asyncFunction` call
 * `existingList` - results from previous calls that have already passed this filter, but haven't 
@@ -391,7 +391,9 @@ filtering, but also for mapping (transforming) the array either before filtering
 this function can be async if needed, so you can make another async operations inside it.
 
 **`getNextAsyncFunc(asyncFunctionResponse)`**  
-*should return:* async/promise function for the next call, analogical to the `asyncFunction`
+*should return:* async/promise function for the next call, analogical to the `asyncFunction`. Can 
+also return anything but a function (e.g. `false`), which will mean that there's no ability to form 
+a new request 
 * `asyncFunctionResponse` - response of the previous async/promise function
 
 **`getError(asyncFunctionResponse)`**  
@@ -402,6 +404,23 @@ this function can be async if needed, so you can make another async operations i
 *should return:* Array of items
 * `asyncFunctionResponse` - response of the previous async/promise function
 
-#### `async ContinuousLoader.loadNext()`
+#### Methods
+
+**`async ContinuousLoader.loadNext()`**  
 **returns:** Promise(Object)  
-Main loading function that tries to loads first/next stated number of items 
+Main loading function that tries to loads first/next stated number of items.
+Returning object contains two fields:
+* `list` - the resulting list of items
+* `reason` - text entry explaining why the polling stopped. Reason can be one of those:
+    * "reached target count" - ContinuousLoader has found the desired count of items, but `loadNext` 
+    can be called one more time 
+    * "target count exists in pool" - there was no need in additional polling, the whole next "page"
+    was found in an existing poll that has been fetched by previous `loadNext`  
+    * "max polls reached" - there can be more results, but ContinuousLoader made `maxTriesPerLoad` 
+    requests and target count haven't been reached
+    * "source ended" - latest call returned 0 items, or `getNextAsyncFunc` returned not a function. 
+    Further polling makes no sense 
+    * "polling finished" - there been "source ended" response already, why do you still 
+    polling `loadNext`? 
+    
+    
