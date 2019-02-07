@@ -353,7 +353,7 @@ import {
 ```
 A set of classes for sequential requests and frontend-side content filtering
 
-### `class ContinuousLoader(asyncFunction, filter, [options={}])`
+### `class ContinuousLoader(asyncFunction, filter, options])`
 **params:** 
 * **asyncFunction** - ES2017 async function or any function that returns a Promise. **Important:** you 
 should not pass Promise itself there, but a function that returns Promise when called.
@@ -422,5 +422,12 @@ Returning object contains two fields:
     Further polling makes no sense 
     * "polling finished" - there been "source ended" response already, why do you still 
     polling `loadNext`? 
+    
+### `class ContinuousLoadJiveREST(asyncFunction, filter, options)`
+
+Additional options:
+* `loose` (false) - true means that (list.length < itemsPerPage) doesn't mean list has ended.
+* `method` ("get")
+* `createNextAsyncFunc` - ...
     
     

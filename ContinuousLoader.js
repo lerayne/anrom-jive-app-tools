@@ -334,7 +334,7 @@ var ContinuousLoadJiveREST = exports.ContinuousLoadJiveREST = function (_Continu
                 links = responseContent.links;
 
 
-            if (list.length < itemsPerPage || !responseContent.links || !responseContent.links.next) {
+            if (!responseContent.links || !responseContent.links.next || list.length < itemsPerPage && !this.options.loose) {
                 // there's nothing to load more
                 return false;
             }
@@ -361,6 +361,9 @@ var ContinuousLoadJiveREST = exports.ContinuousLoadJiveREST = function (_Continu
         var _this2 = (0, _possibleConstructorReturn3.default)(this, (ContinuousLoadJiveREST.__proto__ || (0, _getPrototypeOf2.default)(ContinuousLoadJiveREST)).call(this, asyncFunction, filter, options));
 
         var optionsDefaults = {
+            // loose:true means that (list.length < itemsPerPage) doesn't mean list has ended.
+            // Useful for /activity andpoint
+            loose: false,
             method: 'get',
             createNextAsyncFunc: _this2.createNextAsyncFunc.bind(_this2)
         };
