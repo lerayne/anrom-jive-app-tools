@@ -353,7 +353,14 @@ import {
 ```
 A set of classes for sequential requests and frontend-side content filtering
 
-### `class ContinuousLoader(asyncFunction, filter, options])`
+### `class ContinuousLoader(asyncFunction, filter, options)`
+General class for getting large amounts of data from APIs (or any other async interfaces) which 
+do not provide sufficient filtering parameters. In other words, this is a tool for 
+client-side filtering abstraction over regular APIs.
+
+This class is not based on Jive API and can be used with any asynchronous functions but it has two 
+descendants (see below) created especially for Jive's REST API and OSAPI.   
+
 **params:** 
 * **asyncFunction** - ES2017 async function or any function that returns a Promise. **Important:** you 
 should not pass Promise itself there, but a function that returns Promise when called.
@@ -423,11 +430,84 @@ Returning object contains two fields:
     * "polling finished" - there been "source ended" response already, why do you still 
     polling `loadNext`? 
     
-### `class ContinuousLoadJiveREST(asyncFunction, filter, options)`
+#### Usage examples
 
-Additional options:
-* `loose` (false) - true means that (list.length < itemsPerPage) doesn't mean list has ended.
-* `method` ("get")
-* `createNextAsyncFunc` - ...
+We will code a request for some abstract API that doesn't provide a server-side filtering by entity 
+type:
+```javascript
+// Let's first program our filter function
+function filter(currentList, existingList){
+    let filteredList = currentList.filter((listItem, itemIndex, thisArray) => {
+        
+        // only items with type "document" match our selection
+        if (listItem.type !== 'document') return false
+        
+        // also, we don't want duplicates (by ID) in this current list
+        if (thisArray.findIndex(dupItem => dupItem.id === listItem.id) !== itemIndex) return false
+        
+        // ...or in existing collection pool
+        if (existingList.find(dupItem => dupItem.id === listItem.id)) return false
+
+        // if all checks passed
+        return true
+    })
+    
+    return filteredList
+}
+
+// Now set our first async API call function
+function makeAPICall (){
+    // this will return a Promise when "makeAPICall" is called
+    return fetch('http://someapi.com/api/get/contents').then(response => response.json())
+}
+
+// And the function that tells loader how to make new API call 
+// based on results from each previous one 
+function getNextAsyncFunc(APIResponse){
+    // form new URL minding the pagination from previous one's response
+    const newURL = 'http://someapi.com/api/get/contents?startFrom=' 
+        + (APIResponse.pageLength + APIResponse.startFrom)
+    
+    // returning new function
+    // IMPORTANT! The returned value has to be an async function, not a promise!
+    return () => fetch(newURL).then(response => response.json())
+}
+
+// Finally: initializing the class instance
+const loader = new ContinuousLoader(makeAPICall, filter, {
+    getNextAsyncFunc: getNextAsyncFunc
+})
+
+// Now we can get (hopefully) 10 document-typed items from that API with each call. We can get less 
+// if the target count is not found in first 5 API calls, but we can set larger "maxTriesPerLoad", 
+// or just set it to 0. Anyway, until items.reason is not "source ended" - it means there can be 
+// more matching items in API source 
+async function load(){
+    const items = await loader.nextPage()
+}
+```
+    
+### `class ContinuousLoadJiveREST(asyncFunction, filter, [options])`
+A descendant class of ContinuousLoader, which has it's own getNextAsyncFunc, getError and getList implementations based on 
+standard jive REST response, so you don't have to write it. It also has a set of new **optional** parameters:
+* `loose` (false) - true means that (list.length < itemsPerPage) doesn't mean list has ended. Useful 
+when working with non-consistent `/activities` API, which sometimes can return number of items that 
+is different from `count` parameter
+* `method` ("get") - you need to set this value if your default asyncFunction uses method different 
+then "get" for internal getNextAsyncFunc implementation to work properly
+* `createNextAsyncFunc` - a creator of new asynchronous function based on jive API's "next" link
+
+**Argument functions' interfaces:**  
+`createNextAsyncFunc(nextLink, responseContent)`  
+*should return:* async/promise function for the next call, analogical to the `asyncFunction`. The 
+class has internal implementation of this function too, so you only have to use it if you have to 
+do something else then just passing "next" link as a new request
+* `nextLink` - regular jive API's "next" link 
+* `responseContent` - the whole response (if you need it)
+
+### `class ContinuousLoadJiveOSAPI(asyncFunction, filter, options)`
+A descendant class of ContinuousLoader, which has it's own getList and getNextAsyncFunc implementations
+based on Jive's OSAPI response. 
+
     
     
