@@ -39,6 +39,31 @@ describe("pause", () => {
     })
 })
 
+describe("unescapeHtmlEntities", () => {
+    test("should be a function", () => {
+        expect(typeof unescapeHtmlEntities).toBe('function')
+    })
+
+    test("to unescape & entity", () => {
+        expect(unescapeHtmlEntities("Chip &amp; Dale")).toBe('Chip & Dale')
+    })
+
+    test("to NOT unescape <>", () => {
+        expect(unescapeHtmlEntities("&lt;iframe&gt;")).toBe('‹iframe›')
+        expect(unescapeHtmlEntities("&LT;iframe&GT;")).toBe('‹iframe›')
+        expect(unescapeHtmlEntities("<iframe>")).toBe('‹iframe›')
+    })
+
+    test("to throw error on improper input", () => {
+        expect(() => unescapeHtmlEntities()).toThrow()
+        expect(() => unescapeHtmlEntities(1)).toThrow()
+        expect(() => unescapeHtmlEntities(false)).toThrow()
+        expect(() => unescapeHtmlEntities(undefined)).toThrow()
+        expect(() => unescapeHtmlEntities([])).toThrow()
+        expect(() => unescapeHtmlEntities({})).toThrow()
+    })
+})
+
 describe('splitArray', () => {
     test("should be a function", () => {
         expect(typeof splitArray).toBe('function')
@@ -50,10 +75,12 @@ describe('splitArray', () => {
     })
 
     test("should throw errors on improper input", () => {
+        expect(() => splitArray(undefined)).toThrow()
         expect(() => splitArray()).toThrow()
         expect(() => splitArray(1, 1)).toThrow()
         expect(() => splitArray({})).toThrow()
         expect(() => splitArray('test')).toThrow()
+        expect(() => splitArray([1], undefined)).toThrow()
         expect(() => splitArray([1], false)).toThrow()
         expect(() => splitArray([1], '')).toThrow()
         expect(() => splitArray([1], {})).toThrow()
