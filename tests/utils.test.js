@@ -11,15 +11,75 @@ const {
     isEmptyObject
 } = require('../utils')
 
-const longText = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec pharetra egestas sapien quis vestibulum. Cras semper posuere libero. Nunc auctor leo nisl, vel laoreet massa semper ac. Morbi euismod auctor magna, non sollicitudin orci viverra at. Ut consequat nunc sapien, a pellentesque arcu vestibulum at. Curabitur ut molestie est. Quisque at pulvinar lorem. Curabitur eget faucibus mi. Aenean malesuada efficitur luctus. Proin ut aliquam lectus. Pellentesque euismod metus risus, id sagittis ante sollicitudin venenatis"
+describe("pause", () => {
+    test("should be a function", () => {
+        expect(typeof pause).toBe('function')
+    })
+
+    test("should return promise", () => {
+        expect(pause(0)).toBeInstanceOf(Promise)
+    })
+
+    test("should work with different input values", () => {
+        expect(() => pause()).not.toThrow()
+        expect(() => pause(0)).not.toThrow()
+        expect(() => pause(500)).not.toThrow()
+    })
+
+    test("should throw error on non-numeric or negative input", () => {
+        expect(() => pause(false)).toThrow()
+        expect(() => pause('')).toThrow()
+        expect(() => pause(-1)).toThrow()
+        expect(() => pause([])).toThrow()
+        expect(() => pause({})).toThrow()
+    })
+
+    test("returned promise should be resolvable", () => {
+        return expect(pause()).resolves.toBe(undefined)
+    })
+})
+
+describe('splitArray', () => {
+    test("should be a function", () => {
+        expect(typeof splitArray).toBe('function')
+    })
+
+    test("should split array properly", () => {
+        const result = splitArray([1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17], 4)
+        expect(result).toEqual([[1,2,3,4,5],[6,7,8,9,10],[11,12,13,14,15],[16,17]])
+    })
+
+    test("should throw errors on improper input", () => {
+        expect(() => splitArray()).toThrow()
+        expect(() => splitArray(1, 1)).toThrow()
+        expect(() => splitArray({})).toThrow()
+        expect(() => splitArray('test')).toThrow()
+        expect(() => splitArray([1], false)).toThrow()
+        expect(() => splitArray([1], '')).toThrow()
+        expect(() => splitArray([1], {})).toThrow()
+    })
+
+    test("should return an empty array if chunks number is >= 0", () => {
+        expect(splitArray([1], 0).length).toBe(0)
+    })
+
+    test("should return an original array if chunks number is 1", () => {
+        expect(splitArray([1,2,3], 1)).toEqual([1,2,3])
+    })
+
+    test("should behave properly if original array langth equals chunks", () => {
+        expect(splitArray([1,2,3], 3)).toEqual([[1],[2],[3]])
+    })
+})
 
 describe("abridge", () => {
 
-    test("should be a funcion", () => {
+    test("should be a function", () => {
         expect(typeof abridge).toBe('function')
     })
 
     test("should throw error on non-string", () => {
+        expect(() => abridge(undefined)).toThrow()
         expect(() => abridge(-1)).toThrow()
         expect(() => abridge(false)).toThrow()
         expect(() => abridge([1,2,3])).toThrow()

@@ -6,11 +6,18 @@ export function unescapeHtmlEntities(text) {
     return temp.innerText || temp.textContent
 }
 
-export function pause(ms) {
+export function pause(ms=0) {
+    if (typeof ms !== 'number') throw new Error('Expected parameter to be a number')
+    if (ms < 0) throw new Error("We can't do time travel :) Please input a positive number or 0")
     return new Promise(resolve => setTimeout(resolve, ms))
 }
 
 export function splitArray(array, chunksNumber) {
+    if (!array instanceof Array) throw new Error ('1st argument should be an array')
+    if (typeof chunksNumber !== 'number') throw new Error ('1st argument should be an array')
+    if (chunksNumber <= 0) return []
+    if (chunksNumber === 1) return array
+
     const newArray = []
 
     for (let i = 0; i < chunksNumber; i++) {

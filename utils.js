@@ -45,13 +45,22 @@ function unescapeHtmlEntities(text) {
     return temp.innerText || temp.textContent;
 }
 
-function pause(ms) {
+function pause() {
+    var ms = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 0;
+
+    if (typeof ms !== 'number') throw new Error('Expected parameter to be a number');
+    if (ms < 0) throw new Error("We can't do time travel :) Please input a positive number or 0");
     return new _promise2.default(function (resolve) {
         return setTimeout(resolve, ms);
     });
 }
 
 function splitArray(array, chunksNumber) {
+    if (!array instanceof Array) throw new Error('1st argument should be an array');
+    if (typeof chunksNumber !== 'number') throw new Error('1st argument should be an array');
+    if (chunksNumber <= 0) return [];
+    if (chunksNumber === 1) return array;
+
     var newArray = [];
 
     for (var i = 0; i < chunksNumber; i++) {
