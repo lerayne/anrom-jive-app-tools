@@ -67,8 +67,12 @@ describe('splitArray', () => {
         expect(splitArray([1,2,3], 1)).toEqual([1,2,3])
     })
 
-    test("should behave properly if original array langth equals chunks", () => {
+    test("should behave properly if original array langth equals chunks number", () => {
         expect(splitArray([1,2,3], 3)).toEqual([[1],[2],[3]])
+    })
+
+    test("should behave properly if chunks number is bigger than array length", () => {
+        expect(splitArray([1,2,3], 5)).toEqual([[1],[2],[3],[],[]])
     })
 })
 

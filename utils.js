@@ -56,7 +56,7 @@ function pause() {
 }
 
 function splitArray(array, chunksNumber) {
-    if (!array instanceof Array) throw new Error('1st argument should be an array');
+    if (!(array instanceof Array)) throw new Error('1st argument should be an array');
     if (typeof chunksNumber !== 'number') throw new Error('1st argument should be an array');
     if (chunksNumber <= 0) return [];
     if (chunksNumber === 1) return array;
