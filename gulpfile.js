@@ -5,9 +5,11 @@
 const gulp = require('gulp')
 const shell = require('gulp-shell')
 const rimraf = require('gulp-rimraf')
+const jest = require('gulp-jest').default
+const runSequence = require('run-sequence')
 
-gulp.task('default', ['process-styles', 'babel-win'], () => {
-
+gulp.task('default', () => {
+    return runSequence('process-styles', 'babel-win', 'tests', () => console.log('OK!'))
 })
 
 /*gulp.task('clean', () => {
@@ -15,11 +17,15 @@ gulp.task('default', ['process-styles', 'babel-win'], () => {
 })*/
 
 gulp.task('process-styles', () => {
-    gulp.src('./src/*.css')
+    return gulp.src('./src/*.css')
         .pipe(gulp.dest('./'))
 })
 
 gulp.task('babel-win', () => {
-    gulp.src('', {read: false})
+    return gulp.src('', {read: false})
         .pipe(shell('node node_modules/babel-cli/bin/babel.js ./src --out-dir ./ --source-maps'))
+})
+
+gulp.task('tests', () => {
+    return gulp.src('./tests').pipe(jest())
 })

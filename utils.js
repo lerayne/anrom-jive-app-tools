@@ -81,20 +81,25 @@ function abridge(text) {
     //if it's less than limit - just return it
     if (text.length <= length) return text;
 
-    //cut text
-    text = text.slice(0, length);
+    var newText = text.slice(0, length);
 
-    var words = text.split(' ');
+    // if the next symbol is not a whitespace and not a punctuation - remove last word
+    if (!text[length].match(/\s|\.|,|:|;|!|\?/)) {
 
-    //remove last word (cause it can be broken, or too long in case of a link)
-    if (words.length > 1) {
-        words = words.slice(0, words.length - 1);
+        var words = newText.split(' ');
+
+        //remove last word (cause it can be broken, or too long in case of a link)
+        if (words.length > 1) {
+            words = words.slice(0, words.length - 1);
+        }
+
+        newText = words.join(' ');
     }
 
     // remove commas and dots from a last word
-    words[words.length - 1] = words[words.length - 1].replace(/\.|,/gi, '');
+    newText = newText.replace(/(\.|,|;|:)$/, '');
 
-    return words.join(' ') + '...';
+    return newText + '...';
 }
 
 function getCacheableImage(initialImageURL) {
@@ -123,29 +128,48 @@ function getCacheableImage(initialImageURL) {
     }
 }
 
-function findContentImage(contentItem, defaultImageURL) {
+function findContentImage(contentItem) {
+    var defaultImageURL = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : '';
     var mode = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 'regexp';
+    var fallback = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : true;
 
 
     if (!contentItem || !contentItem.content || !contentItem.content.text) return null;
 
+    var image = void 0;
+
+    function getFromApi() {
+        if (contentItem.contentImages && contentItem.contentImages.length) {
+            return contentItem.contentImages[0].ref;
+        } else if (contentItem.thumbnailURL) {
+            return contentItem.thumbnailURL;
+        }
+        return false;
+    }
+
     switch (mode) {
         case 'api':
             // version 1: take from API. Downside: API images list never updates after content creation
-            if (contentItem.contentImages && contentItem.contentImages.length) {
-                return contentItem.contentImages[0].ref;
-            }
-            return defaultImageURL;
+            image = getFromApi();
+            break;
         case 'jquery':
             //version 2: find image links with jQuery. Downside: it requests all the images content item has
-            return jQuery ? $(contentItem.content.text).find('img').attr('src') || defaultImageURL : defaultImageURL;
+            image = jQuery ? $(contentItem.content.text).find('img').attr('src') : false;
+            break;
         case 'regexp':
             //version 3: Find image URLs by regExp
             var images = contentItem.content.text.match(/<img[^>]*src=["']?([^>"']+)["']?[^>]*>/im);
-            return images && images[1] ? images[1] : defaultImageURL;
-        default:
-            return defaultImageURL;
+            image = images && images[1] ? images[1] : false;
+            break;
     }
+
+    if (!image && mode !== 'api' && fallback) {
+        image = getFromApi();
+    }
+
+    if (!image) image = defaultImageURL;
+
+    return image;
 }
 
 function getImagelessHTML(htmlText) {

@@ -38,20 +38,25 @@ export function abridge(text, length = 160) {
     //if it's less than limit - just return it
     if (text.length <= length) return text
 
-    //cut text
-    text = text.slice(0, length)
+    let newText = text.slice(0, length)
 
-    let words = text.split(' ')
+    // if the next symbol is not a whitespace and not a punctuation - remove last word
+    if (!text[length].match(/\s|\.|,|:|;|!|\?/)) {
 
-    //remove last word (cause it can be broken, or too long in case of a link)
-    if (words.length > 1) {
-        words = words.slice(0, words.length - 1)
+        let words = newText.split(' ')
+
+        //remove last word (cause it can be broken, or too long in case of a link)
+        if (words.length > 1) {
+            words = words.slice(0, words.length - 1)
+        }
+
+        newText = words.join(' ')
     }
 
     // remove commas and dots from a last word
-    words[words.length - 1] = words[words.length - 1].replace(/\.|,/gi, '')
+    newText = newText.replace(/(\.|,|;|:)$/, '')
 
-    return words.join(' ') + '...'
+    return newText + '...'
 }
 
 export function getCacheableImage(initialImageURL, imageWidth = 500, thumbnail = false) {
@@ -82,27 +87,44 @@ export function getCacheableImage(initialImageURL, imageWidth = 500, thumbnail =
     }
 }
 
-export function findContentImage(contentItem, defaultImageURL, mode = 'regexp') {
+export function findContentImage(contentItem, defaultImageURL='', mode = 'regexp', fallback = true) {
 
     if (!contentItem || !contentItem.content || !contentItem.content.text) return null
+
+    let image
+
+    function getFromApi(){
+        if (contentItem.contentImages && contentItem.contentImages.length) {
+            return contentItem.contentImages[0].ref
+        } else if (contentItem.thumbnailURL) {
+            return contentItem.thumbnailURL
+        }
+        return false
+    }
 
     switch (mode) {
         case 'api':
             // version 1: take from API. Downside: API images list never updates after content creation
-            if (contentItem.contentImages && contentItem.contentImages.length) {
-                return contentItem.contentImages[0].ref
-            }
-            return defaultImageURL
+            image = getFromApi()
+            break
         case 'jquery':
             //version 2: find image links with jQuery. Downside: it requests all the images content item has
-            return jQuery ? ($(contentItem.content.text).find('img').attr('src') || defaultImageURL) : defaultImageURL
+            image = jQuery ? $(contentItem.content.text).find('img').attr('src') : false
+            break
         case 'regexp':
             //version 3: Find image URLs by regExp
             const images = contentItem.content.text.match(/<img[^>]*src=["']?([^>"']+)["']?[^>]*>/im)
-            return (images && images[1]) ? images[1] : defaultImageURL
-        default:
-            return defaultImageURL
+            image = (images && images[1]) ? images[1] : false
+            break
     }
+
+    if (!image && mode !== 'api' && fallback) {
+        image = getFromApi()
+    }
+
+    if (!image) image = defaultImageURL
+
+    return image
 }
 
 export function getImagelessHTML(htmlText) {

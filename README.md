@@ -2,6 +2,7 @@
 
 A set of simple tools that helps creating Jive tiles and apps. Also includes some common utilities  
 
+
 ## Requirements
 * **npm** version 6.4.0 or above
 * **node** version 8.12.0 or above
@@ -9,6 +10,7 @@ A set of simple tools that helps creating Jive tiles and apps. Also includes som
 
 ## Installation
 `npm install anrom-jive-app-tools`
+
 
 ## Usage
 
@@ -24,6 +26,16 @@ bundle even larger:
 
 Here's the list of toolsets that the library offers:
 
+
+
+
+
+
+
+
+
+
+
 # tileProps
 ```javascript
 import {
@@ -37,12 +49,14 @@ import {
 
 Gives you access to the tile information before DOM loads 
 
+
 ### `tileId()` 
 **returns:** String; Id of a tile (string), e.g. `1582`. Can be useful if your domain security is turned off and you want to access tile's frame from within a tile.
 ```html
 <iframe id="__gadget_j-app-tile-parent-1582"...    
 ```
 **Note:** returns `undefined` if called from an app
+
 
 ### `tilePath()` 
 **returns:** String; Relative path to a tile's folder inside jive. Helps you load the resources directly. 
@@ -74,12 +88,24 @@ Output example:
 }
 ```
 
+
 ### `parent()` 
 **returns:** String; URL of your root jive instance (without the subdomain added by domain security 
 settings) e.g. `http://myjivesite.com` instead of `http://apps.myjivesite.com`
 
+
 ### `async getContainerAsync()`
-**returns:** Promise(object); Jive place in which tile instance is located
+**returns:** Promise(Object); Jive place in which tile instance is located
+
+
+
+
+
+
+
+
+
+
 
 # utils
 Regular utility functions that is often used in jive tile development  
@@ -98,6 +124,7 @@ import {
 } from 'anrom-jive-app-tools/utils'
 ```
 
+
 ### `async pause(milliseconds)`
 **returns:** Promise(none); Promise/async wrapper for `setTimeout`. If you need to set your code execution on hold, use it:
 ```javascript
@@ -108,6 +135,7 @@ async function myFunc(){
 } 
 ```
 
+
 ### `unescapeHtmlEntities(text)`
 **returns:** String;   
 Text returned by jive API can contain special escape characters like **&amp;amp;** which stands for 
@@ -115,16 +143,19 @@ Text returned by jive API can contain special escape characters like **&amp;amp;
 means it will appear in your tile as "Chip &amp;amp; Dale". To avoid that, use this function:   
 `<div>{unescapeHtmlEntities(text)}</div>` 
 
+
 ### `splitArray(array, columns)`
 **returns:** Array(Arrays);  
 Used to split a plain array into several relatively equal chunks (relatively - because last chunk 
 can be shorter if division is with a remainder). This is usually used to split data model array to
 display in several columns 
 
+
 ### `abridge(text, [length=160])`
 **returns:** String;  
 Used to display text, smartly truncated to end with a whole word and with '...' at the end. If there's 
 only one word left after truncation - it will be left truncated and appedned with '...'
+
 
 ### `getCacheableImage(initialImageURL, [imageWidth=500, thumbnail=false])`
 **returns:** String;   
@@ -134,29 +165,39 @@ to use it when rendering images in terms of performance.
 **Note:** I don't know how "thumbnail" mode is defferent from default, I'm just passing this 
 argument to the URL
 
-### `findContentImage(contentItem, defaultImageURL, [mode='regexp'])`
+
+### `findContentImage(contentItem, [defaultImageURL="", mode='regexp', fallback=false])`
 **returns:** String;   
-Searches jive API content item (document, discussion etc) for first content image URL. It has 3 modes. 
-By default regular expression (`regexp`) mode is used. It's recommended to use it that way, but if 
+Searches jive API content item (document, discussion etc) for first content image URL. 
+**params:**
+* `contentItem` - 
+* `defaultImageURL` (empty string) - 
+* `mode` ("regexp") - select mode (see below)
+* `fallback` (true) - if set to true or omitted *and* the `mode` parameter is *not* `api` 
+         - it will fall back to jive API in case the selected method hasn't found any images. 
+
+modes:   
+By default regular expression ("regexp") mode is used. It's recommended to use it that way, but if 
 you're experiencing some edge cases, you may want to use other modes. Though, each of them has it's 
 own flaw.  
 
-`api` mode relies on jive API's native `contentImages` field. It's fastest way to detect an image.
- The drawback is that this field is set on content creation and then never being updated, even if the 
+`api` mode relies on jive API's native `contentImages` and `thumbnailURL` fields. It's fastest way to detect an image.
+ The drawback is that at least `contentImages` field is populated on content creation and then never being updated, even if the 
 content item does.
 
 `jquery` mode creates the entire content's DOM in browser memory and then searches for an image. It's 
 the most precise way, but it's also a slowest one. Also, **all** images in the parsed content are 
-being requested from the network. This cat hit the overal performance even harder. This mode is 
-only recommended as a temporal solution if `regexp` mode fails and is not yet fixed by me :)   
+being requested from the network. This can *severely* hit the overall performance. This mode is 
+only recommended as a *temporal solution* if `regexp` mode fails and is not yet fixed by me :)   
+
 
 ### `getContentImage(contentItem, [options])`
 **returns:** String;   
 The combination of the previous two functions. Finds image in jive content and if it's a jive-hosted 
-image - converts it's URL to a cacheable and resized one. **Recommended for usage by default** 
+image - converts it's URL to a cacheable and resized one. *Recommended for usage by default* 
 when the job is to display a content preview.
 
-`options` parameter is optional. Default options are
+`options` parameter is optional. Option names and their defaults are:
 ```json
 {
   "imageWidth": 500,
@@ -172,14 +213,26 @@ when the job is to display a content preview.
 **returns:** String;   
 Sometimes you may need html stripped of all images. This is a function for such cases.
 
+
 ### `jsonCopy(object)`
 **returns:** Object;   
 Makes a deep copy of JS data object (ensuring that there will be no links to it in other parts of a 
 program). *Don't use* for objects with function values, class instances etc.
 
+
 ### `isEmptyObject(object)`
 **returns:** Boolean;   
 Returns **true** if the given object has no values (`{}`), **false** otherwise.
+
+
+
+
+
+
+
+
+
+
 
 # dateUtils
 Working with dates in jive requires same actions all the time. I grouped them in a few functions  
@@ -193,6 +246,7 @@ import {
 } from 'anrom-jive-app-tools/dateUtils'
 ```
 
+
 ### `jiveDateFormat`
 **type:** String;   
 Simple string with the value `YYYY-MM-DDTHH:mm:ss.SSSZ`, which is a formatting pattern for moment.js
@@ -202,6 +256,16 @@ Next functions are quite self-explanatory:
 ### `moment2JiveDate(momentDate)`
 ### `jiveDate2TS(JiveDate)`
 ### `TS2JiveDate(timestamp)`
+
+
+
+
+
+
+
+
+
+
 
 # fetchPromise
 ```javascript
@@ -258,6 +322,7 @@ Usage option 2:
 const viewer = await promiseOsapiRequest(api => api.people.getViewer())
 ```
  
+ 
 ### `async promiseHttpGet(...args)`
 Promise/async wrapper for [osapi.http.get](https://opensocial.atlassian.net/wiki/spaces/OSD/pages/527081/Osapi.http+v0.9#Osapi.http(v0.9)-osapi.http.get). Parameters are forwarded without change
 
@@ -265,6 +330,7 @@ Usage example:
 ```javascript
 const posts = await promiseHttpPost('https://apisrver.com/api/v1/posts')
 ```
+
 
 ### `async promiseHttpPost(...args)` 
 Promise/async wrapper for [osapi.http.get](https://opensocial.atlassian.net/wiki/spaces/OSD/pages/527081/Osapi.http+v0.9#Osapi.http(v0.9)-osapi.http.post). Parameters are forwarded without change
@@ -281,6 +347,7 @@ const creationResponse = await promiseHttpPost('https://apisrver.com/api/v1/post
 })
 ```
 
+
 ### `async promiseRestGet(endpoint)`
 Promise/async wrapper for osapi.jive.core.get, which is an OSAPI endpoint for regular jive rest requests.
 
@@ -288,6 +355,7 @@ Usage example:
 ```javascript
 const viewer = await promiseRestGet('/people/@me')
 ```
+
 
 ### `async promiseRestPost(endpoint, options)` 
 Promise/async wrapper for osapi.jive.core.post, which is an OSAPI endpoint for regular jive rest requests.
@@ -301,16 +369,20 @@ const viewer = await promiseRestPost('/executeBatch', {
 })
 ```
 
+
 ### `async promiseRestDelete(endpoint)`
 Promise/async wrapper for osapi.jive.core.delete, which is an OSAPI endpoint for regular jive rest requests.
 Usage is the same as `promiseRestGet`
+ 
  
 ### `async promiseRestPut(endpoint, options)` 
 Promise/async wrapper for osapi.jive.core.put, which is an OSAPI endpoint for regular jive rest requests.
 Usage is the same as `promiseRestPost`
 
+
 ### `async promiseBatch(entries, createBatchEntry)`
 This function will be reworked. No docs for now
+
 
 ### `class CurrentPlace([<function> filter])` 
 A class for getting the current place (sophisticated alternative to `getContainerAsync`)
@@ -343,6 +415,16 @@ or even this way, if you want a raw unfiltered place object
 const currentPlace = new CurrentPlace(rawPlace => rawPlace)
 ```
 
+
+
+
+
+
+
+
+
+
+
 # ContinuousLoader
 ```javascript
 import {
@@ -352,6 +434,7 @@ import {
 } from 'anrom-jive-app-tools/ContinuousLoader'
 ```
 A set of classes for sequential requests and frontend-side content filtering
+
 
 ### `class ContinuousLoader(asyncFunction, filter, options)`
 General class for getting large amounts of data from APIs (or any other async interfaces) which 
@@ -411,6 +494,7 @@ a new request
 *should return:* Array of items
 * `asyncFunctionResponse` - response of the previous async/promise function
 
+
 #### Methods
 
 **`async ContinuousLoader.loadNext()`**  
@@ -429,6 +513,7 @@ Returning object contains two fields:
     Further polling makes no sense 
     * "polling finished" - there been "source ended" response already, why do you still 
     polling `loadNext`? 
+    
     
 #### Usage examples
 
@@ -487,6 +572,7 @@ async function load(){
 }
 ```
     
+    
 ### `class ContinuousLoadJiveREST(asyncFunction, filter, [options])`
 A descendant class of ContinuousLoader, which has it's own getNextAsyncFunc, getError and getList implementations based on 
 standard jive REST response, so you don't have to write it. It also has a set of new **optional** parameters:
@@ -504,6 +590,7 @@ class has internal implementation of this function too, so you only have to use 
 do something else then just passing "next" link as a new request
 * `nextLink` - regular jive API's "next" link 
 * `responseContent` - the whole response (if you need it)
+
 
 ### `class ContinuousLoadJiveOSAPI(asyncFunction, filter, options)`
 A descendant class of ContinuousLoader, which has it's own getList and getNextAsyncFunc implementations
