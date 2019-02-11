@@ -7,6 +7,8 @@ const shell = require('gulp-shell')
 const rimraf = require('gulp-rimraf')
 const jest = require('gulp-jest').default
 const runSequence = require('run-sequence')
+const fs = require('fs')
+const jestConfig = require('./jest.config')
 
 gulp.task('default', () => {
     return runSequence('process-styles', 'babel-win', 'tests', () => console.log('OK!'))
@@ -27,5 +29,5 @@ gulp.task('babel-win', () => {
 })
 
 gulp.task('tests', () => {
-    return gulp.src('./tests').pipe(jest())
+    return gulp.src('./tests').pipe(jest(jestConfig))
 })

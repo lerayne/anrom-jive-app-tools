@@ -122,6 +122,13 @@ function getCacheableImage(initialImageURL) {
     //return initialImageURL
     if (!initialImageURL) return initialImageURL;
 
+    if (typeof initialImageURL !== 'string') {
+        throw new Error('1st argument should be falsy value or string');
+    }
+    if (typeof imageWidth !== 'undefined' && typeof imageWidth !== 'number') {
+        throw new Error('2nd argument should be a number if defined');
+    }
+
     var jiveStorageResult = initialImageURL.match(/(.+)servlet\/JiveServlet\/(downloadImage|previewBody)\/([\d-]+)\/(.+)/i);
 
     //console.log('jiveStorageResult', jiveStorageResult)
@@ -147,6 +154,10 @@ function findContentImage(contentItem) {
 
     if (!contentItem || !contentItem.content || !contentItem.content.text) return null;
 
+    if (typeof mode !== 'undefined' && !['regexp', 'api', 'jquery'].includes(mode)) {
+        throw new Error('2nd argument should be "regexp"|"api"|"jquery"');
+    }
+
     var image = void 0;
 
     function getFromApi() {
@@ -165,7 +176,7 @@ function findContentImage(contentItem) {
             break;
         case 'jquery':
             //version 2: find image links with jQuery. Downside: it requests all the images content item has
-            image = jQuery ? $(contentItem.content.text).find('img').attr('src') : false;
+            image = jQuery ? jQuery(contentItem.content.text).find('img').attr('src') : false;
             break;
         case 'regexp':
             //version 3: Find image URLs by regExp
