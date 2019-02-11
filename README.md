@@ -749,7 +749,10 @@ function filter(currentList){
     })
 }
 
-const loader = new ContinuousLoadJiveOSAPI(() => promiseOsapiRequest(osapi.jive.corev3.people.get()), filter)
+const loader = new ContinuousLoadJiveOSAPI(
+    () => promiseOsapiRequest(osapi.jive.corev3.people.get()),
+    filter
+)
 
 const page1 = await loader.loadNext()
 ```    
