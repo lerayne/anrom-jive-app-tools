@@ -11,6 +11,7 @@ export function unescapeHtmlEntities(text) {
 export function pause(ms=0) {
     if (typeof ms !== 'number') throw new Error('Expected parameter to be a number')
     if (ms < 0) throw new Error("We can't do time travel :) Please input a positive number or 0")
+
     return new Promise(resolve => setTimeout(resolve, ms))
 }
 
@@ -96,7 +97,7 @@ export function getCacheableImage(initialImageURL, imageWidth = 500, thumbnail =
     }
 }
 
-export function findContentImage(contentItem, defaultImageURL='', mode = 'regexp', fallback = true) {
+export function findContentImage(contentItem, mode = 'regexp', fallback = true) {
 
     if (!contentItem || !contentItem.content || !contentItem.content.text) return null
 
@@ -131,8 +132,6 @@ export function findContentImage(contentItem, defaultImageURL='', mode = 'regexp
         image = getFromApi()
     }
 
-    if (!image) image = defaultImageURL
-
     return image
 }
 
@@ -144,9 +143,9 @@ export function getContentImage(contentItem, options={}){
 
     const defaultOptions = {
         imageWidth: 500,
-        defaultImageURL: '',
         mode: 'regexp',
-        thumbnail: false
+        thumbnail: false,
+        fallback: true
     }
 
     options = {
@@ -154,9 +153,9 @@ export function getContentImage(contentItem, options={}){
         ...options
     }
 
-    const {imageWidth, defaultImageURL, mode, thumbnail} = options
+    const {imageWidth, mode, thumbnail, fallback} = options
 
-    return getCacheableImage(findContentImage(contentItem, defaultImageURL, mode), imageWidth, thumbnail)
+    return getCacheableImage(findContentImage(contentItem, mode, fallback), imageWidth, thumbnail)
 }
 
 export function jsonCopy (obj) {

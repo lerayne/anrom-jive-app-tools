@@ -52,6 +52,7 @@ function pause() {
 
     if (typeof ms !== 'number') throw new Error('Expected parameter to be a number');
     if (ms < 0) throw new Error("We can't do time travel :) Please input a positive number or 0");
+
     return new _promise2.default(function (resolve) {
         return setTimeout(resolve, ms);
     });
@@ -140,9 +141,8 @@ function getCacheableImage(initialImageURL) {
 }
 
 function findContentImage(contentItem) {
-    var defaultImageURL = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : '';
-    var mode = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 'regexp';
-    var fallback = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : true;
+    var mode = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 'regexp';
+    var fallback = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : true;
 
 
     if (!contentItem || !contentItem.content || !contentItem.content.text) return null;
@@ -178,8 +178,6 @@ function findContentImage(contentItem) {
         image = getFromApi();
     }
 
-    if (!image) image = defaultImageURL;
-
     return image;
 }
 
@@ -193,21 +191,21 @@ function getContentImage(contentItem) {
 
     var defaultOptions = {
         imageWidth: 500,
-        defaultImageURL: '',
         mode: 'regexp',
-        thumbnail: false
+        thumbnail: false,
+        fallback: true
     };
 
     options = (0, _extends3.default)({}, defaultOptions, options);
 
     var _options = options,
         imageWidth = _options.imageWidth,
-        defaultImageURL = _options.defaultImageURL,
         mode = _options.mode,
-        thumbnail = _options.thumbnail;
+        thumbnail = _options.thumbnail,
+        fallback = _options.fallback;
 
 
-    return getCacheableImage(findContentImage(contentItem, defaultImageURL, mode), imageWidth, thumbnail);
+    return getCacheableImage(findContentImage(contentItem, mode, fallback), imageWidth, thumbnail);
 }
 
 function jsonCopy(obj) {

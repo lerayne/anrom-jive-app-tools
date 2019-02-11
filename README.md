@@ -24,12 +24,50 @@ Or import a number of functions from a single toolset if you don't intend to use
 bundle even larger:  
 `import {jiveDate2Moment} from 'anrom-jive-app-tools/dateUtils'`
 
-Here's the list of toolsets that the library offers:
 
 
 
 
-
+# Contents
+- **[tileProps](#tileprops)** - utils for getting additional info about the tile and it's location
+  - [tileId](#tileid)
+  - [tilePath](#tilepath)
+  - [tileUrl](#tileurl)
+  - [parent](#parent)
+  - [getContainerAsync](#async-getcontainerasync)
+- **[utils](#utils)** - other simple utilities
+  - [pause](#async-pausemilliseconds)
+  - [unescapeHtmlEntities](#unescapehtmlentitiestext)
+  - [splitArray](#splitarrayarray-columns)
+  - [abridge](#abridgetext-length160)
+  - [getCacheableImage](#getcacheableimageinitialimageurl-imagewidth500-thumbnailfalse)
+  - [findContentImage](#findcontentimagecontentitem-moderegexp-fallbackfalse)
+  - [getContentImage](#getcontentimagecontentitem-options)
+  - [getImagelessHTML](#getimagelesshtmlhtmltext)
+  - [jsonCopy](#jsoncopyobject)
+  - [isEmptyObject](#isemptyobjectobject)
+- **[dateUtils](#dateutils)** - utils for work with jive dates
+  - [jiveDateFormat](#jivedateformat)
+  - [jiveDate2Moment](#jivedate2momentjivedate)
+  - [moment2JiveDate](#moment2jivedatemomentdate)
+  - [jiveDate2TS](#jivedate2tsjivedate)
+  - [TS2JiveDate](#ts2jivedatetimestamp)
+- **[fetchPromise](#fetchpromise)** - promise/async wrappers for tile network requests
+  - [promiseOsapiRequest](#async-promiseosapirequestfunctionorexecutable)
+  - [promiseHttpGet](#async-promisehttpgetargs)
+  - [promiseHttpPost](#async-promisehttppostargs)
+  - [promiseRestGet](#async-promiserestgetendpoint)
+  - [promiseRestPost](#async-promiserestpostendpoint-options)
+  - [promiseRestPut](#async-promiserestputendpoint-options)
+  - [promiseRestDelete](#async-promiserestdeleteendpoint)
+  - [promiseBatch](#async-promisebatchentries-createbatchentry)
+  - [CurrentPlace](#class-currentplacefunction-filter)
+- **[ContinuousLoader](#continuousloader)** - smart tool for client-side filtering
+  - [ContinuousLoader](#class-continuousloaderasyncfunction-filter-options)
+    - [Methods](#methods)
+    - [Usage Examples](#usage-examples)
+  - [ContinuousLoadJiveREST](#class-continuousloadjiverestasyncfunction-filter-options)
+  - [ContinuousLoadJiveOSAPI](#class-continuousloadjiveosapiasyncfunction-filter-options)
 
 
 
@@ -51,20 +89,55 @@ Gives you access to the tile information before DOM loads
 
 
 ### `tileId()` 
-**returns:** String; Id of a tile (string), e.g. `1582`. Can be useful if your domain security is turned off and you want to access tile's frame from within a tile.
+**returns:** String; Id of a tile (string), e.g. `1582`. 
+
+Can be useful if your domain security is turned off and you want to access tile's frame from within a tile.  
+
+Usage example:  
 ```html
-<iframe id="__gadget_j-app-tile-parent-1582"...    
+//Jive main page code containing a tile
+<iframe id="__gadget_j-app-tile-parent-1582"... />    
+```
+
+```javascript
+//Tile code
+import {tileId} from 'anrom-jive-app-tools/tileProps'
+const iframe = window.parent.document.querySelector('#__gadget_j-app-tile-parent-' + tileId())
 ```
 **Note:** returns `undefined` if called from an app
 
 
 ### `tilePath()` 
-**returns:** String; Relative path to a tile's folder inside jive. Helps you load the resources directly. 
+**returns:** String; Relative path to a tile's folder inside jive. 
+
+Helps you load the resources directly. 
 (`/resources/add-ons/9abb17d6-e0a4-4e3e-b3d7-dc29f1a9edae/6dc9c116f0/tiles/tile-search`)
 
+This function comes in handy when you need to use a file that resides in tile's package, but you 
+don't know it's final address, because tile will have a new URL after each upload of the package.
+Sometimes you can just use relative URLs and rely on webpack loaders to place file where they have 
+to be. But in case of fonts, for example, you can't. 
+
+Usage example:
+```javascript
+import {tilePath} from 'anrom-jive-app-tools/tileProps'
+import LatoRegularWOFF from '../fonts/Lato-Regular.woff'
+
+export default function FontLoader() {
+    return <style>{
+        `@font-face {
+            font-family: 'Lato-Regular';
+            font-style: normal;
+            font-weight: 400;
+            src: url(${tilePath()}/fonts/${LatoRegularWOFF}) format('woff');
+        }`
+    }</style>
+}
+```
 
 ### `tileUrl()`
 **returns:** Object; Full URL of a tile, with query params  
+
 Output example:
 ```json
 {
@@ -97,6 +170,12 @@ settings) e.g. `http://myjivesite.com` instead of `http://apps.myjivesite.com`
 ### `async getContainerAsync()`
 **returns:** Promise(Object); Jive place in which tile instance is located
 
+Usage example:
+```javascript
+const currentPlace = await getContainerAsync()
+const content = await promiseRestGet('/places/' + currentPlace.placeID + '/contents')
+```
+
 
 
 
@@ -126,7 +205,9 @@ import {
 
 
 ### `async pause(milliseconds)`
-**returns:** Promise(none); Promise/async wrapper for `setTimeout`. If you need to set your code execution on hold, use it:
+**returns:** Promise(none); 
+
+Promise/async wrapper for `setTimeout`. If you need to set your code execution on hold, use it:
 ```javascript
 async function myFunc(){
     /* do stuff */
@@ -138,45 +219,62 @@ async function myFunc(){
 
 ### `unescapeHtmlEntities(text)`
 **returns:** String;   
+
 Text returned by jive API can contain special escape characters like **&amp;amp;** which stands for 
 &. With usual react rendering (`<div>{text}</div>`) these characters are not being unescaped, which 
 means it will appear in your tile as "Chip &amp;amp; Dale". To avoid that, use this function:   
-`<div>{unescapeHtmlEntities(text)}</div>` 
+`<div>{unescapeHtmlEntities(text)}</div>`
+
+**Note:** This function will not allow you to place HTML: it will turn < and > symbols to small 
+quotation marks: ‹ and ›  
 
 
 ### `splitArray(array, columns)`
 **returns:** Array(Arrays);  
+
 Used to split a plain array into several relatively equal chunks (relatively - because last chunk 
 can be shorter if division is with a remainder). This is usually used to split data model array to
 display in several columns 
 
+Usage example:
+```javascript
+const columns = splitArray([1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17], 4)
+// [[1,2,3,4,5],[6,7,8,9,10],[11,12,13,14,15],[16,17]]
+```
+
 
 ### `abridge(text, [length=160])`
-**returns:** String;  
+**returns:** String; 
+ 
 Used to display text, smartly truncated to end with a whole word and with '...' at the end. If there's 
-only one word left after truncation - it will be left truncated and appedned with '...'
+only one word left after truncation - it will be left truncated and appedned with '...'. Also it 
+will trim the `.`, `,`, `:` and `;` at the end of last word, but leave `?` or `!` 
 
 
 ### `getCacheableImage(initialImageURL, [imageWidth=500, thumbnail=false])`
-**returns:** String;   
+**returns:** String; Transformed URL if `initialImageURL` matches the pattern, `initialImageURL` 
+if not; Any falsy value, if given as `initialImageURL`   
+
 Check image URL against few rules, detecting images hosted within jive. If such image is detected - 
 special URL is being returned, allowing image caching and size reduction. It's **highly recommended** 
 to use it when rendering images in terms of performance.  
-**Note:** I don't know how "thumbnail" mode is defferent from default, I'm just passing this 
+
+**Note:** I don't know how "thumbnail" mode is different from default, I'm just passing this 
 argument to the URL
 
 
-### `findContentImage(contentItem, [defaultImageURL="", mode='regexp', fallback=false])`
-**returns:** String;   
+### `findContentImage(contentItem, [mode='regexp', fallback=false])`
+**returns:** String; `false` if no image found; `null` if `contentItem` is malformed  
+
 Searches jive API content item (document, discussion etc) for first content image URL. 
+
 **params:**
-* `contentItem` - 
-* `defaultImageURL` (empty string) - 
+* `contentItem` - jive API content item (documen, discussion etc)
 * `mode` ("regexp") - select mode (see below)
 * `fallback` (true) - if set to true or omitted *and* the `mode` parameter is *not* `api` 
          - it will fall back to jive API in case the selected method hasn't found any images. 
 
-modes:   
+**modes:**   
 By default regular expression ("regexp") mode is used. It's recommended to use it that way, but if 
 you're experiencing some edge cases, you may want to use other modes. Though, each of them has it's 
 own flaw.  
@@ -193,6 +291,7 @@ only recommended as a *temporal solution* if `regexp` mode fails and is not yet 
 
 ### `getContentImage(contentItem, [options])`
 **returns:** String;   
+
 The combination of the previous two functions. Finds image in jive content and if it's a jive-hosted 
 image - converts it's URL to a cacheable and resized one. *Recommended for usage by default* 
 when the job is to display a content preview.
@@ -201,9 +300,9 @@ when the job is to display a content preview.
 ```json
 {
   "imageWidth": 500,
-  "defaultImageURL": "",
   "mode": "regexp",
-  "thumbnail": false
+  "thumbnail": false,
+  "fallback": true
 }
 ``` 
 (they're the same as default parameters of the functions above)
@@ -216,9 +315,15 @@ Sometimes you may need html stripped of all images. This is a function for such 
 
 ### `jsonCopy(object)`
 **returns:** Object;   
-Makes a deep copy of JS data object (ensuring that there will be no links to it in other parts of a 
-program). *Don't use* for objects with function values, class instances etc.
 
+Makes a deep copy of JS data object (ensuring that there will be no references to it's members in other parts of a 
+program). *Don't use* for objects with function values, class instances etc. Also fixes the issue when 
+Array prototype is polluted and thus `array instanceof Array` check fails.
+
+Usage example:
+```javascript
+const immutableConfig = jsonCopy(config)
+```
 
 ### `isEmptyObject(object)`
 **returns:** Boolean;   
@@ -309,12 +414,21 @@ async function getData(){
 
 ### `async promiseOsapiRequest(functionOrExecutable)`
 **returns:** Promise(Object)  
+
 Takes jive osapi executabe or function that takes `osapi.jive.corev3` as a 
 single argument and returns such executable:
 
 Usage option 1:
 ```javascript
 const viewer = await promiseOsapiRequest(osapi.jive.corev3.people.getViewer())
+```
+
+This also means that you can put any executable OSAPI function including those returned from an 
+OSAPI request, like the "getNextPage": 
+
+```javascript
+const contentResponse = await promiseOsapiRequest(osapi.jive.corev3.contents.get())
+const nextPage = await promiseOsapiRequest(contentResponse.getNextPage())
 ```
 
 Usage option 2:
@@ -324,7 +438,10 @@ const viewer = await promiseOsapiRequest(api => api.people.getViewer())
  
  
 ### `async promiseHttpGet(...args)`
-Promise/async wrapper for [osapi.http.get](https://opensocial.atlassian.net/wiki/spaces/OSD/pages/527081/Osapi.http+v0.9#Osapi.http(v0.9)-osapi.http.get). Parameters are forwarded without change
+Promise/async wrapper for 
+[osapi.http.get](https://opensocial.atlassian.net/wiki/spaces/OSD/pages/527081/Osapi.http+v0.9#Osapi.http(v0.9)-osapi.http.get). 
+Parameters are forwarded without change.  
+Use it to access non-jive API from within a tile
 
 Usage example:
 ```javascript
@@ -333,7 +450,10 @@ const posts = await promiseHttpPost('https://apisrver.com/api/v1/posts')
 
 
 ### `async promiseHttpPost(...args)` 
-Promise/async wrapper for [osapi.http.get](https://opensocial.atlassian.net/wiki/spaces/OSD/pages/527081/Osapi.http+v0.9#Osapi.http(v0.9)-osapi.http.post). Parameters are forwarded without change
+Promise/async wrapper for 
+[osapi.http.get](https://opensocial.atlassian.net/wiki/spaces/OSD/pages/527081/Osapi.http+v0.9#Osapi.http(v0.9)-osapi.http.post). 
+Parameters are forwarded without change  
+Use it to access non-jive API from within a tile
 
 Usage example:
 ```javascript
@@ -349,11 +469,17 @@ const creationResponse = await promiseHttpPost('https://apisrver.com/api/v1/post
 
 
 ### `async promiseRestGet(endpoint)`
-Promise/async wrapper for osapi.jive.core.get, which is an OSAPI endpoint for regular jive rest requests.
+Promise/async wrapper for `osapi.jive.core.get`, which is an OSAPI endpoint for regular jive REST v3 
+requests.
 
-Usage example:
+Usage examples:
 ```javascript
 const viewer = await promiseRestGet('/people/@me')
+const viewer = await promiseRestGet('/api/core/v3/people/@me')
+// IMPORTANT! in the next case the host http://myserver.com will be completely thrown away and the 
+// call will address the current jive instance. This is also true for all the next promiseRest... 
+// functions
+const viewer = await promiseRestGet('http://myserver.com/api/core/v3/people/@me')
 ```
 
 
@@ -385,7 +511,7 @@ This function will be reworked. No docs for now
 
 
 ### `class CurrentPlace([<function> filter])` 
-A class for getting the current place (sophisticated alternative to `getContainerAsync`)
+A class for getting the current place (sophisticated alternative to [getContainerAsync](#async-getcontainerasync))
 
 Usage example:
 ```javascript
@@ -447,7 +573,7 @@ descendants (see below) created especially for Jive's REST API and OSAPI.
 **params:** 
 * **asyncFunction** - ES2017 async function or any function that returns a Promise. **Important:** you 
 should not pass Promise itself there, but a function that returns Promise when called.
-* **filter** - async/promise function that is being called for each collection to define whether 
+* **filter** - async/promise *or regular* function that is being called for each collection to define whether 
 it's members pass to the final set or not (interface below)
 * **options** - other parameters (listed below)
     * required:
@@ -468,22 +594,23 @@ it's members pass to the final set or not (interface below)
 **Argument functions' interfaces:**
 
 **`[async] filter(currentList, existingList)`**  
-*should return:* Array; Filtered list of items   
-* `currentList` - results collection received with the latest `asyncFunction` call
+*should return:* Array/Promise(Array); Filtered list of items   
+* `currentList` - results collection received from the latest `asyncFunction` call
 * `existingList` - results from previous calls that have already passed this filter, but haven't 
-been returned by `loadNext` (usually used to 
+been returned by `loadNext` yet (usually used to 
 remove duplicates). Note that the filtered items which are already returned by `loadNext` 
-are being cleared and will not be passed to this parameter again, so if you want to remove all the 
+are being deleted and will not be passed to this parameter again, so if you want to remove all the 
 duplicates, you should check items against your target collection too.
 
-*Note:* since this function receives the array and returns the array, it can be used not only for 
+*Note:* Since this function receives the array and returns the array, it can be used not only for 
 filtering, but also for mapping (transforming) the array either before filtering, or after it. Also,
-this function can be async if needed, so you can make another async operations inside it.
+this function can be async if needed, so you can make another async operations inside it, like
+calling for external services (use this option with caution).
 
 **`getNextAsyncFunc(asyncFunctionResponse)`**  
-*should return:* async/promise function for the next call, analogical to the `asyncFunction`. Can 
-also return anything but a function (e.g. `false`), which will mean that there's no ability to form 
-a new request 
+*should return:* async/promise function for the next call, analogical to the `asyncFunction`. If
+returns anything but a function (e.g. `false`) -it will be treated as a fact that there's no 
+possibility to form a new request and the loader wil stop with "reason: source ended" 
 * `asyncFunctionResponse` - response of the previous async/promise function
 
 **`getError(asyncFunctionResponse)`**  
@@ -522,12 +649,12 @@ type:
 ```javascript
 // Let's first program our filter function
 function filter(currentList, existingList){
-    let filteredList = currentList.filter((listItem, itemIndex, thisArray) => {
+    return currentList.filter((listItem, itemIndex, thisArray) => {
         
         // only items with type "document" match our selection
         if (listItem.type !== 'document') return false
         
-        // also, we don't want duplicates (by ID) in this current list
+        // also, we don't want duplicates (by ID) in this current list...
         if (thisArray.findIndex(dupItem => dupItem.id === listItem.id) !== itemIndex) return false
         
         // ...or in existing collection pool
@@ -536,8 +663,7 @@ function filter(currentList, existingList){
         // if all checks passed
         return true
     })
-    
-    return filteredList
+   
 }
 
 // Now set our first async API call function
@@ -583,6 +709,22 @@ is different from `count` parameter
 then "get" for internal getNextAsyncFunc implementation to work properly
 * `createNextAsyncFunc` - a creator of new asynchronous function based on jive API's "next" link
 
+Usage Example:
+```javascript
+// finds users that have Title === 'director'  
+function filter(currentList){
+    return currentList.filter(user => {
+        return user.jive.profile && user.jive.profile.find(
+            field => field.jive_label === 'Title' && field.value.toLowerCase() === 'director'
+        )
+    })
+}
+
+const loader = new ContinuousLoadJiveREST(() => promiseRestGet('/people'), filter)
+
+const page1 = await loader.loadNext()
+```
+
 **Argument functions' interfaces:**  
 `createNextAsyncFunc(nextLink, responseContent)`  
 *should return:* async/promise function for the next call, analogical to the `asyncFunction`. The 
@@ -596,5 +738,19 @@ do something else then just passing "next" link as a new request
 A descendant class of ContinuousLoader, which has it's own getList and getNextAsyncFunc implementations
 based on Jive's OSAPI response. 
 
-    
+Usage Example:
+```javascript
+// finds users that have Title === 'director'  
+function filter(currentList){
+    return currentList.filter(user => {
+        return user.jive.profile && user.jive.profile.find(
+            field => field.jive_label === 'Title' && field.value.toLowerCase() === 'director'
+        )
+    })
+}
+
+const loader = new ContinuousLoadJiveOSAPI(() => promiseOsapiRequest(osapi.jive.corev3.people.get()), filter)
+
+const page1 = await loader.loadNext()
+```    
     

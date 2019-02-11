@@ -48,6 +48,11 @@ export function promiseHttpPost(...args){
 }
 
 export function promiseRestGet(href) {
+
+    if (href.includes("/api/core/v3/")) {
+        href = href.split("/api/core/v3")[1]
+    }
+
     return new Promise((resolve, reject) => {
         osapi.jive.core.get({
             v:'v3',
@@ -71,6 +76,11 @@ export const promiseRestRequest = function(href){
  * @returns {Promise<any>}
  */
 export function promiseRestPost(href, options = {}) {
+
+    if (href.includes("/api/core/v3/")) {
+        href = href.split("/api/core/v3")[1]
+    }
+
     return new Promise((resolve, reject) => {
         osapi.jive.core.post({
             v:'v3',
@@ -84,6 +94,11 @@ export function promiseRestPost(href, options = {}) {
 }
 
 export function promiseRestDelete(href) {
+
+    if (href.includes("/api/core/v3/")) {
+        href = href.split("/api/core/v3")[1]
+    }
+
     return new Promise((resolve, reject) => {
         osapi.jive.core.delete({
             v:'v3',
@@ -96,6 +111,11 @@ export function promiseRestDelete(href) {
 }
 
 export function promiseRestPut(href) {
+
+    if (href.includes("/api/core/v3/")) {
+        href = href.split("/api/core/v3")[1]
+    }
+
     return new Promise((resolve, reject) => {
         osapi.jive.core.put({
             v:'v3',

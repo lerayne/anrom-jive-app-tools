@@ -11,6 +11,8 @@ const {
     isEmptyObject
 } = require('../utils')
 
+
+
 describe("pause", () => {
     test("should be a function", () => {
         expect(typeof pause).toBe('function')
@@ -39,6 +41,8 @@ describe("pause", () => {
     })
 })
 
+
+
 describe("unescapeHtmlEntities", () => {
     test("should be a function", () => {
         expect(typeof unescapeHtmlEntities).toBe('function')
@@ -63,6 +67,8 @@ describe("unescapeHtmlEntities", () => {
         expect(() => unescapeHtmlEntities({})).toThrow()
     })
 })
+
+
 
 describe('splitArray', () => {
     test("should be a function", () => {
@@ -102,6 +108,8 @@ describe('splitArray', () => {
         expect(splitArray([1,2,3], 5)).toEqual([[1],[2],[3],[],[]])
     })
 })
+
+
 
 describe("abridge", () => {
 
@@ -144,10 +152,14 @@ describe("abridge", () => {
 
     test("should remove redundant punctuation, but not ? and !", () => {
         expect(abridge("Lorem ipsum? dolor", 12)).toEqual('Lorem ipsum?...')
-        expect(abridge("Lorem ipsum! dolor", 13)).toEqual('Lorem ipsum!...')
-        expect(abridge("Lorem ipsum, dolor", 14)).toEqual('Lorem ipsum...')
+        expect(abridge("Lorem ipsum! dolor", 12)).toEqual('Lorem ipsum!...')
+        expect(abridge("Lorem ipsum, dolor", 12)).toEqual('Lorem ipsum...')
         expect(abridge("Lorem ipsum. dolor", 12)).toEqual('Lorem ipsum...')
-        expect(abridge("Lorem ipsum: dolor", 13)).toEqual('Lorem ipsum...')
-        expect(abridge("Lorem ipsum; dolor", 14)).toEqual('Lorem ipsum...')
+        expect(abridge("Lorem ipsum: dolor", 12)).toEqual('Lorem ipsum...')
+        expect(abridge("Lorem ipsum; dolor", 12)).toEqual('Lorem ipsum...')
+    })
+
+    test("should cut first long word without removing it", () => {
+        expect(abridge("LoremIpsumDolor", 12)).toEqual('LoremIpsumDo...')
     })
 })
