@@ -1,6 +1,6 @@
 import moment from 'moment'
 
-export const jiveDateFormat = 'YYYY-MM-DDTHH:mm:ss.SSSZ'
+export const jiveDateFormat = 'YYYY-MM-DDTHH:mm:ss.SSSZZ'
 
 export function jiveDate2Moment(jiveDate){
     return moment(jiveDate, jiveDateFormat)

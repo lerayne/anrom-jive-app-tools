@@ -15,7 +15,7 @@ var _moment2 = _interopRequireDefault(_moment);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-var jiveDateFormat = exports.jiveDateFormat = 'YYYY-MM-DDTHH:mm:ss.SSSZ';
+var jiveDateFormat = exports.jiveDateFormat = 'YYYY-MM-DDTHH:mm:ss.SSSZZ';
 
 function jiveDate2Moment(jiveDate) {
     return (0, _moment2.default)(jiveDate, jiveDateFormat);
