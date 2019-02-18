@@ -22,7 +22,7 @@ function jiveDate2Moment(jiveDate) {
 }
 
 function moment2JiveDate(momentDate) {
-    momentDate.format(jiveDateFormat);
+    return momentDate.format(jiveDateFormat);
 }
 
 function jiveDate2TS(jiveDate) {

@@ -7,7 +7,7 @@ export function jiveDate2Moment(jiveDate){
 }
 
 export function moment2JiveDate(momentDate){
-    momentDate.format(jiveDateFormat)
+    return momentDate.format(jiveDateFormat)
 }
 
 export function jiveDate2TS(jiveDate) {
