@@ -225,8 +225,8 @@ Text returned by jive API can contain special escape characters like **&amp;amp;
 means it will appear in your tile as "Chip &amp;amp; Dale". To avoid that, use this function:   
 `<div>{unescapeHtmlEntities(text)}</div>`
 
-**Note:** This function will not allow you to place HTML: it will turn < and > symbols to small 
-quotation marks: ‹ and ›  
+This function is also stripping all HTML tags and returns plain text, so it can be used for 
+receiving plain preview text from `content.text` 
 
 
 ### `splitArray(array, columns)`

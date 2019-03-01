@@ -43,7 +43,7 @@ function unescapeHtmlEntities(text) {
     if (typeof text !== 'string') throw new Error('Argument should be a string');
 
     var temp = document.createElement('div');
-    temp.innerHTML = text.replace(/<|&lt;/gi, '‹').replace(/>|&gt;/gi, '›');
+    temp.innerHTML = text; //.replace(/<|&lt;/gi, '‹').replace(/>|&gt;/gi, '›')
     return temp.innerText || temp.textContent;
 }
 

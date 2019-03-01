@@ -50,10 +50,14 @@ describe("unescapeHtmlEntities", () => {
         expect(unescapeHtmlEntities("Chip &amp; Dale")).toBe('Chip & Dale')
     })
 
-    test("to NOT unescape <>", () => {
+    /*test("to NOT unescape <>", () => {
         expect(unescapeHtmlEntities("&lt;iframe&gt;")).toBe('‹iframe›')
         expect(unescapeHtmlEntities("&LT;iframe&GT;")).toBe('‹iframe›')
         expect(unescapeHtmlEntities("<iframe>")).toBe('‹iframe›')
+    })*/
+
+    test("to remove HTML tags", () => {
+        expect(unescapeHtmlEntities('text &amp; <b>is bold</b><script>')).toBe('text & is bold')
     })
 
     test("to throw error on improper input", () => {
