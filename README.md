@@ -445,7 +445,10 @@ Use it to access non-jive API from within a tile
 
 Usage example:
 ```javascript
-const posts = await promiseHttpPost('https://apisrver.com/api/v1/posts')
+const posts = await promiseHttpGet({
+    href: 'https://apisrver.com/api/v1/posts',
+    authz: 'signed'
+})
 ```
 
 
@@ -457,7 +460,8 @@ Use it to access non-jive API from within a tile
 
 Usage example:
 ```javascript
-const creationResponse = await promiseHttpPost('https://apisrver.com/api/v1/posts/create', {
+const creationResponse = await promiseHttpPost({
+    href: 'https://apisrver.com/api/v1/posts/create',
     authz: 'signed',
     headers : { 'Content-Type' : ['application/json'] },
     body: {
