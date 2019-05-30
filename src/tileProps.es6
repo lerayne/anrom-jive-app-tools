@@ -39,7 +39,7 @@ const tileId = function(){
         let _tileId = false
         if (_tileUrl.query && _tileUrl.query.syn_app) {
             const {syn_app} = _tileUrl.query
-            _tileId = tileUrl.query['ref_' + syn_app].split(':')[1]
+            _tileId = _tileUrl.query['ref_' + syn_app].split(':')[1]
         }
 
         cache.tileId = _tileId

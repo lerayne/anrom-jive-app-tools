@@ -53,7 +53,7 @@ var tileId = function tileId() {
         if (_tileUrl.query && _tileUrl.query.syn_app) {
             var syn_app = _tileUrl.query.syn_app;
 
-            _tileId = tileUrl.query['ref_' + syn_app].split(':')[1];
+            _tileId = _tileUrl.query['ref_' + syn_app].split(':')[1];
         }
 
         cache.tileId = _tileId;
