@@ -3,4 +3,5 @@
 /tests
 jest.config.js
 jest.setup.js
+gulpfile.js
 *.bat

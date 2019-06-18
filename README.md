@@ -60,7 +60,8 @@ bundle even larger:
   - [promiseRestPost](#async-promiserestpostendpoint-options)
   - [promiseRestPut](#async-promiserestputendpoint-options)
   - [promiseRestDelete](#async-promiserestdeleteendpoint)
-  - [promiseBatch](#async-promisebatchentries-createbatchentry)
+  - [promiseRestBatch](#async-promisebatchentries-createbatchentry)
+  - [promiseOsapiBatch](#async-promisebatchentries-createbatchentry)
   - [CurrentPlace](#class-currentplacefunction-filter)
 - **[ContinuousLoader](#continuousloader)** - smart tool for client-side filtering
   - [ContinuousLoader](#class-continuousloaderasyncfunction-filter-options)
@@ -382,7 +383,8 @@ import {
     promiseRestPost,
     promiseRestPut,
     promiseRestDelete,
-    promiseBatch,
+    promiseRestBatch,
+    promiseOsapiBatch,
     CurrentPlace
 } from 'anrom-jive-app-tools/fetchPromise'
 ```
@@ -510,9 +512,103 @@ Promise/async wrapper for osapi.jive.core.put, which is an OSAPI endpoint for re
 Usage is the same as `promiseRestPost`
 
 
-### `async promiseBatch(entries, createBatchEntry)`
-This function will be reworked. No docs for now
+### `async promiseRestBatch(entries, createBatchEntry, [options])`
+Performs a REST batch request. Bypasses jive's limitations of 25 entries per batch and 5 requests 
+per 15 seconds
 
+**returns:** Promise(Array) - array of results, whether they're elements, error reports, 
+creation/deletion reports etc.
+
+**parameters:**  
+* `entries` - Array, based on which the batch request should be performed
+* `createBatchEntry(entry, entryIndex, requestIndex)` - function that creates a batch entry from 
+`entries` array item. Should return a regular jive rest batch object (see example usage). 
+  * `entry` - single array item which has to be used to create batch element
+  * `entryIndex` - index of this entry inside current batch request (since `promiseRestBatch` can 
+  abstract a few batch requests as one)
+  * `requestIndex` - index of the batch request. This way usually request key is 
+  `requestIndex + '.' + entryIndex`
+* `options` - currently only one options is supported: `maxEntries`. In jive only 25 requests per 
+batch is allowed, but you can make this number smaller (for example for performance reasons) 
+
+Usage examples:
+```javascript
+// get content batch
+const results = await promiseRestBatch([1001, 1003, 1005], (entry, entryIndex, requestIndex) => {
+    return {
+        key: requestIndex + '.' + entryIndex, // key by which you can identify the response
+        request: {
+            method: 'GET',
+            endpoint: '/contents/' + entry
+        }
+    }
+})
+
+//content creation batch
+const results = await promiseRestBatch([1, 2, 3], (entry, entryIndex, requestIndex) => {
+    return {
+        key: requestIndex + '.' + entryIndex,
+        request: {
+            method: 'POST',
+            endpoint: '/contents',
+            body: {
+                "content": {
+                    "type": "text/html",
+                    "text": "<body><p>Some interesting text</p></body>"
+                },
+                "subject": "New Document " + entry,
+                "type": "document"
+            }
+        }
+    }
+})
+```
+
+### `async promiseOsapiBatch(entries, createBatchEntry, [options])`
+Performs an OSAPI batch request. Bypasses jive's limitations of 25 entries per batch and 5 requests 
+per 15 seconds
+
+**returns:** Promise(Array) - array of results, whether they're elements, error reports, 
+creation/deletion reports etc.
+
+**parameters:**  
+* `entries` - Array, based on which the batch request should be performed
+* `createBatchEntry(entry, entryIndex, requestIndex)` - function that creates a batch entry from 
+`entries` array item. Should return an array of request id and osapi executable
+  * `entry` - single array item which has to be used to create batch element
+  * `entryIndex` - index of this entry inside current batch request (since `promiseOsapiBatch` can 
+  abstract a few batch requests as one)
+  * `requestIndex` - index of the batch request. This way usually request key is 
+  `requestIndex + '.' + entryIndex`
+* `options` - currently only one options is supported: `maxEntries`. In jive only 25 requests per 
+batch is allowed, but you can make this number smaller (for example for performance reasons) 
+
+Usage examples:
+```javascript
+// get content batch
+const results = await promiseOsapiBatch([1001, 1003, 1005], (entry, entryIndex, requestIndex) => {
+    return [
+        requestIndex + '.' + entryIndex,
+        osapi.jive.corev3.contents.get({id: entry})
+    ]
+})
+
+// create content batch
+const results = await promiseOsapiBatch([1, 2, 3], (entry, entryIndex, requestIndex) => {
+    return [
+        requestIndex + '.' + entryIndex,
+        
+        osapi.jive.corev3.contents.create({
+            content: {
+                "type": "text/html",
+                "text": "<body><p>Some interesting text</p></body>"
+            },
+            "subject": "New Document " + entry,
+            "type": "document"
+        })
+    ]
+})
+```
 
 ### `class CurrentPlace([<function> filter])` 
 A class for getting the current place (sophisticated alternative to [getContainerAsync](#async-getcontainerasync))

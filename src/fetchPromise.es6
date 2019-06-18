@@ -127,48 +127,123 @@ export function promiseRestPut(href) {
     })
 }
 
-export async function promiseBatch(entries, createBatchEntry){
 
-    function batchObjectToArray(batchResponseObject){
-        return Object.keys(batchResponseObject).map(id => ({id, content: batchResponseObject[id]}))
-    }
+function singleOsapiBatch(entries, createBatchEntry, j = 0) {
+    return new Promise((resolve, reject) => {
 
-    function promiseSingleBatch(entries, createBatchEntry){
-        return new Promise((resolve, reject) => {
+        let batch = osapi.newBatch()
 
-            let batch = osapi.newBatch()
-
-            entries.forEach((entry, i) => {
-                const {id, request} = createBatchEntry(entry, i)
-                batch.add(id, request)
-            })
-
-            batch.execute(response => {
-                if (response.error) reject(response)
-                else resolve(response)
-            })
+        entries.forEach((entry, i) => {
+            const [id, executable] = createBatchEntry(entry, i, j)
+            batch.add(id, executable)
         })
+
+        batch.execute(response => {
+            if (response.error) reject(response)
+            else resolve(response)
+        })
+    })
+}
+
+function batchObjectToArray(batchResponse) {
+    //console.log('batchObjectToArray', batchResponse)
+
+    return Object.keys(batchResponse).map(key => {
+
+        let returnObject = {
+            id: key,
+            status: (typeof batchResponse[key].status === "number") ? batchResponse[key].status : 200
+        }
+
+        if (batchResponse[key].error) {
+            returnObject.error = batchResponse[key].error
+        } else {
+            returnObject.data = (batchResponse[key].content && batchResponse[key].content.id !== undefined)
+                ? batchResponse[key].content
+                : batchResponse[key]
+        }
+
+        return returnObject
+    })
+}
+
+async function singleRestBatch(items, createBatchEntry, j=0){
+    const batch = items.map((item, i) => createBatchEntry(item, i, j))
+
+    const response = await promiseRestPost('/executeBatch', {
+        type: "application/json",
+        body: batch
+    })
+
+    return (response.content && response.content.id) ? response.content : response
+}
+
+/**
+ * promiseOsapiBatch
+ *
+ * @param entries - any array based on which you want to build a batch
+ * @param createBatchEntry - a func that takes a single entry and its index from the array above
+ * and returns an object with the fields "id" and "request". "id" should be a unique id of the
+ * request and "request" should be an OSAPI executable
+ * @returns {Promise<Array>}
+ */
+async function promiseBatch(type = 'rest', entries, createBatchEntry, optionsArgument = {}) {
+
+    const defaultOptions = {
+        maxEntries: 25
     }
 
-    if (entries.length <= 30) {
-        return batchObjectToArray(await promiseSingleBatch(entries, createBatchEntry))
+    const options = {...defaultOptions, ...optionsArgument}
+
+    //console.time('batch')
+
+    //no more than 25! Jive hard limit
+    const maxEntriesPerBatch = options.maxEntries < 25 ? options.maxEntries : 25
+
+    if (entries.length <= maxEntriesPerBatch) {
+
+        if (type === 'osapi') return batchObjectToArray(await singleOsapiBatch(entries, createBatchEntry))
+        if (type === 'rest') return await singleRestBatch(entries, createBatchEntry)
+
+        //console.timeEnd('batch')
 
     } else {
 
-        const entryArrays = splitArray(entries, Math.ceil(entries.length / 30))
+        const entryArrays = splitArray(entries, Math.ceil(entries.length / maxEntriesPerBatch))
         let results = []
         let response = false
 
-        for (let i = 0; i < entryArrays.length; i++){
-            response = await promiseSingleBatch(entryArrays[i], createBatchEntry)
+        for (let i = 0; i < entryArrays.length; i++) {
 
-            results = results.concat(batchObjectToArray(response))
+            if (type === 'osapi') {
+                response = await singleOsapiBatch(entryArrays[i], createBatchEntry, i)
+                results = results.concat(batchObjectToArray(response))
+            }
+            if (type === 'rest') {
+                response = await singleRestBatch(entryArrays[i], createBatchEntry, i)
+                results = results.concat(response)
+            }
 
-            await pause((i+1) % 4 === 0 ? 11000 : 1000)
+            // make 1 sec pause after each request an 11 sec pause each 4 requests to bypass jive's
+            // request frequency limitation
+            // but only if this is not the last query
+            if (i < entryArrays.length - 1) {
+                await pause((i + 1) % 4 === 0 ? 11000 : 1000)
+            }
         }
+
+        //console.timeEnd('batch')
 
         return results
     }
+}
+
+export async function promiseRestBatch(entries, createBatchEntry, options = {}) {
+    return await promiseBatch('rest', entries, createBatchEntry, options)
+}
+
+export async function promiseOsapiBatch(entries, createBatchEntry, options = {}) {
+    return await promiseBatch('osapi', entries, createBatchEntry, options)
 }
 
 export class CurrentPlace {
@@ -216,7 +291,8 @@ const fetchPromise = {
     promiseRestDelete,
     promiseRestRequest,
     promiseOsapiPollingRequest,
-    promiseBatch,
+    promiseOsapiBatch,
+    promiseRestBatch,
     CurrentPlace,
     //currentPlace,
 }
