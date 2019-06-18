@@ -13,6 +13,16 @@ const osapi = window.osapi
 import {promiseOsapiPollingRequest} from './deprecated'
 import {unescapeHtmlEntities, pause, splitArray} from './utils'
 
+export function extractContent(response) {
+
+    if (!response.content) return response
+
+    if (response.content.id !== undefined) return response.content
+    if (response.content instanceof Array) return response.content
+    if (response.content.list) return response.content
+
+    return response
+}
 
 export function promiseOsapiRequest(osapiRequestFunc){
     return new Promise((resolve, reject) => {
@@ -158,9 +168,7 @@ function batchObjectToArray(batchResponse) {
         if (batchResponse[key].error) {
             returnObject.error = batchResponse[key].error
         } else {
-            returnObject.data = (batchResponse[key].content && batchResponse[key].content.id !== undefined)
-                ? batchResponse[key].content
-                : batchResponse[key]
+            returnObject.data = extractContent(batchResponse[key])
         }
 
         return returnObject
@@ -175,7 +183,7 @@ async function singleRestBatch(items, createBatchEntry, j=0){
         body: batch
     })
 
-    return (response.content && response.content.id) ? response.content : response
+    return extractContent(response)
 }
 
 /**
@@ -294,6 +302,7 @@ const fetchPromise = {
     promiseOsapiBatch,
     promiseRestBatch,
     CurrentPlace,
+    extractContent
     //currentPlace,
 }
 

@@ -56,7 +56,7 @@ var singleRestBatch = function () {
 
                     case 3:
                         response = _context.sent;
-                        return _context.abrupt('return', response.content && response.content.id ? response.content : response);
+                        return _context.abrupt('return', extractContent(response));
 
                     case 5:
                     case 'end':
@@ -259,6 +259,7 @@ var promiseOsapiBatch = exports.promiseOsapiBatch = function () {
     };
 }();
 
+exports.extractContent = extractContent;
 exports.promiseOsapiRequest = promiseOsapiRequest;
 exports.promiseHttpGet = promiseHttpGet;
 exports.promiseHttpPost = promiseHttpPost;
@@ -287,6 +288,17 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 var jive = window.jive;
 var osapi = window.osapi;
+
+function extractContent(response) {
+
+    if (!response.content) return response;
+
+    if (response.content.id !== undefined) return response.content;
+    if (response.content instanceof Array) return response.content;
+    if (response.content.list) return response.content;
+
+    return response;
+}
 
 function promiseOsapiRequest(osapiRequestFunc) {
     return new _promise2.default(function (resolve, reject) {
@@ -439,7 +451,7 @@ function batchObjectToArray(batchResponse) {
         if (batchResponse[key].error) {
             returnObject.error = batchResponse[key].error;
         } else {
-            returnObject.data = batchResponse[key].content && batchResponse[key].content.id !== undefined ? batchResponse[key].content : batchResponse[key];
+            returnObject.data = extractContent(batchResponse[key]);
         }
 
         return returnObject;
@@ -502,7 +514,8 @@ var fetchPromise = {
     promiseOsapiPollingRequest: _deprecated.promiseOsapiPollingRequest,
     promiseOsapiBatch: promiseOsapiBatch,
     promiseRestBatch: promiseRestBatch,
-    CurrentPlace: CurrentPlace
+    CurrentPlace: CurrentPlace,
+    extractContent: extractContent
     //currentPlace,
 };
 
