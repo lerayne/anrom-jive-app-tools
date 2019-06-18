@@ -60,8 +60,8 @@ bundle even larger:
   - [promiseRestPost](#async-promiserestpostendpoint-options)
   - [promiseRestPut](#async-promiserestputendpoint-options)
   - [promiseRestDelete](#async-promiserestdeleteendpoint)
-  - [promiseRestBatch](#async-promisebatchentries-createbatchentry)
-  - [promiseOsapiBatch](#async-promisebatchentries-createbatchentry)
+  - [promiseRestBatch](#async-promiserestbatchentries-createbatchentry-options)
+  - [promiseOsapiBatch](#async-promiseosapibatchentries-createbatchentry-options)
   - [CurrentPlace](#class-currentplacefunction-filter)
 - **[ContinuousLoader](#continuousloader)** - smart tool for client-side filtering
   - [ContinuousLoader](#class-continuousloaderasyncfunction-filter-options)
