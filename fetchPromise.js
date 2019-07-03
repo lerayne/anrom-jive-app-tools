@@ -276,7 +276,7 @@ require('core-js/fn/array/map');
 
 require('core-js/fn/array/for-each');
 
-require('core-js/fn/array/includes');
+require('core-js/fn/string/includes');
 
 var _deprecated = require('./deprecated');
 

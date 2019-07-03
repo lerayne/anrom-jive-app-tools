@@ -6,7 +6,7 @@ import 'core-js/fn/object/keys'
 import 'core-js/fn/array/concat'
 import 'core-js/fn/array/map'
 import 'core-js/fn/array/for-each'
-import 'core-js/fn/array/includes'
+import 'core-js/fn/string/includes'
 
 const jive = window.jive
 const osapi = window.osapi
