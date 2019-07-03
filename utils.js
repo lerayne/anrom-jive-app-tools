@@ -35,6 +35,8 @@ exports.getContentImage = getContentImage;
 exports.jsonCopy = jsonCopy;
 exports.isEmptyObject = isEmptyObject;
 
+require('core-js/fn/array/includes');
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var jQuery = window.jQuery;

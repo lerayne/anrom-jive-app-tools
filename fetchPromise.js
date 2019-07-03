@@ -276,17 +276,18 @@ require('core-js/fn/array/map');
 
 require('core-js/fn/array/for-each');
 
+require('core-js/fn/array/includes');
+
 var _deprecated = require('./deprecated');
 
 var _utils = require('./utils');
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-/**
- * Created by M. Yegorov on 2016-12-27.
- */
+var jive = window.jive; /**
+                         * Created by M. Yegorov on 2016-12-27.
+                         */
 
-var jive = window.jive;
 var osapi = window.osapi;
 
 function extractContent(response) {
