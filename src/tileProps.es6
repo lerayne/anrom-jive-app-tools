@@ -1,19 +1,9 @@
 import {parse} from 'url'
-import jive from 'jive'
 
-let getUrlParemeters
+const jive = window.jive
+const gadgets = window.gadgets
 
-if (typeof window.gala != 'undefined') {
-    getUrlParemeters = function(){
-        return {
-            parent: jive.tile.getJiveURL() || '',
-            url: jive.tile.getAppURL() || ''
-        }
-    }
-} else {
-    const gadgets = require('jive/gadgets')
-    getUrlParemeters = gadgets.util.getUrlParameters
-}
+const getUrlParemeters = gadgets.util.getUrlParameters
 
 const cache = {}
 

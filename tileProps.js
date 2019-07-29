@@ -5,27 +5,18 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.getContainerAsync = exports.parent = exports.tileUrl = exports.tilePath = exports.tileId = undefined;
 
+var _promise = require('babel-runtime/core-js/promise');
+
+var _promise2 = _interopRequireDefault(_promise);
+
 var _url = require('url');
-
-var _jive = require('jive');
-
-var _jive2 = _interopRequireDefault(_jive);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-var getUrlParemeters = void 0;
+var jive = window.jive;
+var gadgets = window.gadgets;
 
-if (typeof window.gala != 'undefined') {
-    getUrlParemeters = function getUrlParemeters() {
-        return {
-            parent: _jive2.default.tile.getJiveURL() || '',
-            url: _jive2.default.tile.getAppURL() || ''
-        };
-    };
-} else {
-    var gadgets = require('jive/gadgets');
-    getUrlParemeters = gadgets.util.getUrlParameters;
-}
+var getUrlParemeters = gadgets.util.getUrlParameters;
 
 var cache = {};
 
@@ -81,12 +72,12 @@ var parent = function parent() {
 };
 
 var getContainerAsync = function getContainerAsync() {
-    return new Promise(function (resolve, reject) {
+    return new _promise2.default(function (resolve, reject) {
 
         if (cache.place) {
             resolve(cache.place);
         } else {
-            _jive2.default.tile.getContainer(function (place) {
+            jive.tile.getContainer(function (place) {
                 cache.place = place;
                 resolve(place);
             });
