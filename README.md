@@ -69,6 +69,8 @@ bundle even larger:
     - [Usage Examples](#usage-examples)
   - [ContinuousLoadJiveREST](#class-continuousloadjiverestasyncfunction-filter-options)
   - [ContinuousLoadJiveOSAPI](#class-continuousloadjiveosapiasyncfunction-filter-options)
+- **[Migration Warnings](#migrationwarnings)**
+- **[Changelog](#chnagelog)**
 
 
 
@@ -855,5 +857,76 @@ const loader = new ContinuousLoadJiveOSAPI(
 )
 
 const page1 = await loader.loadNext()
-```    
+```
+# Migration Warnings
+
+##0.3.0
+* Generally this is first version to support `fetchPromise` and it's first 3 functions:
+  * `promiseOsapiRequest`
+  * `promiseRestRequest`
+  * `promiseHttpGet`
+* `tileProps`: `tileUrl`, `tilePath`, `tileId` and `parent` are now made functions instead of
+ just props (to support Gala, despite it's already cancelled)
+
+# Changelog
+
+##1.0.0
+
+##1.0.0-beta.6
+##1.0.0-beta.5
+##1.0.0-beta.4
+##1.0.0-beta.2
+##1.0.0-beta.1
+
+##0.7.4
+
+##0.8.0-beta.17
+##0.8.0-beta.16
+##0.8.0-beta.15
+
+##0.7.3
+
+##0.8.0-beta.14
+##0.8.0-beta.13
+##0.8.0-beta.12
+##0.8.0-beta.11
+
+##0.7.2
+
+##0.8.0-beta.10
+##0.8.0-beta.8
+##0.8.0-beta.6
+##0.8.0-beta.5
+##0.8.0-beta.4
+##0.8.0-beta.2
+##0.8.0-beta.1
+
+##0.7.1
+
+##0.7.0
+
+##0.6.2
+
+##0.6.1
+
+##0.6.0
     
+##0.5.0
+    
+##0.4.0
+    
+##0.3.0
+#####Breaking
+* `tileProps`: `tileUrl`, `tilePath`, `tileId` and `parent` are now made functions instead of
+ just props (to support Gala, despite it's already cancelled)
+#####Critical Fixes
+* `fetchPromise` was not properly compiled
+#####Fixes
+* `fetchPromise` added to index, so it could be imported not only directly from '/fetchPromise'   
+
+##0.2.0    
+#####Features
+* Added `fetchPromise` sublibrary with the next functions:
+  * `promiseOsapiRequest`
+  * `promiseRestRequest`
+  * `promiseHttpGet`
