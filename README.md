@@ -860,6 +860,14 @@ const page1 = await loader.loadNext()
 ```
 # Migration Warnings
 
+##0.7.4
+* Fixed critical error in `tileProps/tileId` - it just wasn't working since 0.3.0
+
+##0.5.0
+* `promiseOsapiRequest`, `promiseHttpGet` and `promiseHttpGet` are now throwing the entire response
+ as error, not just response.error. In the same time, `promiseRestRequest` was always working
+  that way so it doesn't need to be changed 
+
 ##0.3.0
 * Generally this is first version to support `fetchPromise` and it's first 3 functions:
   * `promiseOsapiRequest`
@@ -878,21 +886,13 @@ const page1 = await loader.loadNext()
 ##1.0.0-beta.2
 ##1.0.0-beta.1
 
-##0.7.4
-
 ##0.8.0-beta.17
 ##0.8.0-beta.16
 ##0.8.0-beta.15
-
-##0.7.3
-
 ##0.8.0-beta.14
 ##0.8.0-beta.13
 ##0.8.0-beta.12
 ##0.8.0-beta.11
-
-##0.7.2
-
 ##0.8.0-beta.10
 ##0.8.0-beta.8
 ##0.8.0-beta.6
@@ -901,19 +901,41 @@ const page1 = await loader.loadNext()
 ##0.8.0-beta.2
 ##0.8.0-beta.1
 
-##0.7.1
+##0.7.4
+#####Fixes
+* Critical error in `tileProps/tileId` - it just wasn't working since 0.3.0
 
-##0.7.0
+##0.7.2, 0.7.3
+These are just fixes for the versioning errors 
+
+##0.7.1
+#####Features
+* Introduced `promiseRestDelete` and `promiseRestPut` for `fetchPromise`
+* Introduce `getContainerAsync` for `tileProps`
 
 ##0.6.2
-
-##0.6.1
+#####Fixes
+* Fixed error in 'forEach' polyfill in `fetchPromise`
 
 ##0.6.0
+#####Fixes
+* Fixed improper build (apparently not everything was working, probably with the "regenerator
+-runtime")
     
 ##0.5.0
+#####Features
+* Introduced first lazy version of `promiseOsapiPollingRequest`
+* Introduced `promiseRestGet` as a more properly-named copy of `promiseRestRequest` 
+* Introduced `promiseRestPost`
+* Introduced `promiseBatch`
+#####Fixes
+* `promiseOsapiRequest`, `promiseHttpGet` and `promiseHttpGet` are now throwing the entire response
+ as error, not just response.error. In the same time, `promiseRestRequest` was always working
+  that way so it doesn't need to be changed 
     
 ##0.4.0
+#####Features
+* `promiseHttpPost` added to `fetchPromise`
     
 ##0.3.0
 #####Breaking
