@@ -885,7 +885,7 @@ have to reimport it from `anrom-jive-app-tools/deprecated`
 Fixed critical error in `tileProps/tileId` - it just wasn't working since 0.3.0
 
 ##0.5.0
-* `promiseOsapiRequest`, `promiseHttpGet` and `promiseHttpGet` are now throwing the entire response
+* `promiseOsapiRequest`, `promiseHttpGet` and `promiseHttpPost` are now throwing the entire response
 as error, not just response.error. In the same time, `promiseRestRequest` was always working
 that way so it doesn't need to be changed
 * Rename `promiseRestRequest` to `promiseRestGet` to avoid deprecation warning
@@ -1042,7 +1042,7 @@ and 'href'
 * Introduced `promiseRestPost`
 * Introduced `promiseBatch`
 #####Fixes
-* `promiseOsapiRequest`, `promiseHttpGet` and `promiseHttpGet` are now throwing the entire response
+* `promiseOsapiRequest`, `promiseHttpGet` and `promiseHttpPost` are now throwing the entire response
  as error, not just response.error. In the same time, `promiseRestRequest` was always working
   that way so it doesn't need to be changed 
     
