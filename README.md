@@ -860,67 +860,180 @@ const page1 = await loader.loadNext()
 ```
 # Migration Warnings
 
+##0.8.0-beta.14
+####If migrating from 0.8.0-beta.10 or later
+utils/unescapeHtmlEntities` now works properly again (filtering out html tags instead of
+ turning them to quotes).
+
+##0.8.0-beta.10
+####If migrating from 0.8.0-beta.5 or later
+`utils/findContentImage` and `getContentImage` now don't have the `defaultImageURL` parameter
+It's now up to the function user to make this fallback manually if received falsy value from the
+ function 
+
+##0.8.0-beta.8
+####If migrating from 0.8.0-beta.4 or later
+* `currentPlace` is no longer exported. Now you have to create instance of `CurrentPlace` manually
+* Removed support of 'map' option of `ContinuousLoader`
+
+##0.8.0-beta.2
+####If migrating from 0.5.0 or later
+If you still want to use the deprecated `promiseOsapiPollingRequest` you 
+have to reimport it from `anrom-jive-app-tools/deprecated`
+
 ##0.7.4
-* Fixed critical error in `tileProps/tileId` - it just wasn't working since 0.3.0
+Fixed critical error in `tileProps/tileId` - it just wasn't working since 0.3.0
 
 ##0.5.0
 * `promiseOsapiRequest`, `promiseHttpGet` and `promiseHttpGet` are now throwing the entire response
- as error, not just response.error. In the same time, `promiseRestRequest` was always working
-  that way so it doesn't need to be changed 
+as error, not just response.error. In the same time, `promiseRestRequest` was always working
+that way so it doesn't need to be changed
+* Rename `promiseRestRequest` to `promiseRestGet` to avoid deprecation warning
 
 ##0.3.0
-* Generally this is first version to support `fetchPromise` and it's first 3 functions:
-  * `promiseOsapiRequest`
-  * `promiseRestRequest`
-  * `promiseHttpGet`
-* `tileProps`: `tileUrl`, `tilePath`, `tileId` and `parent` are now made functions instead of
+`tileProps`: `tileUrl`, `tilePath`, `tileId` and `parent` are now made functions instead of
  just props (to support Gala, despite it's already cancelled)
 
 # Changelog
 
 ##1.0.0
+Release of all beta-channel changes starting from **0.8.0-beta.1**
 
 ##1.0.0-beta.6
+#####Fixes
+* Fixed absence of `String.prototype.includes` polyfill
+
 ##1.0.0-beta.5
+#####Fixes
+* Fixed absence of `Array.prototype.includes` polyfill
+
 ##1.0.0-beta.4
-##1.0.0-beta.2
+#####Fixes
+* Batch functions now properly recognize jive content entry point thanks to `extractContent` 
+function that is also exported and free to use.  
+
 ##1.0.0-beta.1
+#####Features
+* `promiseBatch` divided into `promiseOsapiBatch` and `promiseRestBatch`. Their work logic
+ changed. If you use previous versions please refer to the commit to see changes
 
 ##0.8.0-beta.17
-##0.8.0-beta.16
-##0.8.0-beta.15
+#####Fixes
+* Critical error in `tileProps/tileId` - it just wasn't working since 0.3.0
+
 ##0.8.0-beta.14
+#####Fixes
+* `dateUtils` covered by tests and now checking for arguments' types
+* `utils/unescapeHtmlEntities` now works properly again (filtering out html tags instead of
+ turning them to quotes)
+
 ##0.8.0-beta.13
+#####Fixes
+* Fixed jive date format for proper parsing
+
 ##0.8.0-beta.12
-##0.8.0-beta.11
+#####Fixes
+* Better checking of aguments' types
+* Fixed `moment2JiveDate` (wasn't working before)
+
 ##0.8.0-beta.10
+#####Features
+* **Jest testing is applied**. Added parameters input test to some functions.
+* Changed the behavior of `utils/abridge`: now the last word isn't removed if the last symbol is
+ whitespace or punctuation;
+* Changed behavior of `utils/findContentImage`: if image search mode is not 'api' and image is
+ not found - 'api' method is used as a fallback. This can be turned off by passing 'false' as 3rd
+  parameter to the function. `getContentImage` also gets the 'fallback' option in 'options' object 
+  parameter, defaulted to 'true'.
+* `utils/findContentImage` and `getContentImage` now don't have the `defaultImageURL` parameter. 
+It's now up to the function user to make this fallback manually if received falsy value from the
+ function  
+* `fetchPromise/promiseRest*` functions now can detect "/api/core/v3/" in the URL
+ and automatically remove it and everything before it (e.g. domain name)
+* `unescapeHtmlEntities` now also escapes '<' and '>' (this will be removed in the future)
+
 ##0.8.0-beta.8
+#####Features
+* Introduced `utils/getImagelessHTML`
+* Added node and npm version minimal requirements
+* Started API documentation
+* Removed Gala support
+* `ContinuousLoader`' option `maxTriesPerLoad` now can be set to 0 for indefinite loads
+* Added `loose` option to `ContinuousLoader`. When "loose == true" source of data isn't being
+ treated as depleted just because current number of items is lesser than "itemsPerPage" parameter. 
+ Useful for jive's `/activity` API that can return data with page size different than sen in "count"
+   
+#####Fixes:
+* `getContentImage`s 2nd argument (options) is now properly defaulted to an empty object
+* Removed dependency on webpack.externals for `jQuery`, `jive`, `osapi` and `gadgets`
+* now `CurrentPlace` is not being automatically instantiated and `currentPlace` is not exported
+* Removed support of 'map' option of `ContinuousLoader`
+ 
+
 ##0.8.0-beta.6
+#####Features
+* Introduced `utils/jsonCopy` and `utils/isEmptyObject`
+#####Fixes
+* `findContentImage` now properly checks if `contentItem.content.text` exists
+
 ##0.8.0-beta.5
+#####Features
+* Introduced new functions of `utils`: 
+  * `abridge`
+  * `getCacheableImage`
+  * `findContentImage`
+  * `getContentImage`
+
 ##0.8.0-beta.4
+#####Features
+* Introduced `utils` with the next functions: 
+  * `pause`
+  * `unescapeHtmlEntities`
+  * `splitArray`
+* Introduced `dateUtils` with the next functions:
+  * `jiveDateFormat`
+  * `jiveDate2Moment`
+  * `moment2JiveDate`
+  * `jiveDate2TS`
+  * `TS2JiveDate`
+* Introduced `fetchPromise/CurrentPlace` class and it's instance `fetchPromise/currentPlace`
+* `ContinuousLoader`'s "filter" argument can now be an async function
+* `ContinuousLoader` now knows when needed number of items already exists in the pool and doesn't 
+make unneeded loads. 
+* Added "map" option for `ContinuousLoader` (appeared to be a duplicate of "filter and removed
+ later"!)
+#####Fixes
+* `promiseRestPost` now supports second "options" object argument which members are added to 'v' 
+and 'href'
+
 ##0.8.0-beta.2
+#####Features
+* Moved from `babel-preset-latest` to `babel-preset-env` 
+* Deprecated use of `promiseOsapiPollingRequest` - it's now moved to `anrom-jive-app-tools
+/deprecated`
+* Introduced `ContinuousLoader` class to use instead of `promiseOsapiPollingRequest`
+
 ##0.8.0-beta.1
+#####Features
+* Moved to `babel-runtime` to avoid code duplication
 
 ##0.7.4
 #####Fixes
 * Critical error in `tileProps/tileId` - it just wasn't working since 0.3.0
 
-##0.7.2, 0.7.3
-These are just fixes for the versioning errors 
-
 ##0.7.1
 #####Features
 * Introduced `promiseRestDelete` and `promiseRestPut` for `fetchPromise`
-* Introduce `getContainerAsync` for `tileProps`
+* Introduced `getContainerAsync` for `tileProps`
 
 ##0.6.2
 #####Fixes
-* Fixed error in 'forEach' polyfill in `fetchPromise`
+* Fixed error in `forEach` polyfill in `fetchPromise`
 
 ##0.6.0
 #####Fixes
-* Fixed improper build (apparently not everything was working, probably with the "regenerator
--runtime")
+* Fixed improper build (apparently not everything was working, probably with the 
+"regenerator-runtime")
     
 ##0.5.0
 #####Features
