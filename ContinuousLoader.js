@@ -175,6 +175,8 @@ var ContinuousLoader = exports.ContinuousLoader = function () {
 
                                 if (typeof nextAsyncFunc === 'function') {
                                     this.asyncFunction = nextAsyncFunc;
+                                } else {
+                                    this.endReached = true;
                                 }
 
                                 //if pool reached target number - resolve items and remove them from pool
@@ -211,7 +213,7 @@ var ContinuousLoader = exports.ContinuousLoader = function () {
                                 return _context.abrupt('return', null);
 
                             case 33:
-                                if (!(typeof nextAsyncFunc === 'function')) {
+                                if (this.endReached) {
                                     _context.next = 39;
                                     break;
                                 }
@@ -223,28 +225,27 @@ var ContinuousLoader = exports.ContinuousLoader = function () {
 
                             case 39:
                                 this._log('no next promise available. returning pool');
-                                this.endReached = true;
                                 resolve({
                                     list: this.resultPool.splice(0),
                                     reason: 'source ended'
                                 });
 
-                            case 42:
-                                _context.next = 47;
+                            case 41:
+                                _context.next = 46;
                                 break;
 
-                            case 44:
-                                _context.prev = 44;
+                            case 43:
+                                _context.prev = 43;
                                 _context.t0 = _context['catch'](0);
 
                                 reject(_context.t0);
 
-                            case 47:
+                            case 46:
                             case 'end':
                                 return _context.stop();
                         }
                     }
-                }, _callee, this, [[0, 44]]);
+                }, _callee, this, [[0, 43]]);
             }));
 
             function _recursiveLoad(_x2, _x3, _x4) {
@@ -259,17 +260,6 @@ var ContinuousLoader = exports.ContinuousLoader = function () {
             var _this = this;
 
             return new _promise2.default(function (resolve, reject) {
-
-                if (_this.endReached) {
-                    _this._log('end was reached before, no more promising');
-                    resolve({
-                        list: [],
-                        reason: 'polling finished'
-                    });
-                    _this._log('(rest of pool:', _this.resultPool);
-                    return null;
-                }
-
                 var targetCount = _this.options.targetCount;
 
 
@@ -279,6 +269,23 @@ var ContinuousLoader = exports.ContinuousLoader = function () {
                         list: _this.resultPool.splice(0, targetCount),
                         reason: 'target count exists in pool'
                     });
+                    return null;
+                }
+
+                if (_this.endReached) {
+                    if (_this.resultPool.length) {
+                        _this._log('no next promise available. returning pool');
+                        resolve({
+                            list: _this.resultPool.splice(0),
+                            reason: 'source ended'
+                        });
+                    } else {
+                        _this._log('end was already reached before, no more polling');
+                        resolve({
+                            list: [],
+                            reason: 'polling finished'
+                        });
+                    }
                     return null;
                 }
 
