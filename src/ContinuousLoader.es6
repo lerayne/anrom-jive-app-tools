@@ -90,6 +90,8 @@ export class ContinuousLoader {
             const nextAsyncFunc = getNextAsyncFunc(asyncFunctionResponse)
             if (typeof nextAsyncFunc === 'function'){
                 this.asyncFunction = nextAsyncFunc
+            } else {
+                this.endReached = true
             }
 
             //if pool reached target number - resolve items and remove them from pool
@@ -115,7 +117,7 @@ export class ContinuousLoader {
                 })
                 return null
 
-            } else if (typeof nextAsyncFunc === 'function') {
+            } else if (!this.endReached) {
                 //if pool hasn't reached target number, but there's more to load
                 this._log('got', this.resultPool.length, 'while target is', targetCount ,'need to load one more time')
                 this._recursiveLoad(resolve, reject, loadCount)
@@ -123,7 +125,6 @@ export class ContinuousLoader {
 
             } else {
                 this._log('no next promise available. returning pool')
-                this.endReached = true
                 resolve({
                     list: this.resultPool.splice(0),
                     reason: 'source ended'
@@ -138,16 +139,6 @@ export class ContinuousLoader {
     loadNext() {
         return new Promise((resolve, reject) => {
 
-            if (this.endReached) {
-                this._log('end was reached before, no more promising')
-                resolve({
-                    list: [],
-                    reason: 'polling finished'
-                })
-                this._log('(rest of pool:', this.resultPool)
-                return null
-            }
-
             const {targetCount} = this.options
 
             if (this.resultPool.length >= targetCount) {
@@ -156,6 +147,23 @@ export class ContinuousLoader {
                     list: this.resultPool.splice(0, targetCount),
                     reason: 'target count exists in pool'
                 })
+                return null
+            }
+
+            if (this.endReached) {
+                if (this.resultPool.length) {
+                    this._log('no next promise available. returning pool')
+                    resolve({
+                        list: this.resultPool.splice(0),
+                        reason: 'source ended'
+                    })
+                } else {
+                    this._log('end was already reached before, no more polling')
+                    resolve({
+                        list: [],
+                        reason: 'polling finished'
+                    })
+                }
                 return null
             }
 
