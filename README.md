@@ -896,6 +896,15 @@ that way so it doesn't need to be changed
 
 # Changelog
 
+##1.0.3
+#####Fixes
+* **Critical:** ContinuousLoader use case was not handled: if there's something in results pool but
+ not enough to give the targetCount AND source has already ended - loadNext was polling the same
+ request as the latest one endlessly which resulted in response duplication.
+
+##1.0.1
+Documentation updated
+
 ##1.0.0
 Release of all beta-channel changes starting from **0.8.0-beta.1**
 
