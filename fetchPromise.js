@@ -99,113 +99,111 @@ var promiseBatch = function () {
                         };
                         options = (0, _extends3.default)({}, defaultOptions, optionsArgument);
 
-
-                        this.shouldBatchContinue = options.shouldBatchContinue;
-
                         //console.time('batch')
 
                         //no more than 25! Jive hard limit
+
                         maxEntriesPerBatch = options.maxEntries < 25 ? options.maxEntries : 25;
 
                         if (!(entries.length <= maxEntriesPerBatch)) {
-                            _context2.next = 17;
+                            _context2.next = 16;
                             break;
                         }
 
                         if (!(type === 'osapi')) {
-                            _context2.next = 11;
+                            _context2.next = 10;
                             break;
                         }
 
                         _context2.t0 = batchObjectToArray;
-                        _context2.next = 9;
+                        _context2.next = 8;
                         return singleOsapiBatch(entries, createBatchEntry);
 
-                    case 9:
+                    case 8:
                         _context2.t1 = _context2.sent;
                         return _context2.abrupt('return', (0, _context2.t0)(_context2.t1));
 
-                    case 11:
+                    case 10:
                         if (!(type === 'rest')) {
-                            _context2.next = 15;
+                            _context2.next = 14;
                             break;
                         }
 
-                        _context2.next = 14;
+                        _context2.next = 13;
                         return singleRestBatch(entries, createBatchEntry);
 
-                    case 14:
+                    case 13:
                         return _context2.abrupt('return', _context2.sent);
 
-                    case 15:
-                        _context2.next = 41;
+                    case 14:
+                        _context2.next = 40;
                         break;
 
-                    case 17:
+                    case 16:
                         entryArrays = (0, _utils.splitArray)(entries, Math.ceil(entries.length / maxEntriesPerBatch));
                         results = [];
                         response = false;
                         i = 0;
 
-                    case 21:
+                    case 20:
                         if (!(i < entryArrays.length)) {
-                            _context2.next = 40;
+                            _context2.next = 39;
                             break;
                         }
 
                         if (!(type === 'osapi')) {
-                            _context2.next = 27;
+                            _context2.next = 26;
                             break;
                         }
 
-                        _context2.next = 25;
+                        _context2.next = 24;
                         return singleOsapiBatch(entryArrays[i], createBatchEntry, i);
 
-                    case 25:
+                    case 24:
                         response = _context2.sent;
 
                         results = results.concat(batchObjectToArray(response));
 
-                    case 27:
+                    case 26:
                         if (!(type === 'rest')) {
-                            _context2.next = 32;
+                            _context2.next = 31;
                             break;
                         }
 
-                        _context2.next = 30;
+                        _context2.next = 29;
                         return singleRestBatch(entryArrays[i], createBatchEntry, i);
 
-                    case 30:
+                    case 29:
                         response = _context2.sent;
 
                         results = results.concat(response);
 
-                    case 32:
-                        if (!(this.shouldBatchContinue && !this.shouldBatchContinue(response, results))) {
-                            _context2.next = 34;
+                    case 31:
+                        if (!(options.shouldBatchContinue && !options.shouldBatchContinue(response, results))) {
+                            _context2.next = 33;
                             break;
                         }
 
-                        return _context2.abrupt('break', 40);
+                        return _context2.abrupt('break', 39);
 
-                    case 34:
+                    case 33:
                         if (!(i < entryArrays.length - 1)) {
-                            _context2.next = 37;
+                            _context2.next = 36;
                             break;
                         }
 
-                        _context2.next = 37;
+                        _context2.next = 36;
                         return (0, _utils.pause)((i + 1) % 4 === 0 ? 11000 : 1000);
 
-                    case 37:
+                    case 36:
                         i++;
-                        _context2.next = 21;
+                        _context2.next = 20;
                         break;
 
-                    case 40:
+                    case 39:
                         return _context2.abrupt('return', results);
 
-                    case 41:
+                    case 40:
                     case 'end':
                         return _context2.stop();
                 }
