@@ -88,7 +88,7 @@ var promiseBatch = function () {
         var entries = arguments[1];
         var createBatchEntry = arguments[2];
         var optionsArgument = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : {};
-        var defaultOptions, options, maxEntriesPerBatch, entryArrays, results, response, i;
+        var defaultOptions, options, maxEntriesPerBatch, entryArrays, results, responseArray, i, response;
         return _regenerator2.default.wrap(function _callee2$(_context2) {
             while (1) {
                 switch (_context2.prev = _context2.next) {
@@ -140,9 +140,9 @@ var promiseBatch = function () {
                         break;
 
                     case 16:
-                        entryArrays = (0, _utils.splitArray)(entries, Math.ceil(entries.length / maxEntriesPerBatch));
+                        entryArrays = (0, _utils.sliceArray)(entries, maxEntriesPerBatch);
                         results = [];
-                        response = false;
+                        responseArray = void 0;
                         i = 0;
 
                     case 20:
@@ -162,11 +162,11 @@ var promiseBatch = function () {
                     case 24:
                         response = _context2.sent;
 
-                        results = results.concat(batchObjectToArray(response));
+                        responseArray = batchObjectToArray(response);
 
                     case 26:
                         if (!(type === 'rest')) {
-                            _context2.next = 31;
+                            _context2.next = 30;
                             break;
                         }
 
@@ -174,12 +174,15 @@ var promiseBatch = function () {
                         return singleRestBatch(entryArrays[i], createBatchEntry, i);
 
                     case 29:
-                        response = _context2.sent;
+                        responseArray = _context2.sent;
 
-                        results = results.concat(response);
+                    case 30:
 
-                    case 31:
-                        if (!(options.shouldBatchContinue && !options.shouldBatchContinue(response, results))) {
+                        results = results.concat(responseArray);
+
+                        //if function is defined and it returns false - stop the cycle!
+
+                        if (!(options.shouldBatchContinue && !options.shouldBatchContinue(responseArray, results))) {
                             _context2.next = 33;
                             break;
                         }

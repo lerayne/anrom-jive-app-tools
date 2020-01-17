@@ -20,6 +20,10 @@ var _typeof2 = require('babel-runtime/helpers/typeof');
 
 var _typeof3 = _interopRequireDefault(_typeof2);
 
+var _toConsumableArray2 = require('babel-runtime/helpers/toConsumableArray');
+
+var _toConsumableArray3 = _interopRequireDefault(_toConsumableArray2);
+
 var _promise = require('babel-runtime/core-js/promise');
 
 var _promise2 = _interopRequireDefault(_promise);
@@ -27,6 +31,7 @@ var _promise2 = _interopRequireDefault(_promise);
 exports.unescapeHtmlEntities = unescapeHtmlEntities;
 exports.pause = pause;
 exports.splitArray = splitArray;
+exports.sliceArray = sliceArray;
 exports.abridge = abridge;
 exports.getCacheableImage = getCacheableImage;
 exports.findContentImage = findContentImage;
@@ -62,7 +67,7 @@ function pause() {
 
 function splitArray(array, chunksNumber) {
     if (!(array instanceof Array)) throw new Error('1st argument should be an array');
-    if (typeof chunksNumber !== 'number') throw new Error('1st argument should be an array');
+    if (typeof chunksNumber !== 'number') throw new Error('2nd argument should be a number');
     if (chunksNumber <= 0) return [];
     if (chunksNumber === 1) return array;
 
@@ -82,6 +87,22 @@ function splitArray(array, chunksNumber) {
     }
 
     return newArray;
+}
+
+function sliceArray(array, sliceSize) {
+    if (!(array instanceof Array)) throw new Error('1st argument should be an array');
+    if (typeof sliceSize !== 'number') throw new Error('2nd argument should be a number');
+    if (sliceSize <= 0) throw new Error('2nd argument should 1 or more');
+    if (sliceSize >= array.length) return [array];
+
+    var sourceArray = [].concat((0, _toConsumableArray3.default)(array));
+    var targetArrayOfArrays = [];
+
+    while (sourceArray.length) {
+        targetArrayOfArrays.push(sourceArray.splice(0, sliceSize));
+    }
+
+    return targetArrayOfArrays;
 }
 
 function abridge(text) {

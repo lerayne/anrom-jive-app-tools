@@ -12,7 +12,7 @@ const jive = window.jive
 const osapi = window.osapi
 
 import {promiseOsapiPollingRequest} from './deprecated'
-import {unescapeHtmlEntities, pause, splitArray} from './utils'
+import {unescapeHtmlEntities, pause, sliceArray} from './utils'
 
 export function extractContent(response) {
 
@@ -219,23 +219,23 @@ async function promiseBatch(type = 'rest', entries, createBatchEntry, optionsArg
 
     } else {
 
-        const entryArrays = splitArray(entries, Math.ceil(entries.length / maxEntriesPerBatch))
+        const entryArrays = sliceArray(entries, maxEntriesPerBatch)
         let results = []
-        let response = false
+        let responseArray
 
         for (let i = 0; i < entryArrays.length; i++) {
-
             if (type === 'osapi') {
-                response = await singleOsapiBatch(entryArrays[i], createBatchEntry, i)
-                results = results.concat(batchObjectToArray(response))
+                const response = await singleOsapiBatch(entryArrays[i], createBatchEntry, i)
+                responseArray = batchObjectToArray(response)
             }
             if (type === 'rest') {
-                response = await singleRestBatch(entryArrays[i], createBatchEntry, i)
-                results = results.concat(response)
+                responseArray = await singleRestBatch(entryArrays[i], createBatchEntry, i)
             }
 
+            results = results.concat(responseArray)
+
             //if function is defined and it returns false - stop the cycle!
-            if (options.shouldBatchContinue && !options.shouldBatchContinue(response, results)){
+            if (options.shouldBatchContinue && !options.shouldBatchContinue(responseArray, results)){
               break
             }
 

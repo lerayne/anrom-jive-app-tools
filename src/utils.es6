@@ -19,7 +19,7 @@ export function pause(ms=0) {
 
 export function splitArray(array, chunksNumber) {
     if (!(array instanceof Array)) throw new Error ('1st argument should be an array')
-    if (typeof chunksNumber !== 'number') throw new Error ('1st argument should be an array')
+    if (typeof chunksNumber !== 'number') throw new Error ('2nd argument should be a number')
     if (chunksNumber <= 0) return []
     if (chunksNumber === 1) return array
 
@@ -39,6 +39,22 @@ export function splitArray(array, chunksNumber) {
     }
 
     return newArray
+}
+
+export function sliceArray (array, sliceSize) {
+  if (!(array instanceof Array)) throw new Error ('1st argument should be an array')
+  if (typeof sliceSize !== 'number') throw new Error ('2nd argument should be a number')
+  if (sliceSize <= 0) throw new Error ('2nd argument should 1 or more')
+  if (sliceSize >= array.length) return [array]
+
+  const sourceArray = [...array]
+  const targetArrayOfArrays = []
+
+  while (sourceArray.length) {
+    targetArrayOfArrays.push(sourceArray.splice(0, sliceSize))
+  }
+
+  return targetArrayOfArrays
 }
 
 export function abridge(text, length = 160) {
