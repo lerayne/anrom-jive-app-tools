@@ -205,8 +205,6 @@ async function promiseBatch(type = 'rest', entries, createBatchEntry, optionsArg
 
     const options = {...defaultOptions, ...optionsArgument}
 
-    this.shouldBatchContinue = options.shouldBatchContinue
-
     //console.time('batch')
 
     //no more than 25! Jive hard limit
@@ -237,7 +235,7 @@ async function promiseBatch(type = 'rest', entries, createBatchEntry, optionsArg
             }
 
             //if function is defined and it returns false - stop the cycle!
-            if (this.shouldBatchContinue && !this.shouldBatchContinue(response, results)){
+            if (options.shouldBatchContinue && !options.shouldBatchContinue(response, results)){
               break
             }
 
