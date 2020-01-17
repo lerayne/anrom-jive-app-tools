@@ -199,10 +199,13 @@ async function singleRestBatch(items, createBatchEntry, j=0){
 async function promiseBatch(type = 'rest', entries, createBatchEntry, optionsArgument = {}) {
 
     const defaultOptions = {
-        maxEntries: 25
+        maxEntries: 25,
+        shouldBatchContinue: null
     }
 
     const options = {...defaultOptions, ...optionsArgument}
+
+    this.shouldBatchContinue = options.shouldBatchContinue
 
     //console.time('batch')
 
@@ -231,6 +234,11 @@ async function promiseBatch(type = 'rest', entries, createBatchEntry, optionsArg
             if (type === 'rest') {
                 response = await singleRestBatch(entryArrays[i], createBatchEntry, i)
                 results = results.concat(response)
+            }
+
+            //if function is defined and it returns false - stop the cycle!
+            if (this.shouldBatchContinue && !this.shouldBatchContinue(response, results)){
+              break
             }
 
             // make 1 sec pause after each request an 11 sec pause each 4 requests to bypass jive's
