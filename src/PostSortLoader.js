@@ -1,4 +1,4 @@
-import {promiseOsapiBatch} from '../fetchPromise'
+import { promiseRestBatch } from '../fetchPromise'
 
 //todo: so far works with OSAPI batch (not REST) and doesn't load more than required initially (no
 // full support of "load more")
@@ -6,16 +6,29 @@ export default class PostSortLoader {
   constructor (createBatchFunction, createContentItemRequest, sortingFunction, options) {
 
     const optionsDefaults = {
+      // how many items of final sorted content we want to load per each "loadNext"
       targetCount: 10,
+
+      //how many batched pages of signature requests to perform
       batchNumber: 5,
+
+      // jive batch can take no more than 25 requests per batch. 25 is a default, but we're
+      // putting it here explicitly.
+      // In many cases it's better to ask for signatures in smaller chunks - like 10 times per
+      // 100 items makes it 1000 items per page, but we can stop after each thousand and run
+      // shouldBatchContinue to avoid loading too much content
       batchMaxEntries: 25,
+
+      // function that runs after each batch page. If it returns false - batching should stop
       shouldBatchContinue: null
     }
 
-    this.endReached = false
-
     this.options = { ...optionsDefaults, ...options }
 
+    //global flag telling us that we should stop polling.
+    this.endReached = false
+
+    //main functions from params
     this.createBatchFunction = createBatchFunction
     this.createContentItemRequest = createContentItemRequest
     this.sortingFunction = sortingFunction
@@ -24,19 +37,30 @@ export default class PostSortLoader {
     this.contentSignaturesPool = []
   }
 
-  async loadNext(customLoadNumber = false) {
-    if (!this.contentSignaturesPool.length) {
+  async loadNext (customLoadNumber = false) {
+    // if poll is empty and end is not reached (means this is first calling of loadNext) -
+    // get those signatures!
+    if (!this.contentSignaturesPool.length && !this.endReached) {
       this.contentSignaturesPool = await this.getSignatures()
     }
 
+    // as long as pool has data - slice in targetCount/customLoadNumber and get individual items
     if (this.contentSignaturesPool.length) {
       const contentToRequest = this.contentSignaturesPool.splice(0, customLoadNumber || this.options.targetCount)
 
-      const contentsResponse = await promiseOsapiBatch(contentToRequest, (entry, eI, rI) => {
-        return [
-          rI + '.' + eI,
-          this.createContentItemRequest(entry)
-        ]
+      // but if this was the last slice - flag the "endReached"
+      if (!this.contentSignaturesPool.length) {
+        this.endReached = true
+      }
+
+      const contentsResponse = await promiseRestBatch(contentToRequest, (entry, eI, rI) => {
+        return {
+          key: rI + '.' + eI,
+          request: {
+            method: 'GET',
+            endpoint: this.createContentItemRequest(entry)
+          }
+        }
       })
 
       //todo: figure out what to do with errors inside this list (now they're just ignored)
@@ -44,13 +68,7 @@ export default class PostSortLoader {
         list: contentsResponse
           .filter(item => !item.error)
           .map(item => item.data),
-        reason: 'reached target count'
-      }
-    } else if (!this.endReached) {
-      this.endReached = true
-      return {
-        list: [],
-        reason: 'source ended'
+        reason: this.endReached ? 'source ended' : 'reached target count'
       }
     } else {
       return {
@@ -60,7 +78,7 @@ export default class PostSortLoader {
     }
   }
 
-  async getSignatures(){
+  async getSignatures () {
     const {
       batchNumber,
     } = this.options
@@ -68,11 +86,14 @@ export default class PostSortLoader {
     const batchArray = []
     for (let i = 0; i < batchNumber; i++) batchArray.push(i)
 
-    const response = await promiseOsapiBatch(batchArray, (entry, entryIndex, requestIndex) => {
-      return [
-        requestIndex + '.' + entryIndex,
-        this.createBatchFunction(entry)
-      ]
+    const response = await promiseRestBatch(batchArray, (batchPageIndex, entryIndex, requestIndex) => {
+      return {
+        key: requestIndex + '.' + entryIndex,
+        request: {
+          method: 'GET',
+          endpoint: this.createBatchFunction(batchPageIndex)
+        }
+      }
     }, {
       maxEntries: this.options.batchMaxEntries,
       shouldBatchContinue: this.options.shouldBatchContinue

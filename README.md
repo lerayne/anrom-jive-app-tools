@@ -858,11 +858,94 @@ const loader = new ContinuousLoadJiveOSAPI(
 
 const page1 = await loader.loadNext()
 ```
+
+# PostSortLoader
+```javascript
+import PostSortLoader from 'anrom-jive-app-tools/PostSortLoader'
+```
+Allows load content sorted by a parameter not supported by original API
+
+### `class PostSortLoader(createBatchFunction, createContentItemRequest, sortingFunction, options)`
+Class used to create a loader instance that abstracts post-load sorting.
+
+More specifically, it relies on a suggestion that there's a way to reduce server load by
+requesting only fields that are necessary to sort items and then load them one-by-one in smaller
+portions. 
+
+**params:**
+* **createBatchFunction** - func that should return single endpoint used in signature batch
+  * param `batchPageIndex` - number of request starting from 0. Usually used to set `startIndex` param
+* **createContentItemRequest** - func that should return endpoint to a single content item
+  * param `signature` - object with ID and field for sorting of the given item
+* **sortingFunction** - func that used for sorting, as usual for `Array.sort`
+  * param `itemA` - used in standard `Array.sort` comparison
+  * param `itemB` - used in standard `Array.sort` comparison
+* **options** - Object of additional parameters:
+  * targetCount
+  * batchNumber
+  * batchMaxEntries
+  * shouldBatchContinue
+  
+#### Methods
+
+**`async PostSortLoader.loadNext()`**
+**returns**: Promise(Object)
+Main loading function that tries to loads first/next stated number of items.
+Returning object contains two fields:
+* `list` - the resulting list of items
+* `reason` - text entry explaining why the polling stopped. Reason can be one of those:
+    * "reached target count" - PostSortLoader has found the desired count of items, but `loadNext` 
+    can be called one more time
+    * "source ended" - no more signature items in the pool 
+    * "polling finished" - there been "source ended" response already, why do you still 
+    polling `loadNext`? 
+    
+#### Usage example
+```javascript
+const loader = new PostSortLoader(
+  batchPageIndex => url.format({
+    pathname: '/contents',
+    query: {
+      filter: 'type(post)',
+      count: 100,
+      startIndex: batchPageIndex * 100, //(0 for 0, 100 for 1, 200 for 2 etc.)
+      fields: 'contentID,publishDate,-resources,-id' //the only fields we need to make a sorting
+    }           
+  }),
+
+  signature => url.format({
+    pathname: '/contents/' + signature.contentID,
+      query: {
+        directive: 'silent' // don't increase view count 
+      }
+  }),
+
+  (a, b) => {
+    if (moment.utc(a.publishDate).unix() > moment.utc(b.publishDate).unix()) return -1
+    if (moment.utc(a.publishDate).unix() < moment.utc(b.publishDate).unix()) return 1
+    return 0
+  }, 
+
+  {
+    targetCount: 15,
+    batchNumber: 30, //requesting 30 * count 100 = 3000 signatures of content
+    batchMaxEntries: 11,
+    shouldBatchContinue: responseArray => {
+      const lastItem = responseArray[responseArray.length - 1]
+      //last item returned empty - means there's no more data on the server
+      return lastItem?.data?.list && lastItem.data.list.length !== 0
+    }      
+  }
+)
+
+const page = await loader.loadNext()
+```
+
 # Migration Warnings
 
 ##0.8.0-beta.14
 ####If migrating from 0.8.0-beta.10 or later
-utils/unescapeHtmlEntities` now works properly again (filtering out html tags instead of
+`utils/unescapeHtmlEntities` now works properly again (filtering out html tags instead of
  turning them to quotes).
 
 ##0.8.0-beta.10
@@ -895,6 +978,15 @@ that way so it doesn't need to be changed
  just props (to support Gala, despite it's already cancelled)
 
 # Changelog
+
+##1.1.0
+#####Features
+* Introduced `sliceArray` function. Contrary to `splitArray` it doesn't try to split array in
+ even chunks of the given quantity, instead it slices it to unknown number of chunks of given length
+* `promiseRestBatch` and `promiseOsapiBatch` now have option parameter `shouldBatchContinue`,
+that, if defined, should take function, that will be called on each batch iteration and return
+ `false` if batch should stop batching. Useful for loading unknown number of results
+* Introduced `PostSortLoader`
 
 ##1.0.3
 #####Fixes
