@@ -65,10 +65,9 @@ bundle even larger:
   - [CurrentPlace](#class-currentplacefunction-filter)
 - **[ContinuousLoader](#continuousloader)** - smart tool for client-side filtering
   - [ContinuousLoader](#class-continuousloaderasyncfunction-filter-options)
-    - [Methods](#methods)
-    - [Usage Examples](#usage-examples)
   - [ContinuousLoadJiveREST](#class-continuousloadjiverestasyncfunction-filter-options)
   - [ContinuousLoadJiveOSAPI](#class-continuousloadjiveosapiasyncfunction-filter-options)
+- **[PostSortLoader](#postsortloader)** - smart tool for client-side sorting
 - **[Migration Warnings](#migrationwarnings)**
 - **[Changelog](#chnagelog)**
 
@@ -582,8 +581,13 @@ creation/deletion reports etc.
   abstract a few batch requests as one)
   * `requestIndex` - index of the batch request. This way usually request key is 
   `requestIndex + '.' + entryIndex`
-* `options` - currently only one options is supported: `maxEntries`. In jive only 25 requests per 
-batch is allowed, but you can make this number smaller (for example for performance reasons) 
+* `options`:
+  * `maxEntries` - number of entries per batch. In jive only 25 requests per batch is allowed, but
+   you can make this number smaller (for example for performance reasons) 
+  * `shouldBatchContinue` - function that should return false to stop batching at some point. 
+  Described in details in `PostSortLoader`.
+    * param `responseArray` - results received in current batch
+    * param `results` (optional) - all results, including current one
 
 Usage examples:
 ```javascript
@@ -863,9 +867,10 @@ const page1 = await loader.loadNext()
 ```javascript
 import PostSortLoader from 'anrom-jive-app-tools/PostSortLoader'
 ```
-Allows load content sorted by a parameter not supported by original API
+Allows to load Jive content sorted by a parameter not supported by original Jive API.
+**Attention:** This loader is for Jive only at the moment!
 
-### `class PostSortLoader(createBatchFunction, createContentItemRequest, sortingFunction, options)`
+### `class PostSortLoader(createSignatureRequest, createContentItemRequest, sortingFunction, options)`
 Class used to create a loader instance that abstracts post-load sorting.
 
 More specifically, it relies on a suggestion that there's a way to reduce server load by
@@ -873,7 +878,7 @@ requesting only fields that are necessary to sort items and then load them one-b
 portions. 
 
 **params:**
-* **createBatchFunction** - func that should return single endpoint used in signature batch
+* **createSignatureRequest** - func that should return single endpoint used in signature batch
   * param `batchPageIndex` - number of request starting from 0. Usually used to set `startIndex` param
 * **createContentItemRequest** - func that should return endpoint to a single content item
   * param `signature` - object with ID and field for sorting of the given item
@@ -881,15 +886,30 @@ portions.
   * param `itemA` - used in standard `Array.sort` comparison
   * param `itemB` - used in standard `Array.sort` comparison
 * **options** - Object of additional parameters:
-  * targetCount
-  * batchNumber
-  * batchMaxEntries
-  * shouldBatchContinue
+  * `targetCount` - initial number of elements to display after first load. Also evey other page
+  given by `loadNext()` will be giving this number if no count parameter is passed. Default is 10.
+  * `batchNumber` - how many pages of signature requests we want to get. Default is 5.
+  * `batchMaxEntries` - how many requests formed by `createSignatureRequest` should one signature
+   page have. Default is 25 (this is maximum for jive batch request)
+  * `shouldBatchContinue` - function that works in a same way as in `promiseOsapiBatch` or 
+  `promiseRestBatch`.
+  
+**Brief description of how it all calculated:**  
+ Let's say your `createSignatureRequest` creates a request for 100 content items and your 
+ `batchNumber` is 5 as per default. This means loader will make some number of batch requests to
+ get 5 * x 100 = 500 content signatures. If your `batchMaxEntries` is 25, as per default, these 500
+ signatures will be received in one take, because 5 is lesser than 25. But if your `batchNumber` 
+ is 20 (imagine you want 2000 signatures) and your `batchMaxEntries` is 5 - loader will make 4
+ calls, 500 items each, to reach this number. Why is that useful?  
+ Well, you can't know how many content items client does have. And each batch request takes some
+ time to execute. You might find useful to take first 500, look at the last item and if it's
+ empty - stop requesting for next, because by that empty request you know you reached end of
+ content. That's what `shouldBatchContinue` does.
   
 #### Methods
 
-**`async PostSortLoader.loadNext()`**
-**returns**: Promise(Object)
+**`async PostSortLoader.loadNext(count)`**  
+**returns**: Promise(Object)  
 Main loading function that tries to loads first/next stated number of items.
 Returning object contains two fields:
 * `list` - the resulting list of items
@@ -898,7 +918,10 @@ Returning object contains two fields:
     can be called one more time
     * "source ended" - no more signature items in the pool 
     * "polling finished" - there been "source ended" response already, why do you still 
-    polling `loadNext`? 
+    polling `loadNext`?  
+
+**params:**
+* `count` (optional) - size of a page to get.
     
 #### Usage example
 ```javascript
@@ -907,9 +930,10 @@ const loader = new PostSortLoader(
     pathname: '/contents',
     query: {
       filter: 'type(post)',
-      count: 100,
+      count: 100, // 100 is max jive can give, so there's no use to ask for less
       startIndex: batchPageIndex * 100, //(0 for 0, 100 for 1, 200 for 2 etc.)
-      fields: 'contentID,publishDate,-resources,-id' //the only fields we need to make a sorting
+      //we only need publishDate to make a sorting and contentID to get element later
+      fields: 'contentID,publishDate,-resources,-id'
     }           
   }),
 
@@ -920,6 +944,7 @@ const loader = new PostSortLoader(
       }
   }),
 
+  // this function sorts each element by it's publishDate unix timestamp (the latest go to top)
   (a, b) => {
     if (moment.utc(a.publishDate).unix() > moment.utc(b.publishDate).unix()) return -1
     if (moment.utc(a.publishDate).unix() < moment.utc(b.publishDate).unix()) return 1
@@ -927,9 +952,11 @@ const loader = new PostSortLoader(
   }, 
 
   {
-    targetCount: 15,
-    batchNumber: 30, //requesting 30 * count 100 = 3000 signatures of content
-    batchMaxEntries: 11,
+    targetCount: 15, // we need 15 final results per page
+    batchNumber: 20, //requesting  20 * 100 = 2000 signatures total
+    batchMaxEntries: 5, // making it 5* 100 = 500 per page so that we could stop after each
+
+    // batch only continues if last request in a batch is not empty
     shouldBatchContinue: responseArray => {
       const lastItem = responseArray[responseArray.length - 1]
       //last item returned empty - means there's no more data on the server

@@ -3,7 +3,7 @@ import { promiseRestBatch } from '../fetchPromise'
 //todo: so far works with OSAPI batch (not REST) and doesn't load more than required initially (no
 // full support of "load more")
 export default class PostSortLoader {
-  constructor (createBatchFunction, createContentItemRequest, sortingFunction, options) {
+  constructor (createSignatureRequest, createContentItemRequest, sortingFunction, options) {
 
     const optionsDefaults = {
       // how many items of final sorted content we want to load per each "loadNext"
@@ -29,7 +29,7 @@ export default class PostSortLoader {
     this.endReached = false
 
     //main functions from params
-    this.createBatchFunction = createBatchFunction
+    this.createSignatureRequest = createSignatureRequest
     this.createContentItemRequest = createContentItemRequest
     this.sortingFunction = sortingFunction
 
@@ -91,7 +91,7 @@ export default class PostSortLoader {
         key: requestIndex + '.' + entryIndex,
         request: {
           method: 'GET',
-          endpoint: this.createBatchFunction(batchPageIndex)
+          endpoint: this.createSignatureRequest(batchPageIndex)
         }
       }
     }, {
