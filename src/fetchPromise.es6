@@ -200,7 +200,8 @@ async function promiseBatch(type = 'rest', entries, createBatchEntry, optionsArg
 
     const defaultOptions = {
         maxEntries: 25,
-        shouldBatchContinue: null
+        shouldBatchContinue: null,
+        singleRestBatchFunc: singleRestBatch
     }
 
     const options = {...defaultOptions, ...optionsArgument}
@@ -213,7 +214,7 @@ async function promiseBatch(type = 'rest', entries, createBatchEntry, optionsArg
     if (entries.length <= maxEntriesPerBatch) {
 
         if (type === 'osapi') return batchObjectToArray(await singleOsapiBatch(entries, createBatchEntry))
-        if (type === 'rest') return await singleRestBatch(entries, createBatchEntry)
+        if (type === 'rest') return await options.singleRestBatchFunc(entries, createBatchEntry)
 
         //console.timeEnd('batch')
 
@@ -229,7 +230,7 @@ async function promiseBatch(type = 'rest', entries, createBatchEntry, optionsArg
                 responseArray = batchObjectToArray(response)
             }
             if (type === 'rest') {
-                responseArray = await singleRestBatch(entryArrays[i], createBatchEntry, i)
+                responseArray = await options.singleRestBatchFunc(entryArrays[i], createBatchEntry, i)
             }
 
             results = results.concat(responseArray)
