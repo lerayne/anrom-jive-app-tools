@@ -39,6 +39,7 @@ export class ContinuousLoader {
       debug: false,
       targetCount: 10,
       maxTriesPerLoad: 5,
+      timeLimit: 10000,
       getNextAsyncFunc: ::this.getNextAsyncFunc,
       getError: ::this.getError,
       getList: ::this.getList,
@@ -118,8 +119,19 @@ export class ContinuousLoader {
       }
 
       loadCount++
+      const sincePassStart = Date.now().getTime() - this.passStartTS
+      console.log('Time passes since pass started', sincePassStart)
 
-      if (maxTriesPerLoad > 0 && loadCount >= maxTriesPerLoad) {
+      if (sincePassStart > this.options.timeLimit) {
+        // if pool hasn't reached the target number, but time limit has been exceded
+        this._log('time limit of ' + this.options.timeLimit + 'ms is exceeded. returning what\'s' +
+          ' found so far')
+
+        const list = await this.transformResponse(this.resultPool.splice(0))
+
+        resolve({ list, reason: 'time limit exceeded' })
+        return null
+      } else if (maxTriesPerLoad > 0 && loadCount >= maxTriesPerLoad) {
         // if pool hasn't reached the target number, but it's last poll according to
         // maxTriesPerLoad
         this._log('max tries reached. returning what\'s found so far')
@@ -178,6 +190,7 @@ export class ContinuousLoader {
         return null
       }
 
+      this.passStartTS = Date.now().getTime()
       this._recursiveLoad(resolve, reject, 0)
     })
   }
