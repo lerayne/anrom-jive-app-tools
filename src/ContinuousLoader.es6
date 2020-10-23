@@ -42,7 +42,7 @@ export class ContinuousLoader {
       getNextAsyncFunc: ::this.getNextAsyncFunc,
       getError: ::this.getError,
       getList: ::this.getList,
-      transformResponse: (list) => Promise.resolve(list)
+      transformResponse: null
     }
 
     this.options = { ...optionsDefaults, ...options }
@@ -51,6 +51,11 @@ export class ContinuousLoader {
     this.filter = filter
     this.resultPool = []
     this.endReached = false
+    this.transformResponse = this.options.transformResponse || ::this._transformResponse
+  }
+
+  _transformResponse (list) {
+    return  Promise.resolve(list)
   }
 
   async _recursiveLoad (resolve, reject, loadCount) {
@@ -80,10 +85,10 @@ export class ContinuousLoader {
       if (!list.length) {
         this._log('zero items get, returning []/rest of pool')
         this.endReached = true
-        resolve({
-          list: this.resultPool.splice(0),
-          reason: 'source ended'
-        })
+
+        const list = await this.transformResponse(this.resultPool.splice(0))
+
+        resolve({ list, reason: 'source ended' })
         return null
       }
 
@@ -104,10 +109,10 @@ export class ContinuousLoader {
       //if pool reached target number - resolve items and remove them from pool
       if (this.resultPool.length >= targetCount) {
         this._log('pool reached the target count. set pause.')
-        resolve({
-          list: this.resultPool.splice(0, targetCount),
-          reason: 'reached target count'
-        })
+
+        const list = await this.transformResponse(this.resultPool.splice(0, targetCount))
+
+        resolve({ list, reason: 'reached target count' })
         this._log('(rest of pool:', this.resultPool)
         return null
       }
@@ -118,10 +123,10 @@ export class ContinuousLoader {
         // if pool hasn't reached the target number, but it's last poll according to
         // maxTriesPerLoad
         this._log('max tries reached. returning what\'s found so far')
-        resolve({
-          list: this.resultPool.splice(0),
-          reason: 'max polls reached'
-        })
+
+        const list = await this.transformResponse(this.resultPool.splice(0))
+
+        resolve({ list, reason: 'max polls reached' })
         return null
 
       } else if (!this.endReached) {
@@ -132,10 +137,10 @@ export class ContinuousLoader {
 
       } else {
         this._log('no next promise available. returning pool')
-        resolve({
-          list: this.resultPool.splice(0),
-          reason: 'source ended'
-        })
+
+        const list = await this.transformResponse(this.resultPool.splice(0))
+
+        resolve({ list, reason: 'source ended' })
       }
 
     } catch (error) {
@@ -143,16 +148,14 @@ export class ContinuousLoader {
     }
   }
 
-  loadNext (loadOptions) {
+  loadNext () {
     return new Promise((resolve, reject) => {
-      loadOptions = {...this.options, ...loadOptions}
-
-      const { targetCount } = loadOptions
+      const { targetCount } = this.options
 
       if (this.resultPool.length >= targetCount) {
         this._log('target count found in existing pool')
 
-        loadOptions.transformResponse(this.resultPool.splice(0, targetCount))
+        this.transformResponse(this.resultPool.splice(0, targetCount))
           .then(list => resolve({ list, reason: 'target count exists in pool' }))
           .catch(reject)
 
@@ -162,7 +165,7 @@ export class ContinuousLoader {
       if (this.endReached) {
         if (this.resultPool.length) {
           this._log('no next promise available. returning pool')
-          loadOptions.transformResponse(this.resultPool.splice(0))
+          this.transformResponse(this.resultPool.splice(0))
             .then(list => resolve({ list, reason: 'source ended' }))
             .catch(reject)
         } else {
@@ -268,8 +271,5 @@ export class ContinuousLoadJiveOSAPI extends ContinuousLoader {
 export default {
   ContinuousLoader,
   ContinuousLoadJiveREST,
-  ContinuousLoadJiveOSAPI,
-  PostFilteringLoader: ContinuousLoader,
-  PostFilteringLoaderREST: ContinuousLoadJiveREST,
-  PostFilteringLoaderOSAPI: ContinuousLoadJiveOSAPI
+  ContinuousLoadJiveOSAPI
 }

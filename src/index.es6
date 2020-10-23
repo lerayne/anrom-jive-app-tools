@@ -5,10 +5,11 @@
 import tileProps from './tileProps'
 import fetchPromise from './fetchPromise'
 import continuousLoader from './ContinuousLoader'
+import PostFilteringLoader from './PostFilteringLoader'
 import PostSortLoader from './PostSortLoader'
 import utils from './utils'
 import dateUtils from './dateUtils'
 
-const tools = {tileProps, fetchPromise, continuousLoader, PostSortLoader, utils, dateUtils}
-export {tileProps, fetchPromise, continuousLoader, PostSortLoader, utils, dateUtils}
+const tools = {tileProps, fetchPromise, continuousLoader, PostFilteringLoader, PostSortLoader, utils, dateUtils}
+export {tileProps, fetchPromise, continuousLoader, PostFilteringLoader, PostSortLoader, utils, dateUtils}
 export default tools

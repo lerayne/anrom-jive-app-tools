@@ -3,14 +3,20 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.default = undefined;
+exports.PostFilteringLoaderOSAPI = exports.PostFilteringLoaderREST = exports.PostFilteringLoader = undefined;
 
 var _ContinuousLoader = require('./ContinuousLoader');
 
-var _ContinuousLoader2 = _interopRequireDefault(_ContinuousLoader);
+exports.PostFilteringLoader = _ContinuousLoader.ContinuousLoader;
+exports.PostFilteringLoaderREST = _ContinuousLoader.ContinuousLoadJiveREST;
+exports.PostFilteringLoaderOSAPI = _ContinuousLoader.ContinuousLoadJiveOSAPI;
 
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-exports.default = _ContinuousLoader2.default;
-module.exports = exports['default'];
+var exp = {
+  PostFilteringLoader: _ContinuousLoader.ContinuousLoader,
+  PostFilteringLoaderREST: _ContinuousLoader.ContinuousLoadJiveREST,
+  PostFilteringLoaderOSAPI: _ContinuousLoader.ContinuousLoadJiveOSAPI
+};
+
+exports.default = exp;
 //# sourceMappingURL=PostFilteringLoader.js.map
