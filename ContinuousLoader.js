@@ -17,10 +17,6 @@ var _inherits2 = require('babel-runtime/helpers/inherits');
 
 var _inherits3 = _interopRequireDefault(_inherits2);
 
-var _promise = require('babel-runtime/core-js/promise');
-
-var _promise2 = _interopRequireDefault(_promise);
-
 var _regenerator = require('babel-runtime/regenerator');
 
 var _regenerator2 = _interopRequireDefault(_regenerator);
@@ -36,6 +32,10 @@ var _asyncToGenerator3 = _interopRequireDefault(_asyncToGenerator2);
 var _extends2 = require('babel-runtime/helpers/extends');
 
 var _extends3 = _interopRequireDefault(_extends2);
+
+var _promise = require('babel-runtime/core-js/promise');
+
+var _promise2 = _interopRequireDefault(_promise);
 
 var _classCallCheck2 = require('babel-runtime/helpers/classCallCheck');
 
@@ -105,7 +105,10 @@ var ContinuousLoader = exports.ContinuousLoader = function () {
       maxTriesPerLoad: 5,
       getNextAsyncFunc: this.getNextAsyncFunc.bind(this),
       getError: this.getError.bind(this),
-      getList: this.getList.bind(this)
+      getList: this.getList.bind(this),
+      transformResponse: function transformResponse(list) {
+        return _promise2.default.resolve(list);
+      }
     };
 
     this.options = (0, _extends3.default)({}, optionsDefaults, options);
@@ -270,25 +273,28 @@ var ContinuousLoader = exports.ContinuousLoader = function () {
       var _this = this;
 
       return new _promise2.default(function (resolve, reject) {
-        var targetCount = _this.options.targetCount;
+        loadOptions = (0, _extends3.default)({}, _this.options, loadOptions);
+
+        var _loadOptions = loadOptions,
+            targetCount = _loadOptions.targetCount;
 
 
         if (_this.resultPool.length >= targetCount) {
           _this._log('target count found in existing pool');
-          resolve({
-            list: _this.resultPool.splice(0, targetCount),
-            reason: 'target count exists in pool'
-          });
+
+          loadOptions.transformResponse(_this.resultPool.splice(0, targetCount)).then(function (list) {
+            return resolve({ list: list, reason: 'target count exists in pool' });
+          }).catch(reject);
+
           return null;
         }
 
         if (_this.endReached) {
           if (_this.resultPool.length) {
             _this._log('no next promise available. returning pool');
-            resolve({
-              list: _this.resultPool.splice(0),
-              reason: 'source ended'
-            });
+            loadOptions.transformResponse(_this.resultPool.splice(0)).then(function (list) {
+              return resolve({ list: list, reason: 'source ended' });
+            }).catch(reject);
           } else {
             _this._log('end was already reached before, no more polling');
             resolve({
@@ -425,6 +431,9 @@ var ContinuousLoadJiveOSAPI = exports.ContinuousLoadJiveOSAPI = function (_Conti
 exports.default = {
   ContinuousLoader: ContinuousLoader,
   ContinuousLoadJiveREST: ContinuousLoadJiveREST,
-  ContinuousLoadJiveOSAPI: ContinuousLoadJiveOSAPI
+  ContinuousLoadJiveOSAPI: ContinuousLoadJiveOSAPI,
+  PostFilteringLoader: ContinuousLoader,
+  PostFilteringLoaderREST: ContinuousLoadJiveREST,
+  PostFilteringLoaderOSAPI: ContinuousLoadJiveOSAPI
 };
 //# sourceMappingURL=ContinuousLoader.js.map

@@ -41,7 +41,8 @@ export class ContinuousLoader {
       maxTriesPerLoad: 5,
       getNextAsyncFunc: ::this.getNextAsyncFunc,
       getError: ::this.getError,
-      getList: ::this.getList
+      getList: ::this.getList,
+      transformResponse: (list) => Promise.resolve(list)
     }
 
     this.options = { ...optionsDefaults, ...options }
@@ -144,25 +145,26 @@ export class ContinuousLoader {
 
   loadNext (loadOptions) {
     return new Promise((resolve, reject) => {
+      loadOptions = {...this.options, ...loadOptions}
 
-      const { targetCount } = this.options
+      const { targetCount } = loadOptions
 
       if (this.resultPool.length >= targetCount) {
         this._log('target count found in existing pool')
-        resolve({
-          list: this.resultPool.splice(0, targetCount),
-          reason: 'target count exists in pool'
-        })
+
+        loadOptions.transformResponse(this.resultPool.splice(0, targetCount))
+          .then(list => resolve({ list, reason: 'target count exists in pool' }))
+          .catch(reject)
+
         return null
       }
 
       if (this.endReached) {
         if (this.resultPool.length) {
           this._log('no next promise available. returning pool')
-          resolve({
-            list: this.resultPool.splice(0),
-            reason: 'source ended'
-          })
+          loadOptions.transformResponse(this.resultPool.splice(0))
+            .then(list => resolve({ list, reason: 'source ended' }))
+            .catch(reject)
         } else {
           this._log('end was already reached before, no more polling')
           resolve({
@@ -266,5 +268,8 @@ export class ContinuousLoadJiveOSAPI extends ContinuousLoader {
 export default {
   ContinuousLoader,
   ContinuousLoadJiveREST,
-  ContinuousLoadJiveOSAPI
+  ContinuousLoadJiveOSAPI,
+  PostFilteringLoader: ContinuousLoader,
+  PostFilteringLoaderREST: ContinuousLoadJiveREST,
+  PostFilteringLoaderOSAPI: ContinuousLoadJiveOSAPI
 }
