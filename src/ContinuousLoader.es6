@@ -120,7 +120,7 @@ export class ContinuousLoader {
 
       loadCount++
       const sincePassStart = Date.now().getTime() - this.passStartTS
-      console.log('Time passes since pass started', sincePassStart)
+      this._log('Time passes since pass started', sincePassStart)
 
       if (sincePassStart > this.options.timeLimit) {
         // if pool hasn't reached the target number, but time limit has been exceded

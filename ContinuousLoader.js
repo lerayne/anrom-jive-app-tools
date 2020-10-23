@@ -227,7 +227,7 @@ var ContinuousLoader = exports.ContinuousLoader = function () {
                 loadCount++;
                 sincePassStart = Date.now().getTime() - this.passStartTS;
 
-                console.log('Time passes since pass started', sincePassStart);
+                this._log('Time passes since pass started', sincePassStart);
 
                 if (!(sincePassStart > this.options.timeLimit)) {
                   _context.next = 44;
