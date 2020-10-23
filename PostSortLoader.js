@@ -50,7 +50,13 @@ var PostSortLoader = function () {
       batchMaxEntries: 25,
 
       // function that runs after each batch page. If it returns false - batching should stop
-      shouldBatchContinue: null
+      shouldBatchContinue: null,
+
+      // function to filter out some signatures before fetching of real data starts. For example
+      // we want to disable of loading some IDs
+      filterSignature: function filterSignature(sig) {
+        return sig;
+      }
     };
 
     this.options = (0, _extends3.default)({}, optionsDefaults, options);
@@ -152,12 +158,13 @@ var PostSortLoader = function () {
       var _ref2 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee2() {
         var _this2 = this;
 
-        var batchNumber, batchArray, i, response, signatures, sortedSignatures;
+        var _options, batchNumber, filterSignature, batchArray, i, response, signatures, sortedSignatures;
+
         return _regenerator2.default.wrap(function _callee2$(_context2) {
           while (1) {
             switch (_context2.prev = _context2.next) {
               case 0:
-                batchNumber = this.options.batchNumber;
+                _options = this.options, batchNumber = _options.batchNumber, filterSignature = _options.filterSignature;
                 batchArray = [];
 
                 for (i = 0; i < batchNumber; i++) {
@@ -187,7 +194,9 @@ var PostSortLoader = function () {
                   return chunk.data.list;
                 }).reduce(function (accum, current) {
                   return accum.concat(current);
-                }, []);
+                }, []).filter(function (sig) {
+                  return filterSignature(sig);
+                });
                 sortedSignatures = signatures.sort(this.sortingFunction);
 
 

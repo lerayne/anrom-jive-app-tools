@@ -20,7 +20,11 @@ export default class PostSortLoader {
       batchMaxEntries: 25,
 
       // function that runs after each batch page. If it returns false - batching should stop
-      shouldBatchContinue: null
+      shouldBatchContinue: null,
+
+      // function to filter out some signatures before fetching of real data starts. For example
+      // we want to disable of loading some IDs
+      filterSignature: sig => sig
     }
 
     this.options = { ...optionsDefaults, ...options }
@@ -81,6 +85,7 @@ export default class PostSortLoader {
   async getSignatures () {
     const {
       batchNumber,
+      filterSignature
     } = this.options
 
     const batchArray = []
@@ -104,6 +109,7 @@ export default class PostSortLoader {
       .filter(chunk => chunk.status === 200)
       .map(chunk => chunk.data.list)
       .reduce((accum, current) => accum.concat(current), [])
+      .filter(sig => filterSignature(sig))
 
     const sortedSignatures = signatures.sort(this.sortingFunction)
 

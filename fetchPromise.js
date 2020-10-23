@@ -95,7 +95,8 @@ var promiseBatch = function () {
                     case 0:
                         defaultOptions = {
                             maxEntries: 25,
-                            shouldBatchContinue: null
+                            shouldBatchContinue: null,
+                            singleRestBatchFunc: singleRestBatch
                         };
                         options = (0, _extends3.default)({}, defaultOptions, optionsArgument);
 
@@ -130,7 +131,7 @@ var promiseBatch = function () {
                         }
 
                         _context2.next = 13;
-                        return singleRestBatch(entries, createBatchEntry);
+                        return options.singleRestBatchFunc(entries, createBatchEntry);
 
                     case 13:
                         return _context2.abrupt('return', _context2.sent);
@@ -171,7 +172,7 @@ var promiseBatch = function () {
                         }
 
                         _context2.next = 29;
-                        return singleRestBatch(entryArrays[i], createBatchEntry, i);
+                        return options.singleRestBatchFunc(entryArrays[i], createBatchEntry, i);
 
                     case 29:
                         responseArray = _context2.sent;
