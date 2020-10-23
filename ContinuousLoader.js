@@ -225,7 +225,7 @@ var ContinuousLoader = exports.ContinuousLoader = function () {
               case 32:
 
                 loadCount++;
-                sincePassStart = Date.now().getTime() - this.passStartTS;
+                sincePassStart = Date.now() - this.passStartTS;
 
                 this._log('Time passes since pass started', sincePassStart);
 
@@ -349,7 +349,7 @@ var ContinuousLoader = exports.ContinuousLoader = function () {
           return null;
         }
 
-        _this.passStartTS = Date.now().getTime();
+        _this.passStartTS = Date.now();
         _this._recursiveLoad(resolve, reject, 0);
       });
     }

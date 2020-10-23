@@ -119,7 +119,7 @@ export class ContinuousLoader {
       }
 
       loadCount++
-      const sincePassStart = Date.now().getTime() - this.passStartTS
+      const sincePassStart = Date.now() - this.passStartTS
       this._log('Time passes since pass started', sincePassStart)
 
       if (sincePassStart > this.options.timeLimit) {
@@ -190,7 +190,7 @@ export class ContinuousLoader {
         return null
       }
 
-      this.passStartTS = Date.now().getTime()
+      this.passStartTS = Date.now()
       this._recursiveLoad(resolve, reject, 0)
     })
   }
