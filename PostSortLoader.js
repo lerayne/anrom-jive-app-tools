@@ -24,11 +24,11 @@ var _createClass2 = require('babel-runtime/helpers/createClass');
 
 var _createClass3 = _interopRequireDefault(_createClass2);
 
-var _fetchPromise = require('../fetchPromise');
+var _fetchPromise = require('./fetchPromise');
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-//todo: so far works with OSAPI batch (not REST) and doesn't load more than required initially (no
+//todo: so far works with REST batch (not OSAPI) and doesn't load more than required initially (no
 // full support of "load more")
 var PostSortLoader = function () {
   function PostSortLoader(createSignatureRequest, createContentItemRequest, sortingFunction, options) {

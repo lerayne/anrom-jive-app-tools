@@ -1,6 +1,6 @@
-import { promiseRestBatch } from '../fetchPromise'
+import { promiseRestBatch } from './fetchPromise'
 
-//todo: so far works with OSAPI batch (not REST) and doesn't load more than required initially (no
+//todo: so far works with REST batch (not OSAPI) and doesn't load more than required initially (no
 // full support of "load more")
 export default class PostSortLoader {
   constructor (createSignatureRequest, createContentItemRequest, sortingFunction, options) {
