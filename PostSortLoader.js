@@ -8,6 +8,10 @@ var _regenerator = require('babel-runtime/regenerator');
 
 var _regenerator2 = _interopRequireDefault(_regenerator);
 
+var _toConsumableArray2 = require('babel-runtime/helpers/toConsumableArray');
+
+var _toConsumableArray3 = _interopRequireDefault(_toConsumableArray2);
+
 var _asyncToGenerator2 = require('babel-runtime/helpers/asyncToGenerator');
 
 var _asyncToGenerator3 = _interopRequireDefault(_asyncToGenerator2);
@@ -79,26 +83,32 @@ var PostSortLoader = function () {
       var _ref = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee() {
         var _this = this;
 
-        var customLoadNumber = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
-        var contentToRequest, contentsResponse;
+        var customLoadNumber = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 0;
+        var rawPool, contentToRequest, contentsResponse;
         return _regenerator2.default.wrap(function _callee$(_context) {
           while (1) {
             switch (_context.prev = _context.next) {
               case 0:
+                // if poll is empty and end is not reached (means this is first calling of loadNext) -
+                // get those signatures!
+                rawPool = [];
+
                 if (!(!this.contentSignaturesPool.length && !this.endReached)) {
-                  _context.next = 4;
+                  _context.next = 6;
                   break;
                 }
 
-                _context.next = 3;
+                _context.next = 4;
                 return this.getSignatures();
 
-              case 3:
-                this.contentSignaturesPool = _context.sent;
-
               case 4:
+                rawPool = _context.sent;
+
+                this.contentSignaturesPool = [].concat((0, _toConsumableArray3.default)(rawPool));
+
+              case 6:
                 if (!this.contentSignaturesPool.length) {
-                  _context.next = 13;
+                  _context.next = 15;
                   break;
                 }
 
@@ -110,7 +120,7 @@ var PostSortLoader = function () {
                   this.endReached = true;
                 }
 
-                _context.next = 9;
+                _context.next = 11;
                 return (0, _fetchPromise.promiseRestBatch)(contentToRequest, function (entry, eI, rI) {
                   return {
                     key: rI + '.' + eI,
@@ -121,9 +131,11 @@ var PostSortLoader = function () {
                   };
                 });
 
-              case 9:
+              case 11:
                 contentsResponse = _context.sent;
                 return _context.abrupt('return', {
+                  allSignatures: rawPool.length ? rawPool : undefined,
+                  remainingSignatures: [].concat((0, _toConsumableArray3.default)(this.contentSignaturesPool)),
                   list: contentsResponse.filter(function (item) {
                     return !item.error;
                   }).map(function (item) {
@@ -132,13 +144,15 @@ var PostSortLoader = function () {
                   reason: this.endReached ? 'source ended' : 'reached target count'
                 });
 
-              case 13:
+              case 15:
                 return _context.abrupt('return', {
+                  allSignatures: rawPool.length ? rawPool : undefined,
+                  remainingSignatures: [].concat((0, _toConsumableArray3.default)(this.contentSignaturesPool)),
                   list: [],
                   reason: 'polling finished'
                 });
 
-              case 14:
+              case 16:
               case 'end':
                 return _context.stop();
             }
