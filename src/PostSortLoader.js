@@ -24,7 +24,7 @@ export default class PostSortLoader {
 
       // function to filter out some signatures before fetching of real data starts. For example
       // we want to disable of loading some IDs
-      filterSignature: sig => sig
+      filterSignature: (sig, i, a) => sig
     }
 
     this.options = { ...optionsDefaults, ...options }
@@ -115,7 +115,7 @@ export default class PostSortLoader {
       .filter(chunk => chunk.status === 200)
       .map(chunk => chunk.data.list)
       .reduce((accum, current) => accum.concat(current), [])
-      .filter(sig => filterSignature(sig))
+      .filter((sig, index, all) => filterSignature(sig, index, all))
 
     const sortedSignatures = signatures.sort(this.sortingFunction)
 

@@ -58,7 +58,7 @@ var PostSortLoader = function () {
 
       // function to filter out some signatures before fetching of real data starts. For example
       // we want to disable of loading some IDs
-      filterSignature: function filterSignature(sig) {
+      filterSignature: function filterSignature(sig, i, a) {
         return sig;
       }
     };
@@ -208,8 +208,8 @@ var PostSortLoader = function () {
                   return chunk.data.list;
                 }).reduce(function (accum, current) {
                   return accum.concat(current);
-                }, []).filter(function (sig) {
-                  return filterSignature(sig);
+                }, []).filter(function (sig, index, all) {
+                  return filterSignature(sig, index, all);
                 });
                 sortedSignatures = signatures.sort(this.sortingFunction);
 
