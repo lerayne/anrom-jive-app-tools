@@ -39,15 +39,17 @@ export default class PostSortLoader {
 
     //collection of just IDs and fields by which content is sorted
     this.contentSignaturesPool = []
+    this.allContentSignatures = []
   }
 
   async loadNext (customLoadNumber = 0) {
     // if poll is empty and end is not reached (means this is first calling of loadNext) -
     // get those signatures!
-    let rawPool = []
+    let firstLoad = false
     if (!this.contentSignaturesPool.length && !this.endReached) {
-      rawPool = await this.getSignatures()
-      this.contentSignaturesPool = [...rawPool]
+      firstLoad = true
+      this.allContentSignatures = await this.getSignatures()
+      this.contentSignaturesPool = [...this.allContentSignatures]
     }
 
     // as long as pool has data - slice in targetCount/customLoadNumber and get individual items
@@ -71,7 +73,8 @@ export default class PostSortLoader {
 
       //todo: figure out what to do with errors inside this list (now they're just ignored)
       return {
-        allSignatures: rawPool.length ? rawPool : undefined,
+        firstLoad,
+        allSignatures: [...this.allContentSignatures],
         remainingSignatures: [...this.contentSignaturesPool],
         list: contentsResponse
           .filter(item => !item.error)
@@ -80,7 +83,8 @@ export default class PostSortLoader {
       }
     } else {
       return {
-        allSignatures: rawPool.length ? rawPool : undefined,
+        firstLoad,
+        allSignatures: [...this.allContentSignatures],
         remainingSignatures: [...this.contentSignaturesPool],
         list: [],
         reason: 'polling finished'

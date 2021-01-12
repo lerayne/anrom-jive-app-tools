@@ -75,6 +75,7 @@ var PostSortLoader = function () {
 
     //collection of just IDs and fields by which content is sorted
     this.contentSignaturesPool = [];
+    this.allContentSignatures = [];
   }
 
   (0, _createClass3.default)(PostSortLoader, [{
@@ -84,31 +85,32 @@ var PostSortLoader = function () {
         var _this = this;
 
         var customLoadNumber = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 0;
-        var rawPool, contentToRequest, contentsResponse;
+        var firstLoad, contentToRequest, contentsResponse;
         return _regenerator2.default.wrap(function _callee$(_context) {
           while (1) {
             switch (_context.prev = _context.next) {
               case 0:
                 // if poll is empty and end is not reached (means this is first calling of loadNext) -
                 // get those signatures!
-                rawPool = [];
+                firstLoad = false;
 
                 if (!(!this.contentSignaturesPool.length && !this.endReached)) {
-                  _context.next = 6;
+                  _context.next = 7;
                   break;
                 }
 
-                _context.next = 4;
+                firstLoad = true;
+                _context.next = 5;
                 return this.getSignatures();
 
-              case 4:
-                rawPool = _context.sent;
+              case 5:
+                this.allContentSignatures = _context.sent;
 
-                this.contentSignaturesPool = [].concat((0, _toConsumableArray3.default)(rawPool));
+                this.contentSignaturesPool = [].concat((0, _toConsumableArray3.default)(this.allContentSignatures));
 
-              case 6:
+              case 7:
                 if (!this.contentSignaturesPool.length) {
-                  _context.next = 15;
+                  _context.next = 16;
                   break;
                 }
 
@@ -120,7 +122,7 @@ var PostSortLoader = function () {
                   this.endReached = true;
                 }
 
-                _context.next = 11;
+                _context.next = 12;
                 return (0, _fetchPromise.promiseRestBatch)(contentToRequest, function (entry, eI, rI) {
                   return {
                     key: rI + '.' + eI,
@@ -131,10 +133,11 @@ var PostSortLoader = function () {
                   };
                 });
 
-              case 11:
+              case 12:
                 contentsResponse = _context.sent;
                 return _context.abrupt('return', {
-                  allSignatures: rawPool.length ? rawPool : undefined,
+                  firstLoad: firstLoad,
+                  allSignatures: [].concat((0, _toConsumableArray3.default)(this.allContentSignatures)),
                   remainingSignatures: [].concat((0, _toConsumableArray3.default)(this.contentSignaturesPool)),
                   list: contentsResponse.filter(function (item) {
                     return !item.error;
@@ -144,15 +147,16 @@ var PostSortLoader = function () {
                   reason: this.endReached ? 'source ended' : 'reached target count'
                 });
 
-              case 15:
+              case 16:
                 return _context.abrupt('return', {
-                  allSignatures: rawPool.length ? rawPool : undefined,
+                  firstLoad: firstLoad,
+                  allSignatures: [].concat((0, _toConsumableArray3.default)(this.allContentSignatures)),
                   remainingSignatures: [].concat((0, _toConsumableArray3.default)(this.contentSignaturesPool)),
                   list: [],
                   reason: 'polling finished'
                 });
 
-              case 16:
+              case 17:
               case 'end':
                 return _context.stop();
             }
