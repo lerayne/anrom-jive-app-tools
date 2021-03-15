@@ -1,7 +1,7 @@
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
-    value: true
+  value: true
 });
 
 var _keys = require('babel-runtime/core-js/object/keys');
@@ -47,226 +47,236 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 var jQuery = window.jQuery;
 
 function unescapeHtmlEntities(text) {
-    if (typeof text !== 'string') throw new Error('Argument should be a string');
+  if (typeof text !== 'string') throw new Error('Argument should be a string');
 
-    var temp = document.createElement('div');
-    temp.innerHTML = text; //.replace(/<|&lt;/gi, '‹').replace(/>|&gt;/gi, '›')
-    return temp.innerText || temp.textContent;
+  var temp = document.createElement('div');
+  temp.innerHTML = text; //.replace(/<|&lt;/gi, '‹').replace(/>|&gt;/gi, '›')
+  return temp.innerText || temp.textContent;
 }
 
 function pause() {
-    var ms = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 0;
+  var ms = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 0;
 
-    if (typeof ms !== 'number') throw new Error('Expected parameter to be a number');
-    if (ms < 0) throw new Error("We can't do time travel :) Please input a positive number or 0");
+  if (typeof ms !== 'number') throw new Error('Expected parameter to be a number');
+  if (ms < 0) throw new Error('We can\'t do time travel :) Please input a positive number or 0');
 
-    return new _promise2.default(function (resolve) {
-        return setTimeout(resolve, ms);
-    });
+  return new _promise2.default(function (resolve) {
+    return setTimeout(resolve, ms);
+  });
 }
 
 function splitArray(array, chunksNumber) {
-    if (!(array instanceof Array)) throw new Error('1st argument should be an array');
-    if (typeof chunksNumber !== 'number') throw new Error('2nd argument should be a number');
-    if (chunksNumber <= 0) return [];
-    if (chunksNumber === 1) return array;
+  if (!(array instanceof Array)) throw new Error('1st argument should be an array');
+  if (typeof chunksNumber !== 'number') throw new Error('2nd argument should be a number');
+  if (chunksNumber <= 0) return [];
+  if (chunksNumber === 1) return array;
 
-    var newArray = [];
+  var newArray = [];
 
-    for (var i = 0; i < chunksNumber; i++) {
-        newArray.push([]);
-    }
+  for (var i = 0; i < chunksNumber; i++) {
+    newArray.push([]);
+  }
 
-    if (array !== undefined && array.length) {
-        var chunkLength = Math.ceil(array.length / chunksNumber);
+  if (array !== undefined && array.length) {
+    var chunkLength = Math.ceil(array.length / chunksNumber);
 
-        array.forEach(function (item, i) {
-            var chunkNumber = Math.floor(i / chunkLength);
-            newArray[chunkNumber].push(item);
-        });
-    }
+    array.forEach(function (item, i) {
+      var chunkNumber = Math.floor(i / chunkLength);
+      newArray[chunkNumber].push(item);
+    });
+  }
 
-    return newArray;
+  return newArray;
 }
 
 function sliceArray(array, sliceSize) {
-    if (!(array instanceof Array)) throw new Error('1st argument should be an array');
-    if (typeof sliceSize !== 'number') throw new Error('2nd argument should be a number');
-    if (sliceSize <= 0) throw new Error('2nd argument should 1 or more');
-    if (sliceSize >= array.length) return [array];
+  if (!(array instanceof Array)) throw new Error('1st argument should be an array');
+  if (typeof sliceSize !== 'number') throw new Error('2nd argument should be a number');
+  if (sliceSize <= 0) throw new Error('2nd argument should 1 or more');
+  if (sliceSize >= array.length) return [array];
 
-    var sourceArray = [].concat((0, _toConsumableArray3.default)(array));
-    var targetArrayOfArrays = [];
+  var sourceArray = [].concat((0, _toConsumableArray3.default)(array));
+  var targetArrayOfArrays = [];
 
-    while (sourceArray.length) {
-        targetArrayOfArrays.push(sourceArray.splice(0, sliceSize));
-    }
+  while (sourceArray.length) {
+    targetArrayOfArrays.push(sourceArray.splice(0, sliceSize));
+  }
 
-    return targetArrayOfArrays;
+  return targetArrayOfArrays;
 }
 
 function abridge(text) {
-    var length = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 160;
+  var length = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 160;
 
 
-    if (typeof text !== 'string') {
-        throw new Error('"abridge" 1st argument must be a string (' + (typeof text === 'undefined' ? 'undefined' : (0, _typeof3.default)(text)) + ' given)');
+  if (typeof text !== 'string') {
+    throw new Error('"abridge" 1st argument must be a string (' + (typeof text === 'undefined' ? 'undefined' : (0, _typeof3.default)(text)) + ' given)');
+  }
+
+  //if it's less than limit - just return it
+  if (text.length <= length) return text;
+
+  var newText = text.slice(0, length);
+
+  // if the next symbol is not a whitespace and not a punctuation - remove last word
+  if (!text[length].match(/\s|\.|,|:|;|!|\?/)) {
+
+    var words = newText.split(' ');
+
+    //remove last word (cause it can be broken, or too long in case of a link)
+    if (words.length > 1) {
+      words = words.slice(0, words.length - 1);
     }
 
-    //if it's less than limit - just return it
-    if (text.length <= length) return text;
+    newText = words.join(' ');
+  }
 
-    var newText = text.slice(0, length);
+  // remove commas and dots from a last word
+  newText = newText.replace(/(\.|,|;|:)$/, '');
 
-    // if the next symbol is not a whitespace and not a punctuation - remove last word
-    if (!text[length].match(/\s|\.|,|:|;|!|\?/)) {
-
-        var words = newText.split(' ');
-
-        //remove last word (cause it can be broken, or too long in case of a link)
-        if (words.length > 1) {
-            words = words.slice(0, words.length - 1);
-        }
-
-        newText = words.join(' ');
-    }
-
-    // remove commas and dots from a last word
-    newText = newText.replace(/(\.|,|;|:)$/, '');
-
-    return newText + '...';
+  return newText + '...';
 }
 
 function getCacheableImage(initialImageURL) {
-    var imageWidth = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 500;
-    var thumbnail = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
+  var imageWidth = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 500;
+  var thumbnail = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
 
 
-    //return initialImageURL
-    if (!initialImageURL) return initialImageURL;
+  //return initialImageURL
+  if (!initialImageURL) return initialImageURL;
 
-    if (typeof initialImageURL !== 'string') {
-        throw new Error('1st argument should be falsy value or string');
-    }
-    if (typeof imageWidth !== 'undefined' && typeof imageWidth !== 'number') {
-        throw new Error('2nd argument should be a number if defined');
-    }
+  if (typeof initialImageURL !== 'string') {
+    throw new Error('1st argument should be falsy value or string');
+  }
+  if (typeof imageWidth !== 'undefined' && typeof imageWidth !== 'number') {
+    throw new Error('2nd argument should be a number if defined');
+  }
 
-    var jiveStorageResult = initialImageURL.match(/(.+)servlet\/JiveServlet\/(downloadImage|previewBody)\/([\d-]+)\/(.+)/i);
+  var jiveStorageResult = initialImageURL.match(/(.+)servlet\/JiveServlet\/(downloadImage|previewBody)\/([\d-]+)\/(.+)/i);
 
-    //console.log('jiveStorageResult', jiveStorageResult)
+  //console.log('jiveStorageResult', jiveStorageResult)
 
-    if (!jiveStorageResult || !jiveStorageResult[3]) return initialImageURL;
+  if (!jiveStorageResult || !jiveStorageResult[3]) return initialImageURL;
 
-    //get jive image ID from URL
-    var imageNumberChunks = jiveStorageResult[3].split('-');
-    var imageID = imageNumberChunks[imageNumberChunks.length - 1];
+  //get jive image ID from URL
+  var imageNumberChunks = jiveStorageResult[3].split('-');
+  var imageID = imageNumberChunks[imageNumberChunks.length - 1];
 
-    switch (jiveStorageResult[2]) {
-        case 'downloadImage':
-            return jiveStorageResult[1] + 'api/core/v3/images/' + imageID + '?width=' + imageWidth + (thumbnail ? '&thumbnail=true' : '');
-        case 'previewBody':
-            return jiveStorageResult[1] + 'servlet/JiveServlet?bodyImage=true&contentType=image&maxWidth=500&maxHeight=300' + '&binaryBodyID=' + imageID;
-    }
+  switch (jiveStorageResult[2]) {
+    case 'downloadImage':
+      return jiveStorageResult[1] + 'api/core/v3/images/' + imageID + '?width=' + imageWidth + (thumbnail ? '&thumbnail=true' : '');
+    case 'previewBody':
+      return jiveStorageResult[1] + 'servlet/JiveServlet?bodyImage=true&contentType=image&maxWidth=500&maxHeight=300' + '&binaryBodyID=' + imageID;
+  }
 }
 
 function findContentImage(contentItem) {
-    var mode = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 'regexp';
-    var fallback = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : true;
+  var mode = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 'regexp';
+  var fallback = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : true;
 
 
-    if (!contentItem || !contentItem.content || !contentItem.content.text) return null;
+  if (!contentItem || !contentItem.content || !contentItem.content.text) return null;
 
-    if (typeof mode !== 'undefined' && !['regexp', 'api', 'jquery'].includes(mode)) {
-        throw new Error('2nd argument should be "regexp"|"api"|"jquery"');
+  if (typeof mode !== 'undefined' && !['regexp', 'api', 'jquery'].includes(mode)) {
+    throw new Error('2nd argument should be "regexp"|"api"|"jquery"');
+  }
+
+  var image = void 0;
+
+  function getFromApi() {
+    if (contentItem.contentImages && contentItem.contentImages.length) {
+      return contentItem.contentImages[0].ref;
+    } else if (contentItem.thumbnailURL) {
+      return contentItem.thumbnailURL;
     }
+    return false;
+  }
 
-    var image = void 0;
+  switch (mode) {
+    case 'api':
+      // version 1: take from API. Downside: API images list never updates after content creation
+      image = getFromApi();
+      break;
+    case 'jquery':
+      //version 2: find image links with jQuery. Downside: it requests all the images content item has
+      image = jQuery ? jQuery(contentItem.content.text).find('img').attr('src') : false;
+      break;
+    case 'regexp':
+      //version 3: Find image URLs by regExp
+      //regexp: <img[^>]*src=["']?([^>"']+)["']?[^>]*>
+      var regexp = RegExp('<img[^>]*src=["\']?([^>"\']+)["\']?[^>]*>', 'gim');
 
-    function getFromApi() {
-        if (contentItem.contentImages && contentItem.contentImages.length) {
-            return contentItem.contentImages[0].ref;
-        } else if (contentItem.thumbnailURL) {
-            return contentItem.thumbnailURL;
+      var matches = void 0;
+      var imagesArray = [];
+      while ((matches = regexp.exec(contentItem.content.text)) !== null) {
+        if (!matches[0].match(/class=["'][^"']*emoticon-inline/im)) {
+          imagesArray.push(matches[1]);
         }
-        return false;
-    }
+      }
 
-    switch (mode) {
-        case 'api':
-            // version 1: take from API. Downside: API images list never updates after content creation
-            image = getFromApi();
-            break;
-        case 'jquery':
-            //version 2: find image links with jQuery. Downside: it requests all the images content item has
-            image = jQuery ? jQuery(contentItem.content.text).find('img').attr('src') : false;
-            break;
-        case 'regexp':
-            //version 3: Find image URLs by regExp
-            var images = contentItem.content.text.match(/<img[^>]*src=["']?([^>"']+)["']?[^>]*>/im);
-            image = images && images[1] ? images[1] : false;
-            break;
-    }
+      image = imagesArray.length ? imagesArray[0] : false;
+      break;
+  }
 
-    if (!image && mode !== 'api' && fallback) {
-        image = getFromApi();
-    }
+  if (!image && mode !== 'api' && fallback) {
+    image = getFromApi();
+  }
 
-    return image;
+  return image;
 }
 
 function getImagelessHTML(htmlText) {
-    return htmlText.replace(/<img[^>]*src=["']?([^>"']+)["']?[^>]*>/gim, '');
+  return htmlText.replace(/<img[^>]*src=["']?([^>"']+)["']?[^>]*>/gim, '');
 }
 
 function getContentImage(contentItem) {
-    var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+  var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 
 
-    var defaultOptions = {
-        imageWidth: 500,
-        mode: 'regexp',
-        thumbnail: false,
-        fallback: true
-    };
+  var defaultOptions = {
+    imageWidth: 500,
+    mode: 'regexp',
+    thumbnail: false,
+    fallback: true
+  };
 
-    options = (0, _extends3.default)({}, defaultOptions, options);
+  options = (0, _extends3.default)({}, defaultOptions, options);
 
-    var _options = options,
-        imageWidth = _options.imageWidth,
-        mode = _options.mode,
-        thumbnail = _options.thumbnail,
-        fallback = _options.fallback;
+  var _options = options,
+      imageWidth = _options.imageWidth,
+      mode = _options.mode,
+      thumbnail = _options.thumbnail,
+      fallback = _options.fallback;
 
 
-    return getCacheableImage(findContentImage(contentItem, mode, fallback), imageWidth, thumbnail);
+  return getCacheableImage(findContentImage(contentItem, mode, fallback), imageWidth, thumbnail);
 }
 
 function jsonCopy(obj) {
-    if ((typeof obj === 'undefined' ? 'undefined' : (0, _typeof3.default)(obj)) !== 'object') return null;
-    try {
-        return JSON.parse((0, _stringify2.default)(obj));
-    } catch (error) {
-        console.error('Warning! Argument is not a valid JSON. Details:', error);
-    }
+  if ((typeof obj === 'undefined' ? 'undefined' : (0, _typeof3.default)(obj)) !== 'object') return null;
+  try {
+    return JSON.parse((0, _stringify2.default)(obj));
+  } catch (error) {
+    console.error('Warning! Argument is not a valid JSON. Details:', error);
+  }
 }
 
 function isEmptyObject(obj) {
-    if ((typeof obj === 'undefined' ? 'undefined' : (0, _typeof3.default)(obj)) !== 'object') return null;
-    return (0, _keys2.default)(obj).length === 0;
+  if ((typeof obj === 'undefined' ? 'undefined' : (0, _typeof3.default)(obj)) !== 'object') return null;
+  return (0, _keys2.default)(obj).length === 0;
 }
 
 var utils = {
-    pause: pause,
-    unescapeHtmlEntities: unescapeHtmlEntities,
-    splitArray: splitArray,
-    abridge: abridge,
-    getCacheableImage: getCacheableImage,
-    findContentImage: findContentImage,
-    getContentImage: getContentImage,
-    getImagelessHTML: getImagelessHTML,
-    jsonCopy: jsonCopy,
-    isEmptyObject: isEmptyObject
+  pause: pause,
+  unescapeHtmlEntities: unescapeHtmlEntities,
+  splitArray: splitArray,
+  abridge: abridge,
+  getCacheableImage: getCacheableImage,
+  findContentImage: findContentImage,
+  getContentImage: getContentImage,
+  getImagelessHTML: getImagelessHTML,
+  jsonCopy: jsonCopy,
+  isEmptyObject: isEmptyObject
 };
 
 exports.default = utils;
