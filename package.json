@@ -30,15 +30,17 @@
     "@babel/plugin-transform-runtime": "7.17.0",
     "@babel/preset-env": "7.16.11",
     "babel-plugin-add-module-exports": "1.0.4",
+    "core-js": "3.22.0",
     "gulp": "4.0.2",
     "gulp-babel": "8.0.0",
     "gulp-jest": "4.0.4",
-    "gulp-shell": "0.8.0",
+    "gulp-sourcemaps": "3.0.0",
     "jest": "27.5.1",
     "jquery": "3.5.0",
     "moment": "2.29.2"
   },
   "peerDependencies": {
+    "core-js": ">= 3.2.0",
     "moment": ">= 2.22.2",
     "react": ">= 15.3.2"
   },
