@@ -1,12 +1,13 @@
 {
-  "presets":["env", "react", "stage-0"],
-  "env": {
-    "production": {
-      "presets": ["react-optimize"]
-    }
-  },
-  "plugins":[
-    "add-module-exports",
-    "transform-runtime"
+  "presets": [
+    ["@babel/preset-env", {
+      "modules":     "cjs",
+      "useBuiltIns": "usage",
+      "corejs": "3.22"
+    }]
+  ],
+  "plugins": [
+    "@babel/plugin-transform-runtime",
+    "add-module-exports"
   ]
 }

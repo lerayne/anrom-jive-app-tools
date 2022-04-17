@@ -1,104 +1,94 @@
-'use strict';
+"use strict";
+
+require("core-js/modules/es.object.keys.js");
+
+require("core-js/modules/es.symbol.js");
+
+require("core-js/modules/es.object.get-own-property-descriptor.js");
+
+require("core-js/modules/es.array.for-each.js");
+
+require("core-js/modules/web.dom-collections.for-each.js");
+
+require("core-js/modules/es.object.get-own-property-descriptors.js");
+
+require("core-js/modules/es.object.define-properties.js");
+
+require("core-js/modules/es.object.define-property.js");
+
+require("core-js/modules/es.reflect.construct.js");
+
+var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.ContinuousLoadJiveOSAPI = exports.ContinuousLoadJiveREST = exports.ContinuousLoader = undefined;
+exports["default"] = exports.ContinuousLoader = exports.ContinuousLoadJiveREST = exports.ContinuousLoadJiveOSAPI = void 0;
 
-var _getPrototypeOf = require('babel-runtime/core-js/object/get-prototype-of');
+var _regenerator = _interopRequireDefault(require("@babel/runtime/regenerator"));
 
-var _getPrototypeOf2 = _interopRequireDefault(_getPrototypeOf);
+require("core-js/modules/es.function.bind.js");
 
-var _possibleConstructorReturn2 = require('babel-runtime/helpers/possibleConstructorReturn');
+require("core-js/modules/es.array.filter.js");
 
-var _possibleConstructorReturn3 = _interopRequireDefault(_possibleConstructorReturn2);
+require("core-js/modules/es.object.to-string.js");
 
-var _inherits2 = require('babel-runtime/helpers/inherits');
+require("core-js/modules/es.promise.js");
 
-var _inherits3 = _interopRequireDefault(_inherits2);
+require("core-js/modules/es.array.splice.js");
 
-var _regenerator = require('babel-runtime/regenerator');
+require("core-js/modules/es.array.concat.js");
 
-var _regenerator2 = _interopRequireDefault(_regenerator);
+require("core-js/modules/es.date.now.js");
 
-var _toConsumableArray2 = require('babel-runtime/helpers/toConsumableArray');
+require("core-js/modules/es.date.to-string.js");
 
-var _toConsumableArray3 = _interopRequireDefault(_toConsumableArray2);
+require("core-js/modules/es.regexp.exec.js");
 
-var _asyncToGenerator2 = require('babel-runtime/helpers/asyncToGenerator');
+require("core-js/modules/es.string.split.js");
 
-var _asyncToGenerator3 = _interopRequireDefault(_asyncToGenerator2);
+var _assertThisInitialized2 = _interopRequireDefault(require("@babel/runtime/helpers/assertThisInitialized"));
 
-var _promise = require('babel-runtime/core-js/promise');
+var _inherits2 = _interopRequireDefault(require("@babel/runtime/helpers/inherits"));
 
-var _promise2 = _interopRequireDefault(_promise);
+var _possibleConstructorReturn2 = _interopRequireDefault(require("@babel/runtime/helpers/possibleConstructorReturn"));
 
-var _extends2 = require('babel-runtime/helpers/extends');
+var _getPrototypeOf2 = _interopRequireDefault(require("@babel/runtime/helpers/getPrototypeOf"));
 
-var _extends3 = _interopRequireDefault(_extends2);
+var _toConsumableArray2 = _interopRequireDefault(require("@babel/runtime/helpers/toConsumableArray"));
 
-var _classCallCheck2 = require('babel-runtime/helpers/classCallCheck');
+var _asyncToGenerator2 = _interopRequireDefault(require("@babel/runtime/helpers/asyncToGenerator"));
 
-var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
+var _defineProperty2 = _interopRequireDefault(require("@babel/runtime/helpers/defineProperty"));
 
-var _createClass2 = require('babel-runtime/helpers/createClass');
+var _classCallCheck2 = _interopRequireDefault(require("@babel/runtime/helpers/classCallCheck"));
 
-var _createClass3 = _interopRequireDefault(_createClass2);
+var _createClass2 = _interopRequireDefault(require("@babel/runtime/helpers/createClass"));
 
-var _fetchPromise = require('./fetchPromise');
+var _fetchPromise = require("./fetchPromise");
 
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function _createSuperInternal() { var Super = (0, _getPrototypeOf2["default"])(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = (0, _getPrototypeOf2["default"])(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return (0, _possibleConstructorReturn2["default"])(this, result); }; }
+
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
+
+function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
+
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = null != arguments[i] ? arguments[i] : {}; i % 2 ? ownKeys(Object(source), !0).forEach(function (key) { (0, _defineProperty2["default"])(target, key, source[key]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } return target; }
 
 /*
  * Continuous loader designed to abstract loading content lists by any asynchronous API in cases
  * when said API doesn't support filtering parameters by which you want to filter this content.
  */
-var ContinuousLoader = exports.ContinuousLoader = function () {
-  (0, _createClass3.default)(ContinuousLoader, [{
-    key: 'getError',
-
-
-    // Overrideable method that gets error from API response
-    value: function getError(asyncFunctionResponse) {
-      return asyncFunctionResponse.error || false;
-    }
-
-    // Overrideable method that gets content list from API response
-
-  }, {
-    key: 'getList',
-    value: function getList(asyncFunctionResponse) {
-      return asyncFunctionResponse.list || [];
-    }
-
-    /**
-     * Overrideable method to create new promise-returning function
-     * @param asyncFunctionResponse
-     * @returns {function|boolean} - should return async function (one that returns promise),
-     * NOT promise itself
-     */
-
-  }, {
-    key: 'getNextAsyncFunc',
-    value: function getNextAsyncFunc(asyncFunctionResponse) {
-      console.warn('getNextAsyncFunc should be defined in either options or child class');
-      return false;
-    }
-
-    /**
-     * Constructs a class instance
-     * @param {function} asyncFunction - should return Promise
-     * @param {function} filter - should return array
-     * @param {object} [options]
-     */
-
-  }]);
-
+var ContinuousLoader = /*#__PURE__*/function () {
+  /**
+   * Constructs a class instance
+   * @param {function} asyncFunction - should return Promise
+   * @param {function} filter - should return array
+   * @param {object} [options]
+   */
   function ContinuousLoader(asyncFunction, filter) {
     var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
-    (0, _classCallCheck3.default)(this, ContinuousLoader);
-
-
+    (0, _classCallCheck2["default"])(this, ContinuousLoader);
     var optionsDefaults = {
       debug: false,
       targetCount: 10,
@@ -109,9 +99,7 @@ var ContinuousLoader = exports.ContinuousLoader = function () {
       getList: this.getList.bind(this),
       transformResponse: null
     };
-
-    this.options = (0, _extends3.default)({}, optionsDefaults, options);
-
+    this.options = _objectSpread(_objectSpread({}, optionsDefaults), options);
     this.asyncFunction = asyncFunction;
     this.filter = filter;
     this.resultPool = [];
@@ -119,18 +107,43 @@ var ContinuousLoader = exports.ContinuousLoader = function () {
     this.transformResponse = this.options.transformResponse || this._transformResponse.bind(this);
   }
 
-  (0, _createClass3.default)(ContinuousLoader, [{
-    key: '_transformResponse',
-    value: function _transformResponse(list) {
-      return _promise2.default.resolve(list);
+  (0, _createClass2["default"])(ContinuousLoader, [{
+    key: "getError",
+    value: // Overrideable method that gets error from API response
+    function getError(asyncFunctionResponse) {
+      return asyncFunctionResponse.error || false;
+    } // Overrideable method that gets content list from API response
+
+  }, {
+    key: "getList",
+    value: function getList(asyncFunctionResponse) {
+      return asyncFunctionResponse.list || [];
+    }
+    /**
+     * Overrideable method to create new promise-returning function
+     * @param asyncFunctionResponse
+     * @returns {function|boolean} - should return async function (one that returns promise),
+     * NOT promise itself
+     */
+
+  }, {
+    key: "getNextAsyncFunc",
+    value: function getNextAsyncFunc(asyncFunctionResponse) {
+      console.warn('getNextAsyncFunc should be defined in either options or child class');
+      return false;
     }
   }, {
-    key: '_recursiveLoad',
+    key: "_transformResponse",
+    value: function _transformResponse(list) {
+      return Promise.resolve(list);
+    }
+  }, {
+    key: "_recursiveLoad",
     value: function () {
-      var _ref = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee(resolve, reject, loadCount) {
-        var asyncFunctionResponse, _options, getError, getList, getNextAsyncFunc, targetCount, maxTriesPerLoad, error, list, _list, filteredList, nextAsyncFunc, _list2, sincePassStart, _list3, _list4, _list5;
+      var _recursiveLoad2 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee(resolve, reject, loadCount) {
+        var asyncFunctionResponse, _this$options, getError, getList, getNextAsyncFunc, targetCount, maxTriesPerLoad, error, list, _list, filteredList, nextAsyncFunc, _list2, sincePassStart, _list3, _list4, _list5;
 
-        return _regenerator2.default.wrap(function _callee$(_context) {
+        return _regenerator["default"].wrap(function _callee$(_context) {
           while (1) {
             switch (_context.prev = _context.next) {
               case 0:
@@ -140,12 +153,11 @@ var ContinuousLoader = exports.ContinuousLoader = function () {
 
               case 3:
                 asyncFunctionResponse = _context.sent;
-                _options = this.options, getError = _options.getError, getList = _options.getList, getNextAsyncFunc = _options.getNextAsyncFunc, targetCount = _options.targetCount, maxTriesPerLoad = _options.maxTriesPerLoad;
+                _this$options = this.options, getError = _this$options.getError, getList = _this$options.getList, getNextAsyncFunc = _this$options.getNextAsyncFunc, targetCount = _this$options.targetCount, maxTriesPerLoad = _this$options.maxTriesPerLoad;
+
+                this._log('asyncFunctionResponse', asyncFunctionResponse); // catch errors
 
 
-                this._log('asyncFunctionResponse', asyncFunctionResponse);
-
-                // catch errors
                 error = getError(asyncFunctionResponse);
 
                 if (!error) {
@@ -156,11 +168,8 @@ var ContinuousLoader = exports.ContinuousLoader = function () {
                 throw new Error(error);
 
               case 9:
-
                 //getting list
-                list = getList(asyncFunctionResponse);
-
-                //if unfiltered list is empty - means nothing to load
+                list = getList(asyncFunctionResponse); //if unfiltered list is empty - means nothing to load
                 // returning the rest of result poll (if any) and blocking
                 // further calls of this.loadNext
 
@@ -170,39 +179,36 @@ var ContinuousLoader = exports.ContinuousLoader = function () {
                 }
 
                 this._log('zero items get, returning []/rest of pool');
-                this.endReached = true;
 
+                this.endReached = true;
                 _context.next = 15;
                 return this.transformResponse(this.resultPool.splice(0));
 
               case 15:
                 _list = _context.sent;
-
-
-                resolve({ list: _list, reason: 'source ended' });
-                return _context.abrupt('return', null);
+                resolve({
+                  list: _list,
+                  reason: 'source ended'
+                });
+                return _context.abrupt("return", null);
 
               case 18:
                 _context.next = 20;
-                return this.filter(list, [].concat((0, _toConsumableArray3.default)(this.resultPool)));
+                return this.filter(list, (0, _toConsumableArray2["default"])(this.resultPool));
 
               case 20:
                 filteredList = _context.sent;
-
-
-                this.resultPool = this.resultPool.concat(filteredList);
-
-                // getting possible next poll - this should be done before first possible
+                this.resultPool = this.resultPool.concat(filteredList); // getting possible next poll - this should be done before first possible
                 // contentful resolve()
+
                 nextAsyncFunc = getNextAsyncFunc(asyncFunctionResponse);
 
                 if (typeof nextAsyncFunc === 'function') {
                   this.asyncFunction = nextAsyncFunc;
                 } else {
                   this.endReached = true;
-                }
+                } //if pool reached target number - resolve items and remove them from pool
 
-                //if pool reached target number - resolve items and remove them from pool
 
                 if (!(this.resultPool.length >= targetCount)) {
                   _context.next = 32;
@@ -216,14 +222,16 @@ var ContinuousLoader = exports.ContinuousLoader = function () {
 
               case 28:
                 _list2 = _context.sent;
+                resolve({
+                  list: _list2,
+                  reason: 'reached target count'
+                });
 
-
-                resolve({ list: _list2, reason: 'reached target count' });
                 this._log('(rest of pool:', this.resultPool);
-                return _context.abrupt('return', null);
+
+                return _context.abrupt("return", null);
 
               case 32:
-
                 loadCount++;
                 sincePassStart = Date.now() - this.passStartTS;
 
@@ -242,10 +250,11 @@ var ContinuousLoader = exports.ContinuousLoader = function () {
 
               case 39:
                 _list3 = _context.sent;
-
-
-                resolve({ list: _list3, reason: 'time limit exceeded' });
-                return _context.abrupt('return', null);
+                resolve({
+                  list: _list3,
+                  reason: 'time limit exceeded'
+                });
+                return _context.abrupt("return", null);
 
               case 44:
                 if (!(maxTriesPerLoad > 0 && loadCount >= maxTriesPerLoad)) {
@@ -262,10 +271,11 @@ var ContinuousLoader = exports.ContinuousLoader = function () {
 
               case 48:
                 _list4 = _context.sent;
-
-
-                resolve({ list: _list4, reason: 'max polls reached' });
-                return _context.abrupt('return', null);
+                resolve({
+                  list: _list4,
+                  reason: 'max polls reached'
+                });
+                return _context.abrupt("return", null);
 
               case 53:
                 if (this.endReached) {
@@ -275,8 +285,10 @@ var ContinuousLoader = exports.ContinuousLoader = function () {
 
                 //if pool hasn't reached target number, but there's more to load
                 this._log('got', this.resultPool.length, 'while target is', targetCount, 'need to load one more time');
+
                 this._recursiveLoad(resolve, reject, loadCount);
-                return _context.abrupt('return', null);
+
+                return _context.abrupt("return", null);
 
               case 59:
                 this._log('no next promise available. returning pool');
@@ -286,9 +298,10 @@ var ContinuousLoader = exports.ContinuousLoader = function () {
 
               case 62:
                 _list5 = _context.sent;
-
-
-                resolve({ list: _list5, reason: 'source ended' });
+                resolve({
+                  list: _list5,
+                  reason: 'source ended'
+                });
 
               case 64:
                 _context.next = 69;
@@ -296,39 +309,40 @@ var ContinuousLoader = exports.ContinuousLoader = function () {
 
               case 66:
                 _context.prev = 66;
-                _context.t0 = _context['catch'](0);
-
+                _context.t0 = _context["catch"](0);
                 reject(_context.t0);
 
               case 69:
-              case 'end':
+              case "end":
                 return _context.stop();
             }
           }
         }, _callee, this, [[0, 66]]);
       }));
 
-      function _recursiveLoad(_x2, _x3, _x4) {
-        return _ref.apply(this, arguments);
+      function _recursiveLoad(_x, _x2, _x3) {
+        return _recursiveLoad2.apply(this, arguments);
       }
 
       return _recursiveLoad;
     }()
   }, {
-    key: 'loadNext',
+    key: "loadNext",
     value: function loadNext() {
       var _this = this;
 
-      return new _promise2.default(function (resolve, reject) {
+      return new Promise(function (resolve, reject) {
         var targetCount = _this.options.targetCount;
-
 
         if (_this.resultPool.length >= targetCount) {
           _this._log('target count found in existing pool');
 
           _this.transformResponse(_this.resultPool.splice(0, targetCount)).then(function (list) {
-            return resolve({ list: list, reason: 'target count exists in pool' });
-          }).catch(reject);
+            return resolve({
+              list: list,
+              reason: 'target count exists in pool'
+            });
+          })["catch"](reject);
 
           return null;
         }
@@ -336,25 +350,32 @@ var ContinuousLoader = exports.ContinuousLoader = function () {
         if (_this.endReached) {
           if (_this.resultPool.length) {
             _this._log('no next promise available. returning pool');
+
             _this.transformResponse(_this.resultPool.splice(0)).then(function (list) {
-              return resolve({ list: list, reason: 'source ended' });
-            }).catch(reject);
+              return resolve({
+                list: list,
+                reason: 'source ended'
+              });
+            })["catch"](reject);
           } else {
             _this._log('end was already reached before, no more polling');
+
             resolve({
               list: [],
               reason: 'polling finished'
             });
           }
+
           return null;
         }
 
         _this.passStartTS = Date.now();
+
         _this._recursiveLoad(resolve, reject, 0);
       });
     }
   }, {
-    key: '_log',
+    key: "_log",
     value: function _log() {
       if (this.options.debug) {
         var _console;
@@ -366,25 +387,49 @@ var ContinuousLoader = exports.ContinuousLoader = function () {
   return ContinuousLoader;
 }();
 
-var ContinuousLoadJiveREST = exports.ContinuousLoadJiveREST = function (_ContinuousLoader) {
-  (0, _inherits3.default)(ContinuousLoadJiveREST, _ContinuousLoader);
-  (0, _createClass3.default)(ContinuousLoadJiveREST, [{
-    key: 'getList',
+exports.ContinuousLoader = ContinuousLoader;
+
+var ContinuousLoadJiveREST = /*#__PURE__*/function (_ContinuousLoader) {
+  (0, _inherits2["default"])(ContinuousLoadJiveREST, _ContinuousLoader);
+
+  var _super = _createSuper(ContinuousLoadJiveREST);
+
+  function ContinuousLoadJiveREST(asyncFunction, filter) {
+    var _this2;
+
+    var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+    (0, _classCallCheck2["default"])(this, ContinuousLoadJiveREST);
+    _this2 = _super.call(this, asyncFunction, filter, options);
+    var optionsDefaults = {
+      // loose:true means that (list.length < itemsPerPage) doesn't mean list has ended.
+      // Useful for jive REST "/activity" endpoint
+      loose: false,
+      method: 'get',
+      createNextAsyncFunc: _this2.createNextAsyncFunc.bind((0, _assertThisInitialized2["default"])(_this2))
+    };
+    _this2.options = _objectSpread(_objectSpread(_objectSpread({}, optionsDefaults), _this2.options), options);
+    return _this2;
+  }
+
+  (0, _createClass2["default"])(ContinuousLoadJiveREST, [{
+    key: "getList",
     value: function getList(asyncFunctionResponse) {
       //this._log('REST getList')
       var responseContent = asyncFunctionResponse.content || asyncFunctionResponse;
       return responseContent.list || [];
     }
   }, {
-    key: 'getError',
+    key: "getError",
     value: function getError(asyncFunctionResponse) {
       //this._log('REST getError')
       if (asyncFunctionResponse.status) {
         switch (asyncFunctionResponse.status) {
           case 200:
             return false;
+
           case 204:
             return '204: No Content';
+
           default:
             return asyncFunctionResponse.status;
         }
@@ -393,14 +438,12 @@ var ContinuousLoadJiveREST = exports.ContinuousLoadJiveREST = function (_Continu
       return false;
     }
   }, {
-    key: 'getNextAsyncFunc',
+    key: "getNextAsyncFunc",
     value: function getNextAsyncFunc(asyncFunctionResponse) {
       var responseContent = asyncFunctionResponse.content || asyncFunctionResponse;
-
       var itemsPerPage = responseContent.itemsPerPage,
           list = responseContent.list,
           links = responseContent.links;
-
 
       if (!responseContent.links || !responseContent.links.next || list.length < itemsPerPage && !this.options.loose) {
         // there's nothing to load more
@@ -410,7 +453,7 @@ var ContinuousLoadJiveREST = exports.ContinuousLoadJiveREST = function (_Continu
       return this.options.createNextAsyncFunc(links.next, responseContent);
     }
   }, {
-    key: 'createNextAsyncFunc',
+    key: "createNextAsyncFunc",
     value: function createNextAsyncFunc(nextLink, responseContent) {
       var _this3 = this;
 
@@ -421,45 +464,30 @@ var ContinuousLoadJiveREST = exports.ContinuousLoadJiveREST = function (_Continu
       };
     }
   }]);
-
-  function ContinuousLoadJiveREST(asyncFunction, filter) {
-    var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
-    (0, _classCallCheck3.default)(this, ContinuousLoadJiveREST);
-
-    var _this2 = (0, _possibleConstructorReturn3.default)(this, (ContinuousLoadJiveREST.__proto__ || (0, _getPrototypeOf2.default)(ContinuousLoadJiveREST)).call(this, asyncFunction, filter, options));
-
-    var optionsDefaults = {
-      // loose:true means that (list.length < itemsPerPage) doesn't mean list has ended.
-      // Useful for jive REST "/activity" endpoint
-      loose: false,
-      method: 'get',
-      createNextAsyncFunc: _this2.createNextAsyncFunc.bind(_this2)
-    };
-
-    _this2.options = (0, _extends3.default)({}, optionsDefaults, _this2.options, options);
-    return _this2;
-  }
-
   return ContinuousLoadJiveREST;
 }(ContinuousLoader);
 
-var ContinuousLoadJiveOSAPI = exports.ContinuousLoadJiveOSAPI = function (_ContinuousLoader2) {
-  (0, _inherits3.default)(ContinuousLoadJiveOSAPI, _ContinuousLoader2);
+exports.ContinuousLoadJiveREST = ContinuousLoadJiveREST;
+
+var ContinuousLoadJiveOSAPI = /*#__PURE__*/function (_ContinuousLoader2) {
+  (0, _inherits2["default"])(ContinuousLoadJiveOSAPI, _ContinuousLoader2);
+
+  var _super2 = _createSuper(ContinuousLoadJiveOSAPI);
 
   function ContinuousLoadJiveOSAPI() {
-    (0, _classCallCheck3.default)(this, ContinuousLoadJiveOSAPI);
-    return (0, _possibleConstructorReturn3.default)(this, (ContinuousLoadJiveOSAPI.__proto__ || (0, _getPrototypeOf2.default)(ContinuousLoadJiveOSAPI)).apply(this, arguments));
+    (0, _classCallCheck2["default"])(this, ContinuousLoadJiveOSAPI);
+    return _super2.apply(this, arguments);
   }
 
-  (0, _createClass3.default)(ContinuousLoadJiveOSAPI, [{
-    key: 'getList',
+  (0, _createClass2["default"])(ContinuousLoadJiveOSAPI, [{
+    key: "getList",
     value: function getList(asyncFunctionResponse) {
       //console.log('REST getList')
       var responseContent = asyncFunctionResponse.content || asyncFunctionResponse;
       return responseContent.list || [];
     }
   }, {
-    key: 'getNextAsyncFunc',
+    key: "getNextAsyncFunc",
     value: function getNextAsyncFunc(asyncFunctionResponse) {
       if (typeof asyncFunctionResponse.getNextPage === 'function') {
         return function () {
@@ -473,9 +501,11 @@ var ContinuousLoadJiveOSAPI = exports.ContinuousLoadJiveOSAPI = function (_Conti
   return ContinuousLoadJiveOSAPI;
 }(ContinuousLoader);
 
-exports.default = {
+exports.ContinuousLoadJiveOSAPI = ContinuousLoadJiveOSAPI;
+var _default = {
   ContinuousLoader: ContinuousLoader,
   ContinuousLoadJiveREST: ContinuousLoadJiveREST,
   ContinuousLoadJiveOSAPI: ContinuousLoadJiveOSAPI
 };
+exports["default"] = _default;
 //# sourceMappingURL=ContinuousLoader.js.map

@@ -1,22 +1,37 @@
-'use strict';
+"use strict";
+
+require("core-js/modules/es.object.define-property.js");
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.PostFilteringLoaderOSAPI = exports.PostFilteringLoaderREST = exports.PostFilteringLoader = undefined;
+Object.defineProperty(exports, "PostFilteringLoader", {
+  enumerable: true,
+  get: function get() {
+    return _ContinuousLoader.ContinuousLoader;
+  }
+});
+Object.defineProperty(exports, "PostFilteringLoaderOSAPI", {
+  enumerable: true,
+  get: function get() {
+    return _ContinuousLoader.ContinuousLoadJiveOSAPI;
+  }
+});
+Object.defineProperty(exports, "PostFilteringLoaderREST", {
+  enumerable: true,
+  get: function get() {
+    return _ContinuousLoader.ContinuousLoadJiveREST;
+  }
+});
+exports["default"] = void 0;
 
-var _ContinuousLoader = require('./ContinuousLoader');
-
-exports.PostFilteringLoader = _ContinuousLoader.ContinuousLoader;
-exports.PostFilteringLoaderREST = _ContinuousLoader.ContinuousLoadJiveREST;
-exports.PostFilteringLoaderOSAPI = _ContinuousLoader.ContinuousLoadJiveOSAPI;
-
+var _ContinuousLoader = require("./ContinuousLoader");
 
 var exp = {
   PostFilteringLoader: _ContinuousLoader.ContinuousLoader,
   PostFilteringLoaderREST: _ContinuousLoader.ContinuousLoadJiveREST,
   PostFilteringLoaderOSAPI: _ContinuousLoader.ContinuousLoadJiveOSAPI
 };
-
-exports.default = exp;
+var _default = exp;
+exports["default"] = _default;
 //# sourceMappingURL=PostFilteringLoader.js.map

@@ -40,9 +40,9 @@ export class ContinuousLoader {
       targetCount: 10,
       maxTriesPerLoad: 5,
       timeLimit: 10000,
-      getNextAsyncFunc: ::this.getNextAsyncFunc,
-      getError: ::this.getError,
-      getList: ::this.getList,
+      getNextAsyncFunc: this.getNextAsyncFunc.bind(this),
+      getError: this.getError.bind(this),
+      getList: this.getList.bind(this),
       transformResponse: null
     }
 
@@ -52,7 +52,7 @@ export class ContinuousLoader {
     this.filter = filter
     this.resultPool = []
     this.endReached = false
-    this.transformResponse = this.options.transformResponse || ::this._transformResponse
+    this.transformResponse = this.options.transformResponse || this._transformResponse.bind(this)
   }
 
   _transformResponse (list) {
@@ -258,7 +258,7 @@ export class ContinuousLoadJiveREST extends ContinuousLoader {
       // Useful for jive REST "/activity" endpoint
       loose: false,
       method: 'get',
-      createNextAsyncFunc: ::this.createNextAsyncFunc
+      createNextAsyncFunc: this.createNextAsyncFunc.bind(this)
     }
 
     this.options = { ...optionsDefaults, ...this.options, ...options }
