@@ -1,10 +1,10 @@
 {
   "name": "anrom-jive-app-tools",
-  "version": "1.2.0-rc.1",
+  "version": "2.0.0-rc1",
   "description": "Simple tools for jive apps and tiles",
   "main": "index.js",
   "engines": {
-    "node": ">=8.12.0",
+    "node": ">=12.22.10",
     "npm": ">=6.4.0"
   },
   "scripts": {
@@ -25,27 +25,22 @@
   },
   "homepage": "https://github.com/lerayne/anrom-jive-app-tools#readme",
   "devDependencies": {
-    "babel-cli": "6.26.0",
-    "babel-core": "6.26.3",
-    "babel-plugin-add-module-exports": "0.2.1",
-    "babel-plugin-transform-runtime": "6.23.0",
-    "babel-preset-env": "1.7.0",
-    "babel-preset-react": "6.16.0",
-    "babel-preset-stage-0": "6.24.1",
-    "gulp": "3.9.1",
-    "gulp-jest": "4.0.2",
-    "gulp-rimraf": "0.2.1",
-    "gulp-shell": "0.5.2",
-    "jest": "24.1.0",
-    "jest-cli": "24.1.0",
+    "@babel/cli": "7.17.6",
+    "@babel/core": "7.17.9",
+    "@babel/plugin-transform-runtime": "7.17.0",
+    "@babel/preset-env": "7.16.11",
+    "babel-plugin-add-module-exports": "1.0.4",
+    "gulp": "4.0.2",
+    "gulp-babel": "8.0.0",
+    "gulp-jest": "4.0.4",
+    "gulp-shell": "0.8.0",
+    "jest": "27.5.1",
     "jquery": "3.5.0",
-    "moment": "2.29.2",
-    "run-sequence": "2.2.1"
+    "moment": "2.29.2"
   },
   "peerDependencies": {
-    "react": ">= 15.3.2",
-    "babel-runtime": ">= 6.26.0",
-    "moment": ">= 2.22.2"
+    "moment": ">= 2.22.2",
+    "react": ">= 15.3.2"
   },
   "dependencies": {
     "url": "0.11.0"
