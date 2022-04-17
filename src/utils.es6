@@ -1,5 +1,3 @@
-import 'core-js/fn/array/includes'
-
 const jQuery = window.jQuery
 
 export function unescapeHtmlEntities (text) {
