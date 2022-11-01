@@ -32,7 +32,7 @@
     "babel-preset-env": "1.7.0",
     "babel-preset-react": "6.16.0",
     "babel-preset-stage-0": "6.24.1",
-    "gulp": "3.9.1",
+    "gulp": "4.0.2",
     "gulp-jest": "4.0.2",
     "gulp-rimraf": "0.2.1",
     "gulp-shell": "0.5.2",
